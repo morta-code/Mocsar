@@ -1,0 +1,13 @@
+{
+	"name": "Mocsar-game",
+	"description": "This is a web-based implementation of the well-known card game \"Mocsár\". It's created for the course \"Javascript and HTML5 technologies\" and \"Artificial intelligence\" at Pázmány Péter Catholic University - Faculty of Information Technology (Budapest, Hungary). 2013",
+	"version": "0.0.1",
+	"author": "Móréh Tamás, Quintz Gábor",
+	"private": false,
+	"dependencies": {
+		"express": "3.x",
+		"mongoose": "3.x",
+		"socket.io": "0.9"
+	},
+	"license": "MIT"
+}
