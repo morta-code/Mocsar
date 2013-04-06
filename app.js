@@ -30,27 +30,31 @@ io.sockets.on('connection', function (socket) {
 	// Ha a játék kezdete után csatlakozik a kliens, kidobja.
 	// TODO: Ha már csatlakizott játékos lép vissza, engedje be (addig automatikusan passzoljon)
 	if (mocsar.gameStarted){
-		socket.emit('disconnect');
+		socket.emit('disconnect'); // -> erre a kliens kiírja, hogy a játékhoz nem tud csatlakozni
 		return;
 	};
+
+	socket.emit('newplayer', mocsar.players); // Erre frissül (itt először) a játékoslista TODO normáis players modell!!!
 
 	var playerid = null;
 
 	// Az új játékos bejelentkezik, és erről a többiek értesítést kapnak. Ha nem sikerült, hibaüzenetet kap.
 	socket.on('myname', function (data) {
 		mocsar.newPlayer(data, function (id) {
-			io.sockets.emit('newplayer', mocsar.players);
+			io.sockets.emit('newplayer', mocsar.players); // Erre minenkinél frissül a játékoslista TODO normáis players modell!!!
 			playerid = id;
-		}, function() {
-			socket.emit('badname');
+		}, function () {
+			socket.emit('badname'); // Erre az üzenetre új nevet kér (valószínűleg a kliensoldali ellenőrzés miatt nem lesz rá szükség)
 		});
 	});
 
-	// Az admin (0. játékos) elindíthatja a játékot
-	socket.on('startgame', function () {
+	// Az admin (0. játékos) elindíthatja a játékot és megadhatja, hány MI játékos vesz részt
+	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
 		if (mocsar.gameStarted) {return;};
-		mocsar.startGame // TODO, és valamilyen callback
+		mocsar.startGame(function (neworder, cards) {
+			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cards}); // Nincs adózás, ready-t válaszolnak, ha kész.
+		});
 	});
 
 	// Játékos rak lapot (vagy passzol)
@@ -58,39 +62,59 @@ io.sockets.on('connection', function (socket) {
 		cards: [{color: 0-5 (pikk, kör, káró, treff, jolly), value: 2-15 (J=15)}]
 		passz: null
 	*/
-	socket.on('put', function(cards) {
+	socket.on('put', function (cards) {
 		if (mocsar.currentRound.currentPlayerId != playerid) {return;};
-		mocsar.currentRound.putCards(cards, function() {
-			io.sockets.emit('put', {from: playerid, cards: cards});
-		}, function() {
-			socket.emit('badcards');
+		mocsar.currentRound.putCards(cards, function () {
+			io.sockets.emit('put', {from: playerid, cards: cards}); // Erre az üzenetre mindenki látja, hogy ki mit rakott. Az aktuális rakónál is ez jelenti a nyugtát
+		}, function () {
+			socket.emit('badcards'); // Ez a válasz akkor küldődik, ha hibás lapokat akart küldeni.
 		}); // TODO Első callback ok, második bad.
 	});
 
 	// Visszajelzés a játékosoktól, ha kész az animáció
-	socket.on('ready', function() {
-		mocsar.currentRound.readyFrom(playerid, function() {
-			mocsar.currentRound.nextPlayer();
-			io.socket.emit('next', mocsar.currentRound.currentPlayerId);
-		}); // TODO. Callback, ha az utolsó játékostól is beérkezett.
+	// Callback, ha az utolsó játékostól is beérkezett.
+	/*
+		1. callback: Mindenkitől beérkezett, következő jön
+		2. callback: Mindenkitől beérkezett, passz körbeért, utolsó hív
+		3. callback: Mindenkitől beérkezett, új forduló, új sorrenddel
+	*/
+	socket.on('ready', function () {
+		mocsar.currentRound.readyFrom(playerid, function (nextid) {
+			io.sockets.emit('next', nextid); // Erre mindenki tudni fogja, hogy ki jön. Aki jön, az ezzel kapja meg a „promptot”.
+ 		}, function (callid) {
+			io.sockets.emit('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. Erre mindenki ready-t válaszol!
+		}, function (neworder, cards) {
+			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cards}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek cards: [[{color: value}]]
+			// Erre a király adózási törvényt hirdethet, az admin esetleg megszakíthatja a játékot, mindenki más vár a sorára.
+		}); // TODO. callbackek
 	});
 
+	// A király elküldi az adózási törvényt (pl: [4, 3, 1]), és ha minden rendben van, a rendszer szétküldi
+	socket.on('tributes', function (tributes) {
+		if (mocsar.currentRound.playerOrder[0] != playerid || tributes.length > mocsar.players.length/2) {return;}; // TODO
+		io.sockets.emit('tributes', tributes); // Erre mindenki tudja, hogy ki mennyit adózik, de az adás automatikus:
+		mocsar.currentRound.tribute(tributes); // TODO
+	});
 
-	// TODO passz körbeér
-	// TODO forduló vége
-	// TODO adózás (oda-vissza)
+	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát kap.
+	mocsar.players[playerid].getCardsAsTribute = function (cards) {
+		socket.emit('gettributecards' cards);	
+	};
+
+	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát ad.
+	mocsar.players[playerid].giveCardsAsTribute = function (cards) {
+		socket.emit('givetributecards' cards);	
+	};
+
+	// Nemes játékosok kiválasztott kártyákat adnak vissza. Callback akkor hívódik, ha mindenki visszaadta, és kezdődhet a kör.
+	socket.on('tributecardsback', function (cards) {
+		mocsar.currentRound.tributeBack(playerid, cards, function () {
+			io.sockets.emit('nextcircle', callid); // Erre mindenki ready-t válaszol
+		});
+	});
+
 	// TODO MI hozzáadása
 	// TODO MI eseménykezelése
-	// TODO új forduló
-
-
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
-
-
-
 
 
 });
