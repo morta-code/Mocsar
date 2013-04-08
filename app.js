@@ -23,7 +23,7 @@ app.use(express.static("./public"));
 server.listen(7500);
 
 /////////////////////////////////////////////////
-
+// TODO ha lesz idő, titkosítás
 
 io.sockets.on('connection', function (socket) {
 
@@ -34,14 +34,14 @@ io.sockets.on('connection', function (socket) {
 		return;
 	};
 
-	socket.emit('newplayer', mocsar.players); // Erre frissül (itt először) a játékoslista TODO normáis players modell!!!
+	socket.emit('newplayer', mocsar.playerlist()); // Erre frissül (itt először) a játékoslista TODO normáis players modell!!!
 
 	var playerid = null;
 
 	// Az új játékos bejelentkezik, és erről a többiek értesítést kapnak. Ha nem sikerült, hibaüzenetet kap.
-	socket.on('myname', function (data) {
-		mocsar.newPlayer(data, function (id) {
-			io.sockets.emit('newplayer', mocsar.players); // Erre minenkinél frissül a játékoslista TODO normáis players modell!!!
+	socket.on('myname', function (nam) {
+		mocsar.newPlayer({name: nam}, function (id) {
+			io.sockets.emit('newplayer', mocsar.playerlist()); // Erre minenkinél frissül a játékoslista TODO normáis players modell!!!
 			playerid = id;
 		}, function () {
 			socket.emit('badname'); // Erre az üzenetre új nevet kér (valószínűleg a kliensoldali ellenőrzés miatt nem lesz rá szükség)
@@ -52,9 +52,17 @@ io.sockets.on('connection', function (socket) {
 	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
 		if (mocsar.gameStarted) {return;};
-		mocsar.startGame(function (neworder, cards) {
-			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cards}); // Nincs adózás, ready-t válaszolnak, ha kész.
+		mocsar.aiPlayersNum(ainum, function() {
+			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
+		mocsar.startGame(function (neworder, cardnums) {
+			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
+		});
+	});
+
+
+	socket.on('mycards' function () {
+		socket.emit('mycards', mocsar.players[playerid].cards);
 	});
 
 	// Játékos rak lapot (vagy passzol)
@@ -83,8 +91,8 @@ io.sockets.on('connection', function (socket) {
 			io.sockets.emit('next', nextid); // Erre mindenki tudni fogja, hogy ki jön. Aki jön, az ezzel kapja meg a „promptot”.
  		}, function (callid) {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. Erre mindenki ready-t válaszol!
-		}, function (neworder, cards) {
-			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cards}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek cards: [[{color: value}]]
+		}, function (neworder, cardnums) {
+			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cardnums}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek cards: [[{color: value}]]
 			// Erre a király adózási törvényt hirdethet, az admin esetleg megszakíthatja a játékot, mindenki más vár a sorára.
 		}); // TODO. callbackek
 	});
@@ -113,7 +121,6 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 
-	// TODO MI hozzáadása
 	// TODO MI eseménykezelése
 
 
