@@ -25,25 +25,20 @@ module.exports = function () {
 		callbackOK(players.length - 1);
 	}
 
-
-
-
 	var round = function () {
 
 		return {
-			currentPlayer: ,
-
+			currentPlayer: null
 		};
 	};
-
 
 	return {
 		players: players,
 		newPlayer: newPlayer,
 
-		currentRound
-		startGame
-		gameStarted
-		readyFrom
+		currentRound: null,
+		startGame: null,
+		gameStarted: null,
+		readyFrom: null
 	};
 }();

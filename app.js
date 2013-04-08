@@ -98,12 +98,12 @@ io.sockets.on('connection', function (socket) {
 
 	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát kap.
 	mocsar.players[playerid].getCardsAsTribute = function (cards) {
-		socket.emit('gettributecards' cards);	
+		socket.emit('gettributecards', cards);	
 	};
 
 	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát ad.
 	mocsar.players[playerid].giveCardsAsTribute = function (cards) {
-		socket.emit('givetributecards' cards);	
+		socket.emit('givetributecards', cards);	
 	};
 
 	// Nemes játékosok kiválasztott kártyákat adnak vissza. Callback akkor hívódik, ha mindenki visszaadta, és kezdődhet a kör.
