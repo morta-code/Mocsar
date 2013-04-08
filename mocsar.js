@@ -2,11 +2,22 @@ module.exports = function () {
 
 	var players = [];
 
+	var playerlist = function () {
+		var arr = [];
+		players.forEach(function (act) {
+			arr.push({name: act.name, ai: act.ai});
+		});
+		return arr;
+	};
+
 	var newPlayer = function (params, callbackOK, callbackBad) {
 
 		var player = {
 			name: "player" + (players.length + 1),
-			ai: false
+			ai: false,
+			cards: [],
+			getCardsAsTribute: null,
+			giveCardsAsTribute: null
 		};
 
 		if (params) {
@@ -33,9 +44,10 @@ module.exports = function () {
 	};
 
 	return {
-		players: players,
-		newPlayer: newPlayer,
-
+		players: players, // ok
+		playerlist: playerlist, // ok
+		newPlayer: newPlayer, // TODO
+		aiPlayersNum: null,
 		currentRound: null,
 		startGame: null,
 		gameStarted: null,
