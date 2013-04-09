@@ -61,7 +61,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 
-	socket.on('mycards' function () {
+	socket.on('mycards', function () {
 		socket.emit('mycards', mocsar.players[playerid].cards);
 	});
 
@@ -105,21 +105,27 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát kap.
+	/*
 	mocsar.players[playerid].getCardsAsTribute = function (cards) {
 		socket.emit('gettributecards', cards);	
 	};
+	*/
 
 	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát ad.
+	/*
 	mocsar.players[playerid].giveCardsAsTribute = function (cards) {
 		socket.emit('givetributecards', cards);	
 	};
+	*/
 
 	// Nemes játékosok kiválasztott kártyákat adnak vissza. Callback akkor hívódik, ha mindenki visszaadta, és kezdődhet a kör.
+	/*
 	socket.on('tributecardsback', function (cards) {
 		mocsar.currentRound.tributeBack(playerid, cards, function () {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki ready-t válaszol
 		});
 	});
+	*/
 
 	// TODO MI eseménykezelése
 
