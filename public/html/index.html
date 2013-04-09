@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<title>Mocsar Game</title>
+		<script src="/js/jquery-1.9.1.js"></script>
+		<script src="/js/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
+
+		<script type="text/javascript">
+
+			var sendUserNameAndConnection = function(){
+				$('#error').text("");
+  				var socket = io.connect('http://localhost');
+  				
+  				socket.emit('myname', $('#nev').val() );
+
+	  			socket.on('newplayer', function (data) {
+    				console.log(data);
+    				var container = $("#userList");
+    				container.html("");
+    				$.each(data, function(i){
+    					container.append("<div>" + data[i].name + "</div>");
+    				});
+  				});
+
+  				socket.on('badname', function(){
+  					$('#error').text("Hibás Név");
+  				});
+  			}
+  			
+  			$(document).ready(function(){
+  				$("#send").click(sendUserNameAndConnection);
+  			});
+		</script>
+	</head>
+	<body>
+		<div>
+			<input type="text" name="Nev" id="nev" value="quiga" />
+			<button name="ok" id="send">Send</button>
+			<span id="error"></span>
+		</div>
+		<div id="userList"></div>
+	</body>
+</html>
