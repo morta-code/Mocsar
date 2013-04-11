@@ -34,7 +34,7 @@ io.sockets.on('connection', function (socket) {
 		return;
 	};
 
-	socket.emit('newplayer', mocsar.playerlist()); // Erre frissül (itt először) a játékoslista TODO normáis players modell!!!
+	//socket.emit('newplayer', mocsar.playerlist()); // Erre frissül (itt először) a játékoslista TODO normáis players modell!!!
 
 	var playerid = null;
 
@@ -55,6 +55,7 @@ io.sockets.on('connection', function (socket) {
 		mocsar.aiPlayersNum(ainum, function() {
 			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
+		// TODO
 		mocsar.startGame(function (neworder, cardnums) {
 			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
 		});
@@ -105,6 +106,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// Ezt a callback-et kapja meg inicializálásként minden user, ami meghívódik, ha adóként kártyát kap.
+	// TODO Lehet, hogy ezek nem is kellenek?
 	/*
 	mocsar.players[playerid].getCardsAsTribute = function (cards) {
 		socket.emit('gettributecards', cards);	
@@ -120,7 +122,8 @@ io.sockets.on('connection', function (socket) {
 
 	// Nemes játékosok kiválasztott kártyákat adnak vissza. Callback akkor hívódik, ha mindenki visszaadta, és kezdődhet a kör.
 	/*
-	socket.on('tributecardsback', function (cards) {
+	socket.on('tributeback', function (cards) {
+		TODO
 		mocsar.currentRound.tributeBack(playerid, cards, function () {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki ready-t válaszol
 		});
