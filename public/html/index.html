@@ -1,42 +1,142 @@
 <html>
 	<head>
 		<title>Mocsar Game</title>
-		<script src="/js/jquery-1.9.1.js"></script>
-		<script src="/js/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
+		<script type='text/javascript' src="/js/jquery-1.9.1.js"></script>
+		<script type='text/javascript' src="/js/knockout-2.2.1.debug.js"></script>
+		
+		<!--<script type='text/javascript' src="/js/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>-->
+
+		<!--<script type="text/html" id="templateAdmin">
+		/*
+			<label for="aiNumber">MI játékosok száma:</label>
+			<input type="number" name="aiNumber" id="aiNumber" min="0" max="11">
+			<button id="sendAi">SendAdminSettings</button>
+			<button id="start">StartGame</button>
+		*/
+		</script>
+	-->
 
 		<script type="text/javascript">
+			function viewModel(){
+				this.myObject = ko.observable({
+					name: ko.observable(""),
+					id: ko.observable("")
+				});
+			
+				var socket = null;
 
-			var sendUserNameAndConnection = function(){
-				$('#error').text("");
-  				var socket = io.connect('http://localhost');
+				var nameError = "username is used";
+				this.badname = ko.observable(false);
+
+				var isLogin = ko.computed(function(){
+					return this.myObject().name() == "" || this.myObject().id() == "";
+				}, this);
+
+				var isError = ko.computed(function(){
+					return badname();
+				}, this);
+
+				var connectToServer = function(){
+					socket = io.connect('http://localhost');
+				};
+
+				var sendUserName = function(){
+  					socket.emit('myname',  );
+  				};
+
+  				var init = function(){
+	  				socket.on('newplayer', function (data) {
+	    				console.log(data);
+	    				console.log(data.length);
+	    				if(data.length == 1){
+							isAdmin = true;
+							console.log("admin: " + is);
+							//$("#adminArea").html($("#templateAdmin").html());
+							if(isAdmin){
+								//$("#adminArea").show();
+	    						$("#sendAi").click(sendAdminSettings);
+	    						$("#start").click(this.startGame);
+	    					}
+	    				}
+
+	    					
+    					var container = $("#userList");
+    					container.html("");
+    					$.each(data, function(i){
+	    					container.append("<div>" + data[i].name + "</div>");
+    					});
+  					});
+
+  					socket.on('badname', function(state){
+	  					if(state)
+	  						$('#error').text("Hibás Név");
+	  					else{
+	  						$("#login").hide();
+	  						$("#settingsArea").show();
+	  						if(isAdmin)
+	  							$("#adminArea").show();
+	  					}
+  					});
+				};
+				
+
+				return {
+					myObject: myObject,
+					nameError: nameError,
+					badname: badname,
+					isLogin: isLogin,
+					isError: isError
+				};
+
+
+				var gameObject = {
+
+				
+				
+  				sendAdminSettings: function(){
+  					console.log("sendAdminSettings");
+					socket.emit('settings', $('#aiNumber').val() );
+  				},
+  				startGame: function(){
+  					socket.emit('startgame');	
+  				},
+  
   				
-  				socket.emit('myname', $('#nev').val() );
-
-	  			socket.on('newplayer', function (data) {
-    				console.log(data);
-    				var container = $("#userList");
-    				container.html("");
-    				$.each(data, function(i){
-    					container.append("<div>" + data[i].name + "</div>");
-    				});
-  				});
-
-  				socket.on('badname', function(){
-  					$('#error').text("Hibás Név");
-  				});
-  			}
+				}
+			};
   			
   			$(document).ready(function(){
-  				$("#send").click(sendUserNameAndConnection);
+  				ko.applyBindings(viewModel());
+  				//gameObject.connectToServer();
+  				//gameObject.init();
+  				//$("#send").click(gameObject.sendUserName);
   			});
+
+
+  			
+
 		</script>
 	</head>
 	<body>
-		<div>
-			<input type="text" name="Nev" id="nev" value="quiga" />
-			<button name="ok" id="send">Send</button>
-			<span id="error"></span>
+		<div id="login" data-bind="visible: isLogin">
+			<input type="text" name="Nev" id="nev" data-bind="value: myObject().name, valueUpdate: 'afterkeydown'" />
+			<div data-bind="text: myObject().name"></div>
+			<button name="ok" id="send" data-bind="enabled: isLogin">Send</button>
+			<span id="error" data-bind="text: nameError, visible: isError"></span>
 		</div>
-		<div id="userList"></div>
+
+
+
+		<div id="settingsArea" style="display:none;">
+			<div id="userList"></div>
+			<div id="adminArea" style="display:none;">
+				<label for="aiNumber">MI játékosok száma:</label>
+				<input type="number" name="aiNumber" id="aiNumber" min="0" max="11">
+				<button id="sendAi">SendAdminSettings</button>
+				<button id="start">StartGame</button>
+			</div>
+		</div>
+		<div id="gameArea" style="display:none;"></div>
+	
 	</body>
 </html>
