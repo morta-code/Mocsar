@@ -9,7 +9,7 @@
 	<body>
 		<div class="wrapper">
             <div class="tartalom">
-                <div class="data">
+                <div class="data" id="initArea" data-bind="visible: isInit">
                     <div class="userList">
                     	<label for="userList"><p>Eddig csatlakozott Userek:</p></label>
                     	<div id="userList" data-bind="html: userList()"></div>
@@ -30,9 +30,9 @@
 								<button id="start" data-bind="enabled: isAdmin, click: sendAi">StartGame</button>
 							</div>
 						</div>
-						<div id="gameArea" style="display:none;"></div>
 					</div>
 				</div>
+				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted">minta 123</div>
 			</div>
 		</div>
 	</body>

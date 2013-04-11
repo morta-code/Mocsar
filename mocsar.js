@@ -58,13 +58,17 @@ module.exports = function () {
 		callback();
 	};
 
+	var startGame = function(callback_paramNeworderCardnums){
+		callback_paramNeworderCardnums(null, 0);	// teszt
+	};
+
 	return {
 		players: players, // ok
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // TODO
 		aiPlayersNum: aiPlayersNum,
+		startGame: startGame,
 		currentRound: null,
-		startGame: null,
 		gameStarted: null,
 		readyFrom: null
 	};
