@@ -4,7 +4,7 @@
 		<script type='text/javascript' src="/js/jquery-1.9.1.js"></script>
 		<script type='text/javascript' src="/js/knockout-2.2.1.debug.js"></script>
 		
-		<!--<script type='text/javascript' src="/js/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>-->
+		<script type='text/javascript' src="/js/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
 
 		<!--<script type="text/html" id="templateAdmin">
 		/*
@@ -18,10 +18,13 @@
 
 		<script type="text/javascript">
 			function viewModel(){
-				this.myObject = ko.observable({
-					name: ko.observable(""),
-					id: ko.observable("")
-				});
+				this.userName  = ko.observable("");
+				this.id 	   = ko.observable("");
+				this.aiNumbers = ko.observable("0");
+
+				this.players = ko.observableArray([]);
+
+				this.state = ko.observable(0);
 			
 				var socket = null;
 
@@ -29,111 +32,115 @@
 				this.badname = ko.observable(false);
 
 				var isLogin = ko.computed(function(){
-					return this.myObject().name() == "" || this.myObject().id() == "";
+					return (this.userName() == "" || this.id() == "") && this.state() == 0;
 				}, this);
+
+				var isSettings = ko.computed(function(){
+					return (this.userName() != "" || this.id() != "") && this.state() == 1;
+				}, this);
+
+				var isAdmin = ko.computed(function(){
+					return this.id() == "0";
+				}, this);
+
 
 				var isError = ko.computed(function(){
 					return badname();
-				}, this);
+				}, this);			
+
+				var sendData = function(name, data){
+					if(socket==null){
+						connectToServer();
+						init();
+					}
+					socket.emit(name, data);
+				};
+
+				var sendUserName = function(){
+  					sendData('myname', this.userName());	
+  				};
+
+  				var sendAi = function(){
+  					//sendData('startgame', this.aiNumbers());		
+  					sendData('startgame', 10);	
+  				}
+
+  				var __newplayer = function (data) {
+    				players.removeAll();
+					for (var i = 0; i < data.length; i++) {
+    					players.push(data[i]);
+    				}
+  				};
+
+  				var __badname = function(data){
+	  				badname(data.state);
+	  				if(!data.state){	  					
+	  					userName(data.name);
+						id(data.id);
+						state(state()+1);
+					}
+  				};
+
+  				var __newround = function(data){
+  					console.log(data);
+  				};
+
+  				var init = function(){
+	  				socket.on('newplayer', __newplayer);
+  					socket.on('badname', __badname);
+  					socket.on('newround', __newround);
+				};
 
 				var connectToServer = function(){
 					socket = io.connect('http://localhost');
 				};
 
-				var sendUserName = function(){
-  					socket.emit('myname',  );
-  				};
-
-  				var init = function(){
-	  				socket.on('newplayer', function (data) {
-	    				console.log(data);
-	    				console.log(data.length);
-	    				if(data.length == 1){
-							isAdmin = true;
-							console.log("admin: " + is);
-							//$("#adminArea").html($("#templateAdmin").html());
-							if(isAdmin){
-								//$("#adminArea").show();
-	    						$("#sendAi").click(sendAdminSettings);
-	    						$("#start").click(this.startGame);
-	    					}
-	    				}
-
-	    					
-    					var container = $("#userList");
-    					container.html("");
-    					$.each(data, function(i){
-	    					container.append("<div>" + data[i].name + "</div>");
-    					});
-  					});
-
-  					socket.on('badname', function(state){
-	  					if(state)
-	  						$('#error').text("Hibás Név");
-	  					else{
-	  						$("#login").hide();
-	  						$("#settingsArea").show();
-	  						if(isAdmin)
-	  							$("#adminArea").show();
-	  					}
-  					});
-				};
+				var userList = ko.computed(function(){
+					var html = "";
+					
+					for (var i = 0; i < players().length; i++) {
+						html += ("<div>" + players()[i].name + "</div>");
+					};
+					return html;
+				});
 				
-
 				return {
-					myObject: myObject,
+					userName: userName,
 					nameError: nameError,
-					badname: badname,
+	 				badname: badname,
 					isLogin: isLogin,
-					isError: isError
+					isError: isError,
+					isSettings: isSettings,
+					isAdmin: isAdmin,
+					players: players,
+					sendUserName: sendUserName,
+					sendAi: sendAi,
+					userList: userList
 				};
-
-
-				var gameObject = {
-
-				
-				
-  				sendAdminSettings: function(){
-  					console.log("sendAdminSettings");
-					socket.emit('settings', $('#aiNumber').val() );
-  				},
-  				startGame: function(){
-  					socket.emit('startgame');	
-  				},
-  
-  				
-				}
 			};
   			
   			$(document).ready(function(){
   				ko.applyBindings(viewModel());
-  				//gameObject.connectToServer();
-  				//gameObject.init();
-  				//$("#send").click(gameObject.sendUserName);
   			});
-
-
-  			
 
 		</script>
 	</head>
 	<body>
 		<div id="login" data-bind="visible: isLogin">
-			<input type="text" name="Nev" id="nev" data-bind="value: myObject().name, valueUpdate: 'afterkeydown'" />
-			<div data-bind="text: myObject().name"></div>
-			<button name="ok" id="send" data-bind="enabled: isLogin">Send</button>
+			<input type="text" name="Nev" id="nev" data-bind="value: userName, valueUpdate: 'afterkeydown'" />
+			<div data-bind="text: userName"></div>
+			<button name="ok" id="send" data-bind="click: sendUserName, enabled: isLogin">Send</button>
 			<span id="error" data-bind="text: nameError, visible: isError"></span>
 		</div>
 
-
-
-		<div id="settingsArea" style="display:none;">
-			<div id="userList"></div>
-			<div id="adminArea" style="display:none;">
+		<div id="settingsArea" data-bind="visible: isSettings">
+			<div id="userList" data-bind="html: userList()">
+				
+			</div>
+			<div id="adminArea" data-bind="visible: isAdmin">
 				<label for="aiNumber">MI játékosok száma:</label>
-				<input type="number" name="aiNumber" id="aiNumber" min="0" max="11">
-				<button id="sendAi">SendAdminSettings</button>
-				<button id="start">StartGame</button>
+				<input type="number" name="aiNumber" id="aiNumber" min="0" max="11" data-bind="value: aiNumbers, valueUpdate: 'afterkeydown'">
+				<button id="start" data-bind="enabled: isAdmin, click: sendAi">StartGame</button>
 			</div>
 		</div>
 		<div id="gameArea" style="display:none;"></div>

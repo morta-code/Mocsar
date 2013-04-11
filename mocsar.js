@@ -44,11 +44,25 @@ module.exports = function () {
 		};
 	};
 
+	var aiPlayersNum = function(param, callback){
+		for (var i = 0; i < param; i++) {
+			players.push({
+				name: "player_" + i,
+				id: players.length,
+				ai: true,
+				cards: [],
+				getCardsAsTribute: null,
+				giveCardsAsTribute: null
+			});
+		};
+		callback();
+	};
+
 	return {
 		players: players, // ok
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // TODO
-		aiPlayersNum: null,
+		aiPlayersNum: aiPlayersNum,
 		currentRound: null,
 		startGame: null,
 		gameStarted: null,

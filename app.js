@@ -43,26 +43,29 @@ io.sockets.on('connection', function (socket) {
 		mocsar.newPlayer({name: nam}, function (id) {
 			io.sockets.emit('newplayer', mocsar.playerlist()); // Erre minenkinél frissül a játékoslista TODO normáis players modell!!!
 			playerid = id;
-			socket.emit('badname', false);
+			socket.emit('badname', {state: false, id: id, name: nam});
 		}, function () {
-			socket.emit('badname', true); // Erre az üzenetre új nevet kér (valószínűleg a kliensoldali ellenőrzés miatt nem lesz rá szükség)
+			socket.emit('badname', {state: true}); // Erre az üzenetre új nevet kér (valószínűleg a kliensoldali ellenőrzés miatt nem lesz rá szükség)
 		});
 	});
 
 	// Az admin (0. játékos) elindíthatja a játékot és megadhatja, hány MI játékos vesz részt
-	/*
+	
 	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
 		if (mocsar.gameStarted) {return;};
 		mocsar.aiPlayersNum(ainum, function() {
 			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
+		/*
+		* mivel meg nem letezik, ne halljon be
 		mocsar.startGame(function (neworder, cardnums) {
 			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
 		});
+		*/
 	});
-	*/
-
+	
+/*
 	socket.on('settings', function (ainum) {
 		//if (playerid != 0) {return;};
 		//if (mocsar.gameStarted) {return;};
@@ -80,7 +83,7 @@ io.sockets.on('connection', function (socket) {
 			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
 		});
 	});
-
+*/
 	socket.on('mycards', function () {
 		socket.emit('mycards', mocsar.players[playerid].cards);
 	});
