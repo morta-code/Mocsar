@@ -4,8 +4,8 @@ module.exports = function () {
 
 	var playerlist = function () {
 		var arr = [];
-		players.forEach(function (act) {
-			arr.push({name: act.name, ai: act.ai, id: act.id});
+		players.forEach(function (act, index) {
+			arr.push({name: act.name, ai: act.ai, id: index});
 		});
 		return arr;
 	};
@@ -14,11 +14,9 @@ module.exports = function () {
 
 		var player = {
 			name: "player" + (players.length + 1),
-			id: players.length,
 			ai: false,
 			cards: [],
-			getCardsAsTribute: null,
-			giveCardsAsTribute: null
+			toTributrsBack
 		};
 
 		if (params) {
