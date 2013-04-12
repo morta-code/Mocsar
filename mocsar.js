@@ -10,8 +10,12 @@ module.exports = function () {
 		return arr;
 	};
 
+	/* Új játékos hozzáadása
+	*	params: játékos tulajdonságai (pl. name)
+	* 	callbackOK: Akkor hívódik meg, ha sikerers, paraméterként az új játékos azonosítóját kapja
+	*	callbackBad: Akkor hívódik meg, ha sikertelen
+	*/
 	var newPlayer = function (params, callbackOK, callbackBad) {
-
 		var player = {
 			name: "player" + (players.length + 1),
 			ai: false,

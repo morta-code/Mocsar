@@ -28,7 +28,7 @@ server.listen(7500);
 io.sockets.on('connection', function (socket) {
 
 	// Ha a játék kezdete után csatlakozik a kliens, kidobja.
-	// TODO: Ha már csatlakizott játékos lép vissza, engedje be (addig automatikusan passzoljon)
+	// TODO: Ha már csatlakozott/frissített játékos lép vissza, engedje be (addig automatikusan passzoljon)
 	if (mocsar.gameStarted){
 		socket.emit('disconnect'); // -> erre a kliens kiírja, hogy a játékhoz nem tud csatlakozni
 		return;
@@ -38,19 +38,32 @@ io.sockets.on('connection', function (socket) {
 
 	var playerid = null;
 
-	// Az új játékos bejelentkezik, és erről a többiek értesítést kapnak. Ha nem sikerült, hibaüzenetet kap.
+
+	/* 	Eseménykezelő új játékos bejelentkezésére.
+	*		nam: játékos nickneve pl.: ""
+	* 	
+	* 	Létrehozza a játékost, és mindenki tudtára adja, hogy bejelentkezett.
+	*/
 	socket.on('myname', function (nam) {
 		mocsar.newPlayer({name: nam}, function (id) {
-			io.sockets.emit('newplayer', mocsar.playerlist()); // Erre minenkinél frissül a játékoslista TODO normáis players modell!!!
+			io.sockets.emit('newplayer', mocsar.playerlist()); 
 			playerid = id;
 			socket.emit('badname', {state: false, id: id, name: nam});
 		}, function () {
-			socket.emit('badname', {state: true}); // Erre az üzenetre új nevet kér (valószínűleg a kliensoldali ellenőrzés miatt nem lesz rá szükség)
+			socket.emit('badname', {state: true});
 		});
 	});
 
-	// Az admin (0. játékos) elindíthatja a játékot és megadhatja, hány MI játékos vesz részt
-	
+
+	/* 	Játék indítása (csak admin)
+	*		ainum: MI játékosok száma (egész szám)
+	* 	
+	* 	Létrehozza a MI játékosokat, ami automatikusan szétküldi az új listát.
+	* 	Ezután elindítja a játékot, amely a következő paramétereket adja vissza:
+	*		neworder: Játékosok sorrendje (egész tömb, itt [0,1,2,3,...] lesz)
+	* 		cardnums: Játékosok kártyáinak számai (eredeti sorrendben, pl [14,14,14,...])
+	* 	Ezeket küldi szét (kiegészítve a democratic információval) a klienseknek. Mindenki 'ready'-t válaszol
+	*/
 	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
 		if (mocsar.gameStarted) {return;};
@@ -59,35 +72,46 @@ io.sockets.on('connection', function (socket) {
 		});
 		// TODO
 		mocsar.startGame(function (neworder, cardnums) {
-			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész. (Kérdezzék le a lapjukat)
+			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); 
 		});
 	});
 
 
+	/*	Kártyák lekérdezése
+	*	Válaszként a játékos megkapja a saját kártyáinak listáját ilyen formátumban:
+	*		[{color: c, value: v}]
+	*	Pl.: [{color: 0, value: 8},{color: 5: value: 15},{color: 2, value: 11},..]
+	*/
 	socket.on('mycards', function () {
 		socket.emit('mycards', mocsar.players[playerid].cards);
 	});
 
-	// Játékos rak lapot (vagy passzol)
-	/*
-		cards: [{color: 0-5 (pikk, kör, káró, treff, jolly), value: 2-15 (J=15)}]
-		passz: null
+
+	/*	Játékos rak lapot (vagy passzol)
+	*		cards: [{color: 0-5 (pikk, kör, káró, treff, jolly), value: 2-15 (J=15)}]
+	*		passz esetén []
+	*	Ezután érvényes lapok esetén mindenki magkapja a kártyák értékeit. Mindenki 'ready'-t válaszol!
+	*	Érvénytelen lépés esetén 'badcards' üzenetet küld vissza	
 	*/
 	socket.on('put', function (cards) {
 		if (mocsar.currentRound.currentPlayerId != playerid) {return;};
 		mocsar.currentRound.putCards(cards, function () {
-			io.sockets.emit('put', {from: playerid, cards: cards}); // Erre az üzenetre mindenki látja, hogy ki mit rakott. Az aktuális rakónál is ez jelenti a nyugtát
+			io.sockets.emit('put', {from: playerid, cards: cards});
 		}, function () {
-			socket.emit('badcards'); // Ez a válasz akkor küldődik, ha hibás lapokat akart küldeni.
-		}); // TODO Első callback ok, második bad.
+			socket.emit('badcards');
+		});
 	});
 
-	// Visszajelzés a játékosoktól, ha kész az animáció
-	// Callback, ha az utolsó játékostól is beérkezett.
-	/*
-		1. callback: Mindenkitől beérkezett, következő jön
-		2. callback: Mindenkitől beérkezett, passz körbeért, utolsó hív
-		3. callback: Mindenkitől beérkezett, új forduló, új sorrenddel
+
+	/*	Visszajelzés a laprakás/demokratikus kör indítása/adózás után
+	*	Ha mindenkitől beérkezett, akkor az utolsónál a megfelelő callback hívódik vissza
+	*		1. callback: Mindenkitől beérkezett, következő jön
+	*			nextid: A következő játékos azonosítója (eredeti sorrend alapján)
+	*		2. callback: Mindenkitől beérkezett, passz körbeért, utolsó lapot lerakó hív
+	*			callid: A nyitó játékos azonosítója (eredeti sorrend alapján)
+	*		3. callback: Mindenkitől beérkezett, új forduló, új sorrenddel
+	*			neworder: Játékosok sorrendje (egész tömb, pl.: [4,1,7,2,...])
+	*			cardnums: Játékosok kártyáinak számai (eredeti sorrendben, pl [14,14,...,16])
 	*/
 	socket.on('ready', function () {
 		mocsar.currentRound.readyFrom(playerid, function (nextid) {
@@ -95,31 +119,42 @@ io.sockets.on('connection', function (socket) {
  		}, function (callid) {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. A callid megkapja a promptot
 		}, function (neworder, cardnums) {
-			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cardnums}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek cards: [kártyák száma]
+			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cardnums}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek 
 			// A kliensek kérdezzék le a kártyájukat 'mycards'-szal
 			// Erre a király adózási törvényt hirdethet.
-		}); // TODO. callbackek
+		});
 	});
 
-	// A király elküldi az adózási törvényt (pl: [4, 3, 1]), és ha minden rendben van, a rendszer szétküldi
+
+	/*	A király elküldi az adózási törvényt
+	*		tributes: Az adózási tételeket tartalmazó szig.mon.fogyó tömb pl.: [4,3,1]
+	*	Az adótételeket mindneki megkapja (ha érvényes, és sikeres az átadás)
+	*	Erre mindenki kérje le újra a lapjait
+	*	Akik pedig kaptak, adjanak vissza, amennyi jár, akkor automatikusan tovább lép a program
+	*/
 	socket.on('tributes', function (tributes) {
-		if (mocsar.currentRound.canTribute != playerid || tributes.length > mocsar.players.length/2) {return;}; // TODO
+		if (mocsar.currentRound.canTribute != playerid || tributes.length > mocsar.players.length/2) {return;};
 		mocsar.currentRound.tribute(tributes, function() {
-			io.sockets.emit('tributes', tributes); // Erre mindenki tudja, hogy ki mennyit adózik, de az adás automatikus. Mindenki kérdezze le a saját lapjait!
+			io.sockets.emit('tributes', tributes);
 		}); // TODO
 	});
 
-	// Nemes játékosok kiválasztott kártyákat adnak vissza. Callback akkor hívódik, ha mindenki visszaadta, és kezdődhet a kör.
-	
+
+	/*	Akik lapot kaptak, visszaadnak megfelelő számút
+	*		cards: kártyák, amiket visszaadnak.
+	*	Sikeres és sikertelen esetben is kap a játékos visszajelzést 'tributeback' true/false üzenettel
+	*	Ha mindenki végrehajtotta a cserét, az utolsó callback hívódik, ami ezt a tényt kürtöli szét.
+	*	Erre mindenki kérdezze le a lapjait, majd válaszoljon 'ready'-vel.
+	*/
 	socket.on('tributeback', function (cards) {
 		if (mocsar.players[playerid].toTributeBack != cards.length) {
 			socket.emit('tributeback', false);
+			return;
 		};
 		mocsar.currentRound.tributeBack(playerid, cards, function() {
-			socket.emit('tributeback', true); // Sikeres átadás esetén fut le
+			socket.emit('tributeback', true);
 		}, function () {
-			io.sockets.emit('tributeback'); // Akkor hívódik meg, ha minenkinél lezárult a lapcsere
-			// Erre mindenki ready-t válaszol (Az pedig nextcircle-t ad)
+			io.sockets.emit('tributeback'); 
 		});
 	});
 	
