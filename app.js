@@ -60,7 +60,7 @@ io.sockets.on('connection', function (socket) {
 
 		mocsar.startGame(function (neworder, cardnums) {
 			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
-		});		// kiegészítés: szükség lenne egy külön signal-ra, amivel a kliensek tudják, hogy a játék elindult és lekérdezik a kártyákat
+		});
 	});
 	
 /*

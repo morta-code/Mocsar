@@ -2,6 +2,8 @@ module.exports = function () {
 
 	var players = [];
 
+	var gameStarted = false;
+
 	var playerlist = function () {
 		var arr = [];
 		players.forEach(function (act) {
@@ -59,6 +61,7 @@ module.exports = function () {
 	};
 
 	var startGame = function(callback_paramNeworderCardnums){
+		gameStarted = true;
 		callback_paramNeworderCardnums(null, 0);	// teszt
 	};
 
@@ -69,7 +72,7 @@ module.exports = function () {
 		aiPlayersNum: aiPlayersNum,
 		startGame: startGame,
 		currentRound: null,
-		gameStarted: null,
+		gameStarted: gameStarted,
 		readyFrom: null
 	};
 }();
