@@ -70,29 +70,12 @@ io.sockets.on('connection', function (socket) {
 		mocsar.aiPlayersNum(ainum, function() {
 			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
-<<<<<<< HEAD
 
 		mocsar.startGame(function (neworder, cardnums) {
 			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
 		});
 	});
 	
-/*
-	socket.on('settings', function (ainum) {
-		//if (playerid != 0) {return;};
-		//if (mocsar.gameStarted) {return;};
-		
-		mocsar.aiPlayersNum(ainum, function() {
-			io.sockets.emit('newplayer', mocsar.playerlist());
-=======
-		// TODO
-		mocsar.startGame(function (neworder, cardnums) {
-			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); 
->>>>>>> origin/master
-		});
-	});
-
-
 	/*	Kártyák lekérdezése
 	*	Válaszként a játékos megkapja a saját kártyáinak listáját ilyen formátumban:
 	*		[{color: c, value: v}]
