@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<title>Mocsar Game - Minta oldal JS nélkül</title>
+		<link rel="stylesheet" href="/css/style.css" type="text/css" />
+	</head>
+	<body>
+		<div class="wrapper">
+            <div class="tartalom">
+                <div class="data">
+                    <div class="userList">
+                    	<label for="userList"><p>Eddig csatlakozott Userek:</p></label>
+                    	<div id="userList">
+       						<div>admin</div>
+							<div>quiga</div>
+							<div>player_0</div>
+							<div>player_1</div>
+							<div>player_2</div>
+							<div>player_3</div>
+							<div>player_4</div>
+							<div>player_5</div>
+							<div>player_6</div>
+							<div>player_7</div>
+							<div>player_8</div>
+							<div>player_9</div>				
+						</div>
+					</div>
+					<div class="content">
+						<div id="login" style="display:none;">
+							<label for="nev"> Felhasználónév: </label>
+							<input type="text" name="Nev" id="nev" />
+							<div>admin</div>
+							<span id="errorLoginArea" style="">username is used</span><br />
+							<button name="ok" id="send">Send</button>
+						</div>
+						<div id="settingsArea" style="display:none;">
+							<div id="adminArea">
+								<label for="aiNumber">MI játékosok száma:</label>
+								<input type="number" name="aiNumber" id="aiNumber" min="0" max="11"><br />
+								<span id="errorSettingsArea" style="">is not a number</span><br />
+								<button id="start">StartGame</button>
+							</div>
+						</div>
+						<div id="gameArea" style="display:none;"></div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</body>
+</html>
