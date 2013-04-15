@@ -5,6 +5,7 @@ define(["jquery", "ko"], function ($, ko) {
 				this.aiNumbers = ko.observable("0");
 				this.badname   = ko.observable(false);
 				this.players   = ko.observableArray([]);
+				this.cards     = ko.observableArray([]);
 				this.state     = ko.observable(0);
 			
 				var socket = null;
@@ -67,16 +68,81 @@ define(["jquery", "ko"], function ($, ko) {
 					}
   				};
 
+  				// TODO ide valami jobb módszer
+  				var __mycards = function(data){
+  					mycards.removeAll();
+  					for (var i = 0; i < data.length; i++) {
+  						mycards.push(data[i]);
+  						console.log(data[i]);
+  					}
+  				};
+
+  				var __nextcircle = function(data){
+  					// 	TODO 
+  						// játéktér ürítése
+  						// data id játékos jön
+  						// sendData('put', cards);
+  				};
+
+  				var __put = function (data) {
+  					//	TODO  data = {from: playerid, cards: cards};
+  					// grafikus
+  					sendData('ready', null);
+  				};
+
+  				var __next = function(data){
+  					// 	TODO 
+  						// játéktér ürítése nincs, nem rakhat akármit
+  						// data id játékos jön
+  						// sendData('put', cards);
+  				}
+
+  				var __tributes = function(data){
+  					sendData('mycards', null);
+  					if(players[this.id()].order<data.length)
+  					{
+  						data[players[this.id()].order];
+  						// 	TODO   ennyi lapot kell visszaadnom
+  					}
+  				};
+  				// TODO tributeback eseményt visszaküldeni cards paraméterrel. formátum: [{color: 0, value: 8}, {color: x, value: y}...]
+
+  				var __tributeback = function(){
+  					sendData('mycards', null);
+  					sendData('ready', null);
+  				};
+
   				var __newround = function(data){
-  					//if(!isLoggedIn()) return null;
+
+  					for (var i = 0; i < players.length && i < data.order.length; i++) {
+  						players[data.order[i]].order = i;
+  						players[i].cards = data.cards[i];
+  						// TODO ne egyesével mozgassa az embereket
+  					};
+
+  					sendData('mycards', null);
+
+  					if(data.democratic)
+  					{
+  						sendData('ready', null);
+  					}
+  					else{
+  						//	TODO
+  					}
+
   					console.log(data);
-  					//state(2);
   				};
 
   				var init = function(){
 	  				socket.on('newplayer', __newplayer);
   					socket.on('badname', __badname);
   					socket.on('newround', __newround);
+  					socket.on('mycards', __mycards);
+  					socket.on('tributes', __tributes);
+  					socket.on('tributeback', __tributeback);
+  					socket.on('nextcircle', __nextcircle);
+  					socket.on('put', __put);
+  					socket.on('next', __next);
 				};
 
 				var connectToServer = function(){
