@@ -9,17 +9,13 @@ define(["jquery", "ko"], function ($, ko) {
 			
 				var socket = null;
 				var nameError = "username is used";
-/*
-				var isLoggedIn = function(){
-					return (this.userName() != "" && this.id() != "");
-				};
-*/
+
 				var isLogin = ko.computed(function(){
 					return (this.userName() == "" || this.id() == "") && this.state() == 0;
 				}, this);
 
 				var isSettings = ko.computed(function(){
-					return (this.userName() != "" && this.id() != "") && this.state() == 1;
+					return (this.userName() !== "" && this.id() !== "") && this.state() == 1;
 				}, this);
 
 				var isAdmin = ko.computed(function(){
