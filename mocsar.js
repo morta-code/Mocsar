@@ -2,14 +2,12 @@ module.exports = function () {
 
 	var players = [];
 
-<<<<<<< HEAD
 	var gameStarted = false;
 
-=======
 	/*	Játékoslista kliensoldali célokra
 	*	A visszaadott tömb nem tartalmazza a nem publikus adatokat, pl. minden
 	*/
->>>>>>> 5425463e5e0d8ea433e70a94b7d3635e3908709b
+
 	var playerlist = function () {
 		var arr = [];
 		players.forEach(function (act, index) {
@@ -94,15 +92,12 @@ module.exports = function () {
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // ok
 		aiPlayersNum: aiPlayersNum,
-<<<<<<< HEAD
+
 		startGame: startGame,
-		currentRound: null,
+
 		gameStarted: gameStarted,
-=======
 		currentRound: currentRound,
-		startGame: null,
-		gameStarted: null,
->>>>>>> 5425463e5e0d8ea433e70a94b7d3635e3908709b
+
 		readyFrom: null
 	};
 }();
