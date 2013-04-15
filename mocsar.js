@@ -6,21 +6,23 @@ module.exports = function () {
 
 	var playerlist = function () {
 		var arr = [];
-		players.forEach(function (act) {
-			arr.push({name: act.name, ai: act.ai, id: act.id});
+		players.forEach(function (act, index) {
+			arr.push({name: act.name, ai: act.ai, id: index});
 		});
 		return arr;
 	};
 
+	/* Új játékos hozzáadása
+	*	params: játékos tulajdonságai (pl. name)
+	* 	callbackOK: Akkor hívódik meg, ha sikerers, paraméterként az új játékos azonosítóját kapja
+	*	callbackBad: Akkor hívódik meg, ha sikertelen
+	*/
 	var newPlayer = function (params, callbackOK, callbackBad) {
-
 		var player = {
 			name: "player" + (players.length + 1),
-			id: players.length,
 			ai: false,
 			cards: [],
-			getCardsAsTribute: null,
-			giveCardsAsTribute: null
+			toTributesBack: null
 		};
 
 		if (params) {
@@ -52,9 +54,7 @@ module.exports = function () {
 				name: "player_" + i,
 				id: players.length,
 				ai: true,
-				cards: [],
-				getCardsAsTribute: null,
-				giveCardsAsTribute: null
+				cards: []
 			});
 		};
 		callback();
