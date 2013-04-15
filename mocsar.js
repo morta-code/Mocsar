@@ -2,8 +2,14 @@ module.exports = function () {
 
 	var players = [];
 
+<<<<<<< HEAD
 	var gameStarted = false;
 
+=======
+	/*	Játékoslista kliensoldali célokra
+	*	A visszaadott tömb nem tartalmazza a nem publikus adatokat, pl. minden
+	*/
+>>>>>>> 5425463e5e0d8ea433e70a94b7d3635e3908709b
 	var playerlist = function () {
 		var arr = [];
 		players.forEach(function (act, index) {
@@ -12,12 +18,13 @@ module.exports = function () {
 		return arr;
 	};
 
-	/* Új játékos hozzáadása
+	/* 	Új játékos hozzáadása
 	*	params: játékos tulajdonságai (pl. name)
 	* 	callbackOK: Akkor hívódik meg, ha sikerers, paraméterként az új játékos azonosítóját kapja
 	*	callbackBad: Akkor hívódik meg, ha sikertelen
 	*/
 	var newPlayer = function (params, callbackOK, callbackBad) {
+		if (gameStarted) {return;};
 		var player = {
 			name: "player" + (players.length + 1),
 			ai: false,
@@ -41,15 +48,32 @@ module.exports = function () {
 		callbackOK(players.length - 1);
 	}
 
-	var round = function () {
+
+	function Round (order) {
+		var currentOrder = order;
+		var currentPlayer = 0;
+		var currentPlayerId = 0;
 
 		return {
-			currentPlayer: null
+			currentPlayerId: currentPlayerId,
+			putCards: null,
+			readyFrom: null,
+			canTribute: null,
+			tribute: null,
+			tributeBack: null
 		};
 	};
 
+	var currentRound = null;
+
+	/*	MI játékosok hozzáadása
+	*		param: MI játékosok száma
+	*	(ettől függetlenül nem adódik hozzá több, mint amennyi a mayximum)
+	*		callback: ha kész, visszahívódik
+	*/
 	var aiPlayersNum = function(param, callback){
-		for (var i = 0; i < param; i++) {
+		if (gameStarted) {return;};
+		for (var i = 0; i < param && players.length < 12; i++) {
 			players.push({
 				name: "player_" + i,
 				id: players.length,
@@ -68,11 +92,17 @@ module.exports = function () {
 	return {
 		players: players, // ok
 		playerlist: playerlist, // ok
-		newPlayer: newPlayer, // TODO
+		newPlayer: newPlayer, // ok
 		aiPlayersNum: aiPlayersNum,
+<<<<<<< HEAD
 		startGame: startGame,
 		currentRound: null,
 		gameStarted: gameStarted,
+=======
+		currentRound: currentRound,
+		startGame: null,
+		gameStarted: null,
+>>>>>>> 5425463e5e0d8ea433e70a94b7d3635e3908709b
 		readyFrom: null
 	};
 }();
