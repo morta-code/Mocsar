@@ -6,16 +6,16 @@ var io = require('socket.io').listen(server);
 
 var mocsar = require('./mocsar');
 
-mongoose.connect("mongodb://localhost/mocsar");
-var db = mongoose.connection;
+// mongoose.connect("mongodb://localhost/mocsar");
+// var db = mongoose.connection;
 
-var mocsarSchema = mongoose.Schema({
-	// TODO
-});
+// var mocsarSchema = mongoose.Schema({
+// 	// TODO
+// });
 
-var historySchema = mongoose.Schema({
-	// TODO
-});
+// var historySchema = mongoose.Schema({
+// 	// TODO
+// });
 
 
 app.use(express.static("./public"));
