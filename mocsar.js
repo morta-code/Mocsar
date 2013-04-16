@@ -59,110 +59,103 @@ module.exports = function () {
 		var rdyCb = {cb: 1, param: currentPlayerId};// Utolsó 'ready'-ra adandó válasz
 
 		var circles = [];							// A forduló körei. Object-eket tartalmaz (egyfajta history)
-		var currentCircle = {						// A jelenlegi kör
-			cardsOnTable: [],						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
-			nobids: []								// Az egymást követő passzok.
-		};
+
+		var nobids = [];							// Az egymást követő passzok.
+		var cardsOnTable = [];						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
 		var neworder = [];							// A következő kör sorrendje (folyamatosan töltődik)
 
 
-		var putCards = function (cards, callbackOK, callbackBad) {
-			// játékos passzolt -> readies és rdyCb beállítása
-			if (cards.length === 0) {
-				readies.splice(0);
-				currentCircle.nobids.push(currentPlayerId);
-				
-				// Nem ért körbe a passz
-				if (currentCircle.nobids.length <= order.length) {
-					if (currentPlayerOrder == order.length-1) {
-						currentPlayerOrder = 0;
-					} else {
-						currentPlayerOrder++;
-					};
-					currentPlayerId = order[currentPlayerOrder];
-					rdyCb.cb = 0;
-				} else {
-					rdyCb.cb = 1;
-					currentPlayerId = currentCircle.cardsOnTable[cardsOnTable.length-1].id;
-					// Kiment már a játékos? Ha igen, az utána következő (első passzoló hív)
-					while (order.indexOf(currentPlayerId) === -1) {
-						currentPlayerId = currentCircle.nobids.shift();
-					};
-					currentPlayerOrder = order.indexOf(currentPlayerId);
-				}
-
-				rdyCb.param = currentPlayerId;
-				callbackOK();
-				return;
+		function __next () {
+			if (currentPlayerOrder == order.length-1) {
+				currentPlayerOrder = 0;
+			} else {
+				currentPlayerOrder++;
 			};
+			currentPlayerId = order[currentPlayerOrder];
+			rdyCb.cb = 0;
+			rdyCb.param = currentPlayerId;
+		};
 
-			nobids.splice(0);
-			// kártyák kivétele a kézből
-			var cardsToTable = [];
+		function __goodput (cards) {
 			var putValue = 0;
 			for (var i = cards.length - 1; i >= 0; i--) {
-				var c_id = players[currentPlayerId].cards.indexOf(cards[i]);
-				if (c_id === -1) {
-					callbackBad();
-					return;
-				};
-				cardsToTable.push(players[currentPlayerId].cards.splice(c_id, 1));
-			};
-
-			// kártyák ellenőrzése
-			for (var i = cardsToTable.length - 1; i >= 0; i--) {
-				if (putValue === 0) {putValue = cardsToTable[i].value; continue;};
-				if ((putValue === 15 || putValue === 2) && (cardsToTable[i].value !== 15 && cardsToTable[i].value !== 2)) {putValue = cardsToTable[i].value; continue;};
-				if ((putValue !== 15 && putValue !== 2 && cardsToTable[i].value !== 15 && cardsToTable[i].value !== 2) && cardsToTable[i].value !== putValue) {
-					players[currentPlayerId].cards = players[currentPlayerId].cards.concat(cardsToTable);
-					callbackBad();
-					return;
-				};
+				if (players[currentPlayerId].cards.indexOf(cards[i]) === -1) {return;};
+				if (putValue === 0) {putValue = cards[i].value; continue;};
+				if ((putValue === 15 || putValue === 2) && (cards[i].value !== 15 && cards[i].value !== 2)) {putValue = cards[i].value; continue;};
+				if ((putValue !== 15 && putValue !== 2 && cards[i].value !== 15 && cards[i].value !== 2) && cards[i].value !== putValue) {return;};
 			};
 			if (putValue === 2) {putValue = 15;};
-			// Überelt?
-			if (putValue <= currentCircle.cardsOnTable[cardsOnTable.length-1].value) {
-				players[currentPlayerId].cards = players[currentPlayerId].cards.concat(cardsToTable);
-				callbackBad();
-				return;
-			};
+			if (cardsOnTable.length > 0 && putValue <= cardsOnTable[cardsOnTable.length-1].value) {return;};
+			return putValue;
+		};
 
-			// kártyák betétele a kör közepére
-			currentCircle.cardsOnTable.push({id: currentPlayerId, value: putValue, cards: cardsToTable});
 
-			// readies beállítása + ready reakció beállítása
-			// Kiment a játékos?
-			if (players[currentPlayerId].cards.length === 0) {
-				neworder.push(order.splice(currentPlayerOrder, 1));
-				if (currentPlayerOrder == order.length) {
-					currentPlayerOrder = 0;					
+		var putCards = function (cards, callbackOK, callbackBad) {
+			//////L//O//G//////
+			console.log("PUT CARDS: " + currentPlayerId + " " + cards);
+			//////L//O//G//////
+
+
+			if (cards.length === 0) {
+				// Passzolás
+
+				nobids.push(currentPlayerId);
+
+				if (nobids.length < order.length) {		// Nem ért körbe a passz
+					__next();
+				} else {								// Körbeért a passz
+					currentPlayerId = cardsOnTable[cardsOnTable.length-1].id;
+					while (order.indexOf(currentPlayerId) === -1) {
+						currentPlayerId = nobids.shift();
+					};
+					currentPlayerOrder = order.indexOf(currentPlayerId);
+					rdyCb.cb = 1;
+					rdyCb.param = currentPlayerId;
 				};
-				currentPlayerId = order[currentPlayerOrder];
+
 			} else {
-				if (currentPlayerOrder == order.length-1) {
-					currentPlayerOrder = 0;
+				// Lépés
+
+				var putValue = __goodput(cards);
+				if (!putValue) {
+					// Helytelen lépés
+					callbackBad();
+					return;
+				};
+				cardsOnTable.push({id: currentPlayerId, value: putValue, cards: cards});
+				nobids.splice(0);
+				// TODO putValue === 15 esetén nextcircle
+				if (players[currentPlayerId].cards.length === 0) {
+					// elfogyott
+
+					neworder.push(order.splice(currentPlayerOrder, 1));
+
+					if (order.length == 1) {
+						// vége van
+						players[currentPlayerId].cards.splice(0); // TODO betenni a history-ba
+						neworder.push(order.splice(0,1));
+						rdyCb.cb = 2;
+						rdyCb.param = {order: neworder};
+
+					} else {
+						// nincs vége
+						if (currentPlayerOrder == order.length) {
+							currentPlayerOrder = 0;					
+						};
+						currentPlayerId = order[currentPlayerOrder];
+						rdyCb.cb = 0;
+						rdyCb.param = currentPlayerId;
+					};
+
 				} else {
-					currentPlayerOrder++;
+					// nem fogyott el
+					__next();
 				};
-				currentPlayerId = order[currentPlayerOrder];
+
 			};
 
-			// Már csak egy játékos maradt?
-			if (order.length == 1) {
-				// Mocsár
-				players[currentPlayerId].cards.splice(0); // TODO betenni a history-ba
-				neworder.push(order.splice(0,1));
-				// TODO osztás
-				rdyCb.cb = 2;
-				rdyCb.param = {order: neworder};
-			} else {
-				rdyCb.param = currentPlayerId;
-			};
-
-			// callback
 			readies.splice(0);
 			callbackOK();
-			return;
 		};
 
 
