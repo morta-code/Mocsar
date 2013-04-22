@@ -64,6 +64,7 @@ module.exports = function () {
 		var cardsOnTable = [];						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
 		var neworder = [];							// A következő kör sorrendje (folyamatosan töltődik)
 
+		var whoCanTribute = null;					// Tárolja a király id-jét, amíg nem hirdet adózást TODO
 
 		function __next () {
 			if (currentPlayerOrder == order.length-1) {
@@ -89,6 +90,12 @@ module.exports = function () {
 			return putValue;
 		};
 
+		function __newround () {
+			// Osztás, rdyCb.param.cardnums beállítás
+			// TODO
+
+			whoCanTribute = neworder[0];
+		}
 
 		var putCards = function (cards, callbackOK, callbackBad) {
 			//////L//O//G//////
@@ -168,8 +175,12 @@ module.exports = function () {
 			if (readies.length === players.length) {
 				if (rdyCb.cb === 0) {cbNext(rdyCb.param); return;};
 				if (rdyCb.cb === 1) {cbNextCircle(rdyCb.param); return;};
-				// TODO osztás
-				if (rdyCb.cb === 2) {cbNextRound(rdyCb.param.order, rdyCb.param.cardnums); return;};
+				if (rdyCb.cb === 2) {
+					__newround();
+					cbNextRound(rdyCb.param.order, rdyCb.param.cardnums);
+					neworder.splice(0);
+					return;
+				};
 			};
 		};
 
@@ -178,7 +189,7 @@ module.exports = function () {
 			currentPlayerId: currentPlayerId, // ok
 			putCards: putCards,	// ok
 			readyFrom: readyFrom, // ok
-			canTribute: null,
+			canTribute: whoCanTribute,	// TODO 
 			tribute: null,
 			tributeBack: null
 		};
@@ -223,7 +234,7 @@ module.exports = function () {
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // ok
 		aiPlayersNum: aiPlayersNum, // TODO AI vezérlés, eseménykezelés
-		startGame: startGame,
+		startGame: startGame, // TODO minimális játékosszám megléte?
 		gameStarted: gameStarted,
 		currentRound: currentRound
 	};
