@@ -1,7 +1,10 @@
 module.exports = function () {
 
-	var players = [];
+	// Hiányzott a Ruby után:
+	Number.prototype.times = function (cb) {for(var i = 0; i < this; i++){cb(i)};};
 
+	var pack = require("./cards");
+	var players = [];
 	var gameStarted = false;
 
 
@@ -12,6 +15,14 @@ module.exports = function () {
 		var arr = [];
 		players.forEach(function (act, index) {
 			arr.push({name: act.name, ai: act.ai, id: index});
+		});
+		return arr;
+	};
+
+	var cardnums = function () {
+		var arr = [];
+		players.forEach(function (act) {
+			arr.push(act.cards.length);
 		});
 		return arr;
 	};
@@ -28,7 +39,8 @@ module.exports = function () {
 			name: "player" + (players.length + 1),
 			ai: false,
 			cards: [],
-			toTributesBack: null
+			toTributeBack: null,
+			toTributeBackFor: null
 		};
 
 		if (params) {
@@ -48,7 +60,7 @@ module.exports = function () {
 	}
 
 
-	function Round (order) {
+	function Round (order, democratic) {
 		//////L//O//G//////
 		console.log("ROUND " + order);
 		//////L//O//G//////
@@ -64,7 +76,34 @@ module.exports = function () {
 		var cardsOnTable = [];						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
 		var neworder = [];							// A következő kör sorrendje (folyamatosan töltődik)
 
-		var whoCanTribute = null;					// Tárolja a király id-jét, amíg nem hirdet adózást TODO
+		var whoCanTribute = (democratic ? null : currentOrder[0]);// Tárolja a király id-jét, amíg nem hirdet adózást
+		var needsTributeBack = 0;					// 
+
+
+		// De facto konstruktor (osztás) TODO keverés, demokratikus kör esetén mindenkinek egyenlően
+		function __deal (p) {
+			var oID = currentOrder.length-1;
+			function nxt (o) {
+				if (!o)	{
+					return currentOrder.length-1;
+				}
+				return o -= 1;
+			};
+
+			// for (var i = 0; i < (currentOrder.length < 9 ? 2 : 3); i++) {
+			// 	pack.forEach(function (card) {
+			// 		 p[currentOrder[oID]].cards.push(card);
+			// 		oID = nxt(oID);
+			// 	});
+			// };
+			(currentOrder.length < 9 ? 2 : 3).times(function () {
+				pack.forEach(function (card) {
+					 p[currentOrder[oID]].cards.push(card);
+					oID = nxt(oID);
+				});
+			});
+		}(players);
+		
 
 		function __next () {
 			if (currentPlayerOrder == order.length-1) {
@@ -90,11 +129,13 @@ module.exports = function () {
 			return putValue;
 		};
 
-		function __newround () {
-			// Osztás, rdyCb.param.cardnums beállítás
-			// TODO
-
-			whoCanTribute = neworder[0];
+		function __bestCards (player, num) {
+			// TODO a legjobbak átadása, nem az első hármat!
+			var bests = [];
+			num.times(function () {
+				bests.push(player.cards.splice(0, 1));
+			});
+			return bests;
 		}
 
 		var putCards = function (cards, callbackOK, callbackBad) {
@@ -176,8 +217,7 @@ module.exports = function () {
 				if (rdyCb.cb === 0) {cbNext(rdyCb.param); return;};
 				if (rdyCb.cb === 1) {cbNextCircle(rdyCb.param); return;};
 				if (rdyCb.cb === 2) {
-					__newround();
-					cbNextRound(rdyCb.param.order, rdyCb.param.cardnums);
+					cbNextRound(rdyCb.param.order);
 					neworder.splice(0);
 					return;
 				};
@@ -185,13 +225,52 @@ module.exports = function () {
 		};
 
 
+		var tribute = function (tributes, callback) {
+			//////L//O//G//////
+			console.log("TRIBUTE " + tributes);
+			//////L//O//G//////
+
+			tributes.forEach(function(t, i) {
+				//////L//O//G//////
+				console.log("TRIBUTE ", players[currentOrder[i]].name, players[currentOrder[currentOrder.length-(1+i)]]);
+				//////L//O//G//////
+				players[currentOrder[i]].toTributeBack = t;
+				players[currentOrder[i]].toTributeBackFor = currentOrder[currentOrder.length-(1+i)];
+
+				players[currentOrder[i]].cards = players[currentOrder[i]].cards.concat(
+					__bestCards(players[currentOrder[currentOrder.length-(1+i)]], t));
+			});
+			needsTributeBack = tributes.length;
+			canTribute = null;
+		};
+
+
+		var tributeBack = function (id, cards, callbackOK, callbackReady) {
+			//////L//O//G//////
+			console.log("TRIBUTEBACK ", players[id], cards);
+			//////L//O//G//////
+
+			var fromCards = players[id].cards;
+			var forCards = players[ players[id].toTributeBackFor ].cards;
+			cards.forEach(function (c, i) {
+				forCards.push(fromCards.splice(fromCards.indexOf(c), 1));
+			});
+
+			needsTributeBack--;
+			callbackOK();
+			// Ha az utolsó is visszaadta, callbackReady
+			if (needsTributeBack === 0) {
+				callbackReady();
+			};
+		}
+
 		return {
 			currentPlayerId: currentPlayerId, // ok
 			putCards: putCards,	// ok
 			readyFrom: readyFrom, // ok
-			canTribute: whoCanTribute,	// TODO 
-			tribute: null,
-			tributeBack: null
+			canTribute: whoCanTribute, // ok 
+			tribute: tribute,	// ok
+			tributeBack: tributeBack // ok
 		};
 	};
 
@@ -220,13 +299,18 @@ module.exports = function () {
 	*		callback: ha kész, visszahívódik a sorrenddel és a lapok számával
 	*/
 	var startGame = function (callback){
+		if (players.length < 6) return;
 		var order = [];
 		players.forEach(function (act, index) {
 			order.push(index);
 		});
-		currentRound = new Round(order);
+		currentRound = new Round(order, true);
 		gameStarted = true;
 		callback(order, 0);
+	};
+
+	var newRound = function (order) {
+		currentRound = new Round(order, false);
 	};
 
 	return {
@@ -234,8 +318,12 @@ module.exports = function () {
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // ok
 		aiPlayersNum: aiPlayersNum, // TODO AI vezérlés, eseménykezelés
-		startGame: startGame, // TODO minimális játékosszám megléte?
-		gameStarted: gameStarted,
-		currentRound: currentRound
+		startGame: startGame, // ok
+		newRound: newRound, // ok
+		gameStarted: gameStarted, // ok
+		currentRound: currentRound, // ok
+		cardnums: cardnums
 	};
 }();
+
+// TODO optimalizálás (számításra)

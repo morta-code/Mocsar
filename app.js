@@ -23,7 +23,6 @@ app.use(express.static("./public"));
 server.listen(7500);
 
 /////////////////////////////////////////////////
-// TODO ha lesz idő, titkosítás
 
 io.sockets.on('connection', function (socket) {
 
@@ -33,8 +32,6 @@ io.sockets.on('connection', function (socket) {
 		socket.emit('disconnect'); // -> erre a kliens kiírja, hogy a játékhoz nem tud csatlakozni
 		return;
 	};
-
-	//socket.emit('newplayer', mocsar.playerlist()); // Erre frissül (itt először) a játékoslista TODO normáis players modell!!!
 
 	var playerid = null;
 
@@ -67,6 +64,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
 		if (mocsar.gameStarted) {return;};
+		if (mocsar.players.length + ainum <= 6) {return;};
 		mocsar.aiPlayersNum(ainum, function() {
 			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
@@ -85,9 +83,16 @@ io.sockets.on('connection', function (socket) {
 		socket.emit('mycards', mocsar.players[playerid].cards);
 	});
 
+	/*	Kártyák számának lekérdezése
+	*	Válaszként a játékos megkapja az összes játékos kártyáinak számát az eredeti (id) sorrendben
+	*/
+	socket.on('cardnums', function () {
+		socket.emit('cardnums', mocsar.cardnums);
+	});
+
 
 	/*	Játékos rak lapot (vagy passzol)
-	*		cards: [{color: 0-5 (pikk, kör, káró, treff, jolly), value: 2-15 (J=15)}]
+	*		cards: [{color: 0-4 (pikk, kör, káró, treff, jolly), value: 2-15 (J=15)}]
 	*		passz esetén []
 	*	Ezután érvényes lapok esetén mindenki magkapja a kártyák értékeit. Mindenki 'ready'-t válaszol!
 	*	Érvénytelen lépés esetén 'badcards' üzenetet küld vissza	
@@ -118,6 +123,7 @@ io.sockets.on('connection', function (socket) {
  		}, function (callid) {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. A callid megkapja a promptot
 		}, function (neworder, cardnums) {
+			mocsar.newRound(neworder);
 			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cardnums}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek 
 			// A kliensek kérdezzék le a kártyájukat 'mycards'-szal
 			// Erre a király adózási törvényt hirdethet.
@@ -135,7 +141,7 @@ io.sockets.on('connection', function (socket) {
 		if (mocsar.currentRound.canTribute !== playerid || tributes.length > mocsar.players.length/2) {return;};
 		mocsar.currentRound.tribute(tributes, function() {
 			io.sockets.emit('tributes', tributes);
-		}); // TODO
+		});
 	});
 
 
@@ -158,4 +164,5 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	// TODO MI eseménykezelése
+	// TODO Eseménykezelést berakni a 'myname'-be
 });
