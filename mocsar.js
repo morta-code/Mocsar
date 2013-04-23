@@ -340,9 +340,12 @@ module.exports = function () {
 	var getGameStarted = function(){
 		return gameStarted;
 	}
+	var getPlayers = function(){
+		return players;
+	}
 
 	return {
-		players: players, // ok
+		players: getPlayers, // ok
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // ok
 		aiPlayersNum: aiPlayersNum, // TODO AI vezérlés, eseménykezelés

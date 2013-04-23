@@ -74,7 +74,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
 		if (mocsar.gameStarted()) {return;};
-		if (mocsar.players.length + ainum <= 6) {return;};
+		if (mocsar.players().length + ainum <= 6) {return;};
 		mocsar.aiPlayersNum(ainum, function() {
 			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
@@ -90,7 +90,7 @@ io.sockets.on('connection', function (socket) {
 	*	Pl.: [{color: 0, value: 8},{color: 5: value: 15},{color: 2, value: 11},..]
 	*/
 	socket.on('mycards', function () {
-		socket.emit('mycards', mocsar.players[playerid].cards);
+		socket.emit('mycards', mocsar.players()[playerid].cards);
 	});
 
 	/*	Kártyák számának lekérdezése
@@ -148,7 +148,7 @@ io.sockets.on('connection', function (socket) {
 	*	Akik pedig kaptak, adjanak vissza, amennyi jár, akkor automatikusan tovább lép a program
 	*/
 	socket.on('tributes', function (tributes) {
-		if (mocsar.currentRound().canTribute !== playerid || tributes.length > mocsar.players.length/2) {return;};
+		if (mocsar.currentRound().canTribute !== playerid || tributes.length > mocsar.players().length/2) {return;};
 		mocsar.currentRound().tribute(tributes, function() {
 			io.sockets.emit('tributes', tributes);
 		});
@@ -162,7 +162,7 @@ io.sockets.on('connection', function (socket) {
 	*	Erre mindenki kérdezze le a lapjait, majd válaszoljon 'ready'-vel.
 	*/
 	socket.on('tributeback', function (cards) {
-		if (mocsar.players[playerid].toTributeBack !== cards.length) {
+		if (mocsar.players()[playerid].toTributeBack !== cards.length) {
 			socket.emit('tributeback', false);
 			return;
 		};
