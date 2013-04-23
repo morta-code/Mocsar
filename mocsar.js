@@ -337,6 +337,9 @@ module.exports = function () {
 	var getCurrentRound = function(){
 		return currentRound;
 	}
+	var getGameStarted = function(){
+		return gameStarted;
+	}
 
 	return {
 		players: players, // ok
@@ -345,7 +348,7 @@ module.exports = function () {
 		aiPlayersNum: aiPlayersNum, // TODO AI vezérlés, eseménykezelés
 		startGame: startGame, // ok
 		newRound: newRound, // ok
-		gameStarted: gameStarted, // ok
+		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
 		cardnums: cardnums
 	};

@@ -38,7 +38,7 @@ io.sockets.on('connection', function (socket) {
 
 	// Ha a játék kezdete után csatlakozik a kliens, kidobja.
 	// TODO: Ha már csatlakozott/frissített játékos lép vissza, engedje be (addig automatikusan passzoljon)
-	if (mocsar.gameStarted){
+	if (mocsar.gameStarted()){
 		socket.emit('disconnect'); // -> erre a kliens kiírja, hogy a játékhoz nem tud csatlakozni
 		return;
 	};
@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
 	*/
 	socket.on('startgame', function (ainum) {
 		if (playerid != 0) {return;};
-		if (mocsar.gameStarted) {return;};
+		if (mocsar.gameStarted()) {return;};
 		if (mocsar.players.length + ainum <= 6) {return;};
 		mocsar.aiPlayersNum(ainum, function() {
 			io.sockets.emit('newplayer', mocsar.playerlist());
