@@ -2,7 +2,11 @@ module.exports = function () {
 
 	// Hiányzott a Ruby után:
 	Number.prototype.times = function (cb) {for(var i = 0; i < this; i++){cb(i)};};
-
+	// Function.prototype.if = function(condition){if(condition){this();}};
+	// Function.prototype.while = function(condition){while(condition){this();}};
+	// Function.prototype.unless = function(!condition){if(condition){this();}};
+	// Function.prototype.until = function(!condition){until(condition){this();}};
+	
 	var pack = require("./cards");
 	var players = [];
 	var gameStarted = false;
@@ -56,7 +60,7 @@ module.exports = function () {
 		};
 
 		players.push(player);
-		callbackOK(players.length - 1);
+		callbackOK(players.length-1);
 	}
 
 
@@ -77,11 +81,14 @@ module.exports = function () {
 		var neworder = [];							// A következő kör sorrendje (folyamatosan töltődik)
 
 		var whoCanTribute = (democratic ? null : currentOrder[0]);// Tárolja a király id-jét, amíg nem hirdet adózást
-		var needsTributeBack = 0;					// 
+		var needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
 
 
 		// De facto konstruktor (osztás) TODO keverés, demokratikus kör esetén mindenkinek egyenlően
 		function __deal (p) {
+			//////L//O//G//////
+			console.log("DEAL");
+			//////L//O//G//////
 			var oID = currentOrder.length-1;
 			function nxt (o) {
 				if (!o)	{
@@ -149,9 +156,11 @@ module.exports = function () {
 
 				nobids.push(currentPlayerId);
 
-				if (nobids.length < order.length) {		// Nem ért körbe a passz
+				if (nobids.length < order.length) {		
+					// Nem ért körbe a passz
 					__next();
-				} else {								// Körbeért a passz
+				} else {								
+					// Körbeért a passz
 					currentPlayerId = cardsOnTable[cardsOnTable.length-1].id;
 					while (order.indexOf(currentPlayerId) === -1) {
 						currentPlayerId = nobids.shift();
@@ -208,6 +217,9 @@ module.exports = function () {
 
 
 		var readyFrom = function (id, cbNext, cbNextCircle, cbNextRound) {
+			//////L//O//G//////
+			console.log("READY from", players[id].name);
+			//////L//O//G//////
 			if (readies.indexOf(id) === -1) {
 				readies.push(id);
 			} else {
@@ -291,6 +303,9 @@ module.exports = function () {
 				cards: []
 			});
 		};
+		//////L//O//G//////
+		console.log("AIs added ", param);
+		//////L//O//G//////
 		callback();
 	};
 
@@ -304,13 +319,19 @@ module.exports = function () {
 		players.forEach(function (act, index) {
 			order.push(index);
 		});
-		currentRound = new Round(order, true);
+		currentRound = Round(order, true);
 		gameStarted = true;
+		//////L//O//G//////
+		console.log("GAME STARTED", currentRound);
+		//////L//O//G//////
 		callback(order, 0);
 	};
 
 	var newRound = function (order) {
-		currentRound = new Round(order, false);
+		currentRound = Round(order, false);
+		//////L//O//G//////
+		console.log("ROUND STARTED", currentRound);
+		//////L//O//G//////
 	};
 
 	return {
