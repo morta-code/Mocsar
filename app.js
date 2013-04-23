@@ -9,7 +9,7 @@ var mocsar = require('./mocsar');
 // TODO
 var L = function () {
 	arguments.forEach(function (a) {
-		cmds a.match(/\{.+\}/ig);
+		cmds = a.match(/\{.+\}/ig);
 		cmds.forEach(function() {
 
 		});
