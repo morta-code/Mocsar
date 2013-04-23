@@ -2,7 +2,7 @@ define(["jquery", "ko"], function ($, ko) {
 	return function(){
 				this.userName  = ko.observable("");
 				this.id 	   = ko.observable("");
-				this.aiNumbers = ko.observable("0");
+				this.aiNumbers = ko.observable("5");
 				this.badname   = ko.observable(false);
 				this.players   = ko.observableArray([]);
 				this.cards     = ko.observableArray([]);
@@ -48,8 +48,7 @@ define(["jquery", "ko"], function ($, ko) {
   				};
 
   				var sendAi = function(){
-  					//sendData('startgame', this.aiNumbers());		
-  					sendData('startgame', 10);	
+  					sendData('startgame', aiNumbers());		
   				}
 
   				var __newplayer = function (data) {
