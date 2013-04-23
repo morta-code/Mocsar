@@ -6,6 +6,16 @@ var io = require('socket.io').listen(server);
 
 var mocsar = require('./mocsar');
 
+// TODO
+var L = function () {
+	arguments.forEach(function (a) {
+		cmds a.match(/\{.+\}/ig);
+		cmds.forEach(function() {
+
+		});
+	});
+};
+
 // mongoose.connect("mongodb://localhost/mocsar");
 // var db = mongoose.connection;
 
@@ -98,8 +108,8 @@ io.sockets.on('connection', function (socket) {
 	*	Érvénytelen lépés esetén 'badcards' üzenetet küld vissza	
 	*/
 	socket.on('put', function (cards) {
-		if (mocsar.currentRound.currentPlayerId != playerid) {return;};
-		mocsar.currentRound.putCards(cards, function () {
+		if (mocsar.currentRound().currentPlayerId != playerid) {return;};
+		mocsar.currentRound().putCards(cards, function () {
 			io.sockets.emit('put', {from: playerid, cards: cards});
 		}, function () {
 			socket.emit('badcards');
@@ -138,8 +148,8 @@ io.sockets.on('connection', function (socket) {
 	*	Akik pedig kaptak, adjanak vissza, amennyi jár, akkor automatikusan tovább lép a program
 	*/
 	socket.on('tributes', function (tributes) {
-		if (mocsar.currentRound.canTribute !== playerid || tributes.length > mocsar.players.length/2) {return;};
-		mocsar.currentRound.tribute(tributes, function() {
+		if (mocsar.currentRound().canTribute !== playerid || tributes.length > mocsar.players.length/2) {return;};
+		mocsar.currentRound().tribute(tributes, function() {
 			io.sockets.emit('tributes', tributes);
 		});
 	});
@@ -156,7 +166,7 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('tributeback', false);
 			return;
 		};
-		mocsar.currentRound.tributeBack(playerid, cards, function() {
+		mocsar.currentRound().tributeBack(playerid, cards, function() {
 			socket.emit('tributeback', true);
 		}, function () {
 			io.sockets.emit('tributeback'); 
