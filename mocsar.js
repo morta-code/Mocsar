@@ -85,7 +85,7 @@ module.exports = function () {
 
 
 		// De facto konstruktor (osztás) TODO keverés, demokratikus kör esetén mindenkinek egyenlően
-		function __deal (p) {
+		var __deal = function (p) {
 			//////L//O//G//////
 			console.log("DEAL");
 			//////L//O//G//////
@@ -112,7 +112,7 @@ module.exports = function () {
 		}(players);
 		
 
-		function __next () {
+		var __next = function () {
 			if (currentPlayerOrder == order.length-1) {
 				currentPlayerOrder = 0;
 			} else {
@@ -123,7 +123,7 @@ module.exports = function () {
 			rdyCb.param = currentPlayerId;
 		};
 
-		function __goodput (cards) {
+		var __goodput = function (cards) {
 			var putValue = 0;
 			for (var i = cards.length - 1; i >= 0; i--) {
 				if (players[currentPlayerId].cards.indexOf(cards[i]) === -1) {return;};
@@ -136,7 +136,7 @@ module.exports = function () {
 			return putValue;
 		};
 
-		function __bestCards (player, num) {
+		var __bestCards = function (player, num) {
 			// TODO a legjobbak átadása, nem az első hármat!
 			var bests = [];
 			num.times(function () {
