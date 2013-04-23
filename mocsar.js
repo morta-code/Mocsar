@@ -324,7 +324,7 @@ module.exports = function () {
 		//////L//O//G//////
 		console.log("GAME STARTED", currentRound);
 		//////L//O//G//////
-		callback(order, 0);
+		callback(order);
 	};
 
 	var newRound = function (order) {

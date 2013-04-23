@@ -69,8 +69,8 @@ io.sockets.on('connection', function (socket) {
 			io.sockets.emit('newplayer', mocsar.playerlist());
 		});
 
-		mocsar.startGame(function (neworder, cardnums) {
-			io.sockets.emit('newround', {order: neworder, democratic: true, cards: cardnums}); // Nincs adózás, ready-t válaszolnak, ha kész.
+		mocsar.startGame(function (neworder) {
+			io.sockets.emit('newround', {order: neworder, democratic: true}); // Nincs adózás, ready-t válaszolnak, ha kész.
 		});
 	});
 	
@@ -122,9 +122,9 @@ io.sockets.on('connection', function (socket) {
 			io.sockets.emit('next', nextid); // Erre mindenki tudni fogja, hogy ki jön. Aki jön, az ezzel kapja meg a „promptot”.
  		}, function (callid) {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. A callid megkapja a promptot
-		}, function (neworder, cardnums) {
+		}, function (neworder) {
 			mocsar.newRound(neworder);
-			io.sockets.emit('newround', {order: neworder, democratic: false, cards: cardnums}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek 
+			io.sockets.emit('newround', {order: neworder, democratic: false}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek 
 			// A kliensek kérdezzék le a kártyájukat 'mycards'-szal
 			// Erre a király adózási törvényt hirdethet.
 		});
