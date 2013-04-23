@@ -274,7 +274,7 @@ module.exports = function () {
 		};
 	};
 
-	var currentRound = null;
+	var currentRound;
 
 
 	/*	MI játékosok hozzáadása

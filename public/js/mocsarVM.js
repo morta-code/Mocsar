@@ -70,9 +70,9 @@ define(["jquery", "ko"], function ($, ko) {
 
   				// TODO ide valami jobb módszer
   				var __mycards = function(data){
-  					mycards.removeAll();
+  					cards.removeAll();
   					for (var i = 0; i < data.length; i++) {
-  						mycards.push(data[i]);
+  						cards.push(data[i]);
   						console.log(data[i]);
   					}
   				};
