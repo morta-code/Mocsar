@@ -334,6 +334,10 @@ module.exports = function () {
 		//////L//O//G//////
 	};
 
+	var getCurrentRound = function(){
+		return currentRound;
+	}
+
 	return {
 		players: players, // ok
 		playerlist: playerlist, // ok
@@ -342,7 +346,7 @@ module.exports = function () {
 		startGame: startGame, // ok
 		newRound: newRound, // ok
 		gameStarted: gameStarted, // ok
-		currentRound: currentRound, // ok
+		currentRound: getCurrentRound, // ok
 		cardnums: cardnums
 	};
 }();

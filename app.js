@@ -118,7 +118,7 @@ io.sockets.on('connection', function (socket) {
 	*			cardnums: Játékosok kártyáinak számai (eredeti sorrendben, pl [14,14,...,16])
 	*/
 	socket.on('ready', function () {
-		mocsar.currentRound.readyFrom(playerid, function (nextid) {
+		mocsar.currentRound().readyFrom(playerid, function (nextid) {
 			io.sockets.emit('next', nextid); // Erre mindenki tudni fogja, hogy ki jön. Aki jön, az ezzel kapja meg a „promptot”.
  		}, function (callid) {
 			io.sockets.emit('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. A callid megkapja a promptot
