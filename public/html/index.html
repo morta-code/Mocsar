@@ -3,7 +3,13 @@
 		<title>Mocsar Game</title>
 
 		<script type='text/javascript' src="/js/require.js" data-main="/js/main.js"></script>
-		<link rel="stylesheet/less" type="text/css" href="/css/style_2.less" />
+		<link rel="stylesheet/less" type="text/css" href="/css/style.less" />
+		<script type="text/html" id="gamer">
+			<div data-bind="text: player.name"></div>
+			<div data-bind="text: player.id"></div>
+			<div data-bind="text: player.ai"></div>
+			<div data-bind="text: player.card"></div>
+		</script>
 		
 	</head>
 	<body>
@@ -32,7 +38,9 @@
 						</div>
 					</div>
 				</div>
-				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted"><p>minta 123</p></div>
+				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted">
+					<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }"></div>
+				</div>
 			</div>
 		</div>
 	</body>

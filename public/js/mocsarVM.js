@@ -48,37 +48,58 @@ define(["jquery", "ko"], function ($, ko) {
   				};
 
   				var sendAi = function(){
-  					sendData('startgame', aiNumbers());		
+  					sendData('startgame', aiNumbers());	
   				}
 
   				var __newplayer = function (data) {
     				players.removeAll();
 					for (var i = 0; i < data.length; i++) {
-    					players.push(data[i]);
+						data[i].card = 0;
     				}
+
+                    players(data);
+  				};
+
+  				var __cardnums = function(data){
+  					console.log("__cardnums");
+  					
+  					console.log(players().length);
+  					console.log(data.length);
+
+                    var elemek = players.removeAll();
+
+  					for (var i = 0; i < elemek.length && i < data.length; i++) {
+  						elemek[i].card = data[i];
+  						console.log(elemek[i].card);
+  					};
+                    players(elemek);
+
+  					console.log(players());
+  					players.valueHasMutated();
   				};
 
   				var __badname = function(data){
 	  				badname(data.state);
 	  				if(!data.state){	  					
 	  					userName(data.name);
-						id(data.id);
-						state(state()+1);
-					}
+						  id(data.id);
+						  state(state()+1);
+					  }
   				};
 
-  				// TODO ide valami jobb módszer
   				var __mycards = function(data){
   					cards.removeAll();
+                    // ez csak log
   					for (var i = 0; i < data.length; i++) {
-  						cards.push(data[i]);
   						console.log(data[i]);
   					}
+                    cards(data);
+  					sendData("cardnums", null);
   				};
 
   				var __nextcircle = function(data){
   					// 	TODO 
-  						// játéktér ürítése
+  						// játéktér fürítése
   						// data id játékos jön
   						// sendData('put', cards);
   				};
@@ -95,6 +116,7 @@ define(["jquery", "ko"], function ($, ko) {
   						// data id játékos jön
   						// sendData('put', cards);
   				}
+
 
   				var __tributes = function(data){
   					sendData('mycards', null);
@@ -115,7 +137,6 @@ define(["jquery", "ko"], function ($, ko) {
 
   					for (var i = 0; i < players.length && i < data.order.length; i++) {
   						players[data.order[i]].order = i;
-  						players[i].cards = data.cards[i];
   						// TODO ne egyesével mozgassa az embereket
   					};
 
@@ -129,6 +150,7 @@ define(["jquery", "ko"], function ($, ko) {
   						//	TODO
   					}
 
+                    state(2);
   					console.log(data);
   				};
 
@@ -137,6 +159,7 @@ define(["jquery", "ko"], function ($, ko) {
   					socket.on('badname', __badname);
   					socket.on('newround', __newround);
   					socket.on('mycards', __mycards);
+  					socket.on('cardnums', __cardnums);
   					socket.on('tributes', __tributes);
   					socket.on('tributeback', __tributeback);
   					socket.on('nextcircle', __nextcircle);
@@ -146,6 +169,10 @@ define(["jquery", "ko"], function ($, ko) {
 
 				var connectToServer = function(){
 					socket = io.connect('http://localhost');
+				};
+
+				var getPlayers = function(){
+					return players;
 				};
 
 				var userList = ko.computed(function(){
@@ -173,6 +200,7 @@ define(["jquery", "ko"], function ($, ko) {
 					isGameStarted: isGameStarted,
 
 					players: players,
+					getPlayers: getPlayers,
 					sendUserName: sendUserName,
 					sendAi: sendAi,
 					userList: userList

@@ -97,7 +97,7 @@ io.sockets.on('connection', function (socket) {
 	*	Válaszként a játékos megkapja az összes játékos kártyáinak számát az eredeti (id) sorrendben
 	*/
 	socket.on('cardnums', function () {
-		socket.emit('cardnums', mocsar.cardnums);
+		socket.emit('cardnums', mocsar.cardnums());
 	});
 
 
