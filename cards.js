@@ -1,15 +1,8 @@
 module.exports = function () {
 
-	Number.prototype.times = function (cb) {for(var i = 0; i < this; i++){cb(i)};};
+	require('./jsexpansion');
 
 	var cards = [];
-
-	//kártyák
-	// for (var color = 0; color < 4; color += 1) {
-	// 	for (var value = 2; value < 15; value += 1) {
-	// 		cards.push({color: color, value: value});
-	// 	};
-	// };
 
 	(4).times(function(color) {
 		(13).times(function(value) {
@@ -18,9 +11,6 @@ module.exports = function () {
 	});
 
 	// jollyk
-	cards.push({color: 4, value: 15});
-	cards.push({color: 4, value: 15});
-	cards.push({color: 4, value: 15});
-
+	cards.push({color: 4, value: 15},{color: 4, value: 15},{color: 4, value: 15});
 	return cards;
 }();

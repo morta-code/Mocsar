@@ -6,15 +6,6 @@ var io = require('socket.io').listen(server);
 
 var mocsar = require('./mocsar');
 
-// TODO
-var L = function () {
-	arguments.forEach(function (a) {
-		cmds = a.match(/\{.+\}/ig);
-		cmds.forEach(function() {
-
-		});
-	});
-};
 
 // mongoose.connect("mongodb://localhost/mocsar");
 // var db = mongoose.connection;
