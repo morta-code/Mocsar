@@ -1,12 +1,5 @@
 module.exports = function () {
-
-	// Hiányzott a Ruby után:
-	Number.prototype.times = function (cb) {for(var i = 0; i < this; i++){cb(i)};};
-	// Function.prototype.if = function(condition){if(condition){this();}};
-	// Function.prototype.while = function(condition){while(condition){this();}};
-	// Function.prototype.unless = function(!condition){if(condition){this();}};
-	// Function.prototype.until = function(!condition){until(condition){this();}};
-	
+	require('./jsexpansion');
 	var pack = require("./cards");
 	var players = [];
 	var gameStarted = false;
@@ -97,12 +90,6 @@ module.exports = function () {
 				return o -= 1;
 			};
 
-			// for (var i = 0; i < (currentOrder.length < 9 ? 2 : 3); i++) {
-			// 	pack.forEach(function (card) {
-			// 		 p[currentOrder[oID]].cards.push(card);
-			// 		oID = nxt(oID);
-			// 	});
-			// };
 			(currentOrder.length < 9 ? 2 : 3).times(function () {
 				pack.forEach(function (card) {
 					 p[currentOrder[oID]].cards.push(card);
