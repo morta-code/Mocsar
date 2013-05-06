@@ -5,6 +5,7 @@ module.exports = function () {
 	var players = [];
 	var gameStarted = false;
 	var currentRound;
+	var ais = []; // collection of ids
 
 
 	/*	Játékoslista kliensoldali célokra
@@ -299,17 +300,18 @@ module.exports = function () {
 	*	(ettől függetlenül nem adódik hozzá több, mint amennyi a maximum)
 	*		callback: ha kész, visszahívódik
 	*/
-	var aiPlayersNum = function (param, callback){
+	var aiPlayersNum = function (param, callback, funcs){
 		for (var i = 0; i < param && players.length < 12; i++) {
 			players.push({
 				name: "player_" + i,
-				id: players.length,
 				ai: true,
 				cards: []
 			});
-			ai.newAiPlayer(players.last(), players.length-1); // TODO implement
-			
+			players.last().id = players.length-1;
+			ais.push(players.length-1);
+			ai.newAiPlayer(players.last(), players.length-1);
 		};
+		ai.callbacks(funcs);
 		//////L//O//G//////
 		console.log("AIs added ", param);
 		//////L//O//G//////
@@ -351,17 +353,24 @@ module.exports = function () {
 		return players;
 	}
 
+	var callAIs = function (ev, data) {
+		ais.forEach(function (a, i) {
+			(ai.aiPlayers[i])[ev](data);
+		});
+	}
+
 	return {
 		players: getPlayers, // ok
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // ok
-		aiPlayersNum: aiPlayersNum, // TODO AI vezérlés, eseménykezelés
+		aiPlayersNum: aiPlayersNum, 
 		startGame: startGame, // ok
 		newRound: newRound, // ok
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
-		cardnums: cardnums//,
-		//callAIs: null // TODO
+		cardnums: cardnums,
+		callAIs: callAIs,
+
 	};
 }();
 

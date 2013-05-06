@@ -26,7 +26,7 @@ server.listen(7500);
 
 var broadcast = function (ev, data) {
 	io.sockets.emit(ev, data);
-	// TODO mocsar.callAIs(ev, data);
+	mocsar.callAIs(ev, data);
 };
 
 /*	Játékos rak lapot (vagy passzol)
@@ -137,6 +137,11 @@ io.sockets.on('connection', function (socket) {
 					if (mocsar.players().length + ainum <= 6) {return;};
 					mocsar.aiPlayersNum(ainum, function() {
 						broadcast('newplayer', mocsar.playerlist());
+					}, {
+						put: onPut,
+						ready: onReady,
+						tributes: onTributes,
+						tributeback: onTributeBack
 					});
 
 					mocsar.startGame(function (neworder) {
