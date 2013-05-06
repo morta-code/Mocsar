@@ -4,6 +4,7 @@ module.exports = function () {
 	var pack = require("./cards");
 	var players = [];
 	var gameStarted = false;
+	var currentRound;
 
 
 	/*	Játékoslista kliensoldali célokra
@@ -134,15 +135,16 @@ module.exports = function () {
 
 				idx = player.cards.indexOfKeyValue('value', 15);
 				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 2);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 14);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 13);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 12);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 11);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 10);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 9);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 8);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 7);
-				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 6);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 14);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 13);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 12);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 11);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 10);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 9);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 8);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 7);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 6);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 5);
 
 				bests.push(player.cards.splice(idx, 1));
 			});
@@ -290,7 +292,6 @@ module.exports = function () {
 		};
 	};
 
-	var currentRound;
 
 
 	/*	MI játékosok hozzáadása
@@ -359,7 +360,8 @@ module.exports = function () {
 		newRound: newRound, // ok
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
-		cardnums: cardnums
+		cardnums: cardnums//,
+		//callAIs: null // TODO
 	};
 }();
 
