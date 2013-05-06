@@ -1,4 +1,19 @@
 
+/////////////////////T//O//O//L//S/////////////////////
+
+// Get random integer.
+// If one param is given, the intervall will be 0 (incl) to param (incl)
+// If two params are given, the intervall will be p1 (incl) to p2 (incl) 
+function rndInt () {
+	if(arguments.length === 1){
+		return Math.floor(Math.random() * (arguments['0'] + 1));
+	}
+	if(arguments.length === 2){
+		return Math.floor(Math.random() * (arguments['1'] - arguments['0'] + 1)) + arguments['0'];
+	}
+}
+
+
 /////////////////////A//R//R//A//Y/////////////////////
 
 
@@ -25,6 +40,21 @@ Array.prototype.removeAll = function (items) {
 	});
 };
 
+
+Array.prototype.shaked = function () {
+	var ret = [],
+		idxs = [];
+
+	this.forEach(function (a, i) {
+		idxs.push(i);
+	});
+
+	while (idxs.length !== 0) {
+		ret.push(this[idxs.splice(rndInt(idxs.length-1),1)]);
+	}
+
+	return ret;
+};
 
 // Returns true if the array contains SOME of given arguments
 Array.prototype.containsOne = function () {
@@ -68,7 +98,7 @@ Array.prototype.first = function () {
 };
 
 
-// Returns the lasr value of the Array. If the array is empty, it will be undefinded.
+// Returns the last value of the Array. If the array is empty, it will be undefinded.
 Array.prototype.last = function () {
 	if (this.length === 0) {return undefined;};
 	return this[this.length-1];
