@@ -41,6 +41,7 @@ Array.prototype.removeAll = function (items) {
 };
 
 
+// Returns a new array from original, but the items will be shaked
 Array.prototype.shaked = function () {
 	var ret = [],
 		idxs = [];
@@ -55,6 +56,7 @@ Array.prototype.shaked = function () {
 
 	return ret;
 };
+
 
 // Returns true if the array contains SOME of given arguments
 Array.prototype.containsOne = function () {
@@ -82,6 +84,17 @@ Array.prototype.contains = function () {
 		if (this.indexOf(arguments[prop]) === -1) return false;
 	}
 	return true;
+};
+
+// Returns the index of value in the array of objects. Otherwise -1
+Array.prototype.indexOfKeyValue = function (key, value) {
+	for (var i = 0; i < this.length; i++) {
+		for (var prop in this[i]) {
+			if (prop !== key) continue;
+			if ((this[i])[prop] === value) return i;
+		}
+	};
+	return -1;
 };
 
 

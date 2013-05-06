@@ -1,5 +1,6 @@
 module.exports = function () {
 	require('./jsexpansion');
+	var ai = require('./ai');
 	var pack = require("./cards");
 	var players = [];
 	var gameStarted = false;
@@ -77,11 +78,12 @@ module.exports = function () {
 		var needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
 
 
-		// De facto konstruktor (osztás) TODO keverés, demokratikus kör esetén mindenkinek egyenlően
-		var __deal = function (p) {
+		// De facto konstruktor (osztás), TODO demokratikus kör esetén mindenkinek egyenlően
+		function __deal (p) {
 			//////L//O//G//////
 			console.log("DEAL");
 			//////L//O//G//////
+
 			var oID = currentOrder.length-1;
 			function nxt (o) {
 				if (!o)	{
@@ -91,7 +93,7 @@ module.exports = function () {
 			};
 
 			(currentOrder.length < 9 ? 2 : 3).times(function () {
-				pack.forEach(function (card) {
+				pack.shaked().forEach(function (card) {
 					 p[currentOrder[oID]].cards.push(card);
 					oID = nxt(oID);
 				});
@@ -123,11 +125,26 @@ module.exports = function () {
 			return putValue;
 		};
 
+		// A legjobb lapok kivétele a pakliból, és visszaadása
 		var __bestCards = function (player, num) {
-			// TODO a legjobbak átadása, nem az első hármat!
+
 			var bests = [];
 			num.times(function () {
-				bests.push(player.cards.splice(0, 1));
+				var idx = -1;
+
+				idx = player.cards.indexOfKeyValue('value', 15);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 2);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 14);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 13);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 12);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 11);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 10);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 9);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 8);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 7);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 6);
+
+				bests.push(player.cards.splice(idx, 1));
 			});
 			return bests;
 		}
@@ -278,7 +295,7 @@ module.exports = function () {
 
 	/*	MI játékosok hozzáadása
 	*		param: MI játékosok száma
-	*	(ettől függetlenül nem adódik hozzá több, mint amennyi a mayximum)
+	*	(ettől függetlenül nem adódik hozzá több, mint amennyi a maximum)
 	*		callback: ha kész, visszahívódik
 	*/
 	var aiPlayersNum = function (param, callback){
@@ -289,6 +306,8 @@ module.exports = function () {
 				ai: true,
 				cards: []
 			});
+			ai.newAiPlayer(players.last(), players.length-1); // TODO implement
+			
 		};
 		//////L//O//G//////
 		console.log("AIs added ", param);
