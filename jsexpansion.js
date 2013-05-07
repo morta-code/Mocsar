@@ -212,7 +212,7 @@ Object.prototype.merge = function(otherObject) {
 
 Number.prototype.times = function (cb) {
 	for(var i = 0; i < this; i++){
-		var ret = cb(i);
+		var ret = cb(i, this);
 		if (ret === "break") {break;};
 	};
 };
