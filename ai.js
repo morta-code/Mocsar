@@ -2,33 +2,55 @@ module.exports = function () {
 	require('./jsexpansion');
 
 	return function (db, players) {
+		var aiPlayers = [],
+		    callbacks;
 
-		var players = players;
-		var aiPlayers = [];
+		function getAiPlayers () {
+			return aiPlayers;
+		}
+
+		function newAiPlayer (player, id) {
+			aiPlayers.push(playerAI(player, id));
+		}
+
+		function setCallbacks (data) {
+			callbacks = data;
+		}
 
 		
 		function playerAI (player, id) {
 
-			var myCurrentIndex;
-			var currentOrder
+			var myCurrentIndex,
+			    currentOrder;
 
 			var _iCall = function () {
-				// body...
+				// TODO Ne a legelső lappal nyisson, hanem ésszel
+				var cards = [];
+				cards.push(player.cards.first());
+				callbacks.put(id, function() {}, cards);
 			};
 			var _iPut = function () {
-				// body...
+				// TODO Ne passzoljon, hanem ésszel
+				var cards = [];
+				callbacks.put(id, function() {}, cards);
 			};
 			var _ready = function () {
-				// body...
+				callbacks.ready(id);
 			};
 			var _updateModel = function () {
-				// body...
+				// TODO
 			};
 			var _iTribute = function () {
-				// body...
+				// TODO valami okosság
+				callbacks.tributes(id, [4,2,1]);
 			};
 			var _iTributeBack = function (num) {
-				// body...
+				// TODO ne a legelső numt, hanem értelmesen
+				var cards = [];
+				num.downto(1, function (i) {
+					cards.push(player.cards[i]);
+				});
+				callbacks.tributeback(id, function() {}, cards);
 			};
 
 			////////////////////////////////////////////////////
@@ -45,20 +67,20 @@ module.exports = function () {
 				};
 			};
 
-			var onNewRound = function (neworder) {
-				myCurrentIndex = neworder.indexOf(id);
-				currentOrder = neworder;
-				if (neworder.first() === id) {
+			var onNewRound = function (data) {
+				currentOrder = data.order;
+				myCurrentIndex = currentOrder.indexOf(id);
+				if (currentOrder.first() === id) {
 					_iTribute();
 				};
 			};
 
-			var onPut = function (fromId, cards) {
-				_updateModel('put' ,fromId, cards);
+			var onPut = function (data) {
+				_updateModel('put', data.from, data.cards);
 				_ready();
 			};
 
-			var onTribute = function (tributes) {
+			var onTributes = function (tributes) {
 				if (tributes.length > myCurrentIndex) {
 					_iTributeBack(tributes[myCurrentIndex]);
 				};
@@ -70,17 +92,29 @@ module.exports = function () {
 				_ready();
 			};
 
-			return {
+			var onNewPlayer = function (list) {
+				// TODO
+			};
 
+			return {
+				newplayer: onNewPlayer,
+				newround: onNewRound,
+				put: onPut,
+				next: onNext,
+				nextcircle: onNextCircle,
+				tributes: onTributes,
+				tributeback: onTributeBack
 			};
 		}
 
 
 
-		return {
-			newAiPlayer: null,
-			aiPlayers: null
 
+
+		return {
+			newAiPlayer: newAiPlayer,
+			aiPlayers: getAiPlayers,
+			callbacks: setCallbacks
 		};
 	};
 }();

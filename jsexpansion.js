@@ -1,4 +1,19 @@
 
+/////////////////////T//O//O//L//S/////////////////////
+
+// Get random integer.
+// If one param is given, the intervall will be 0 (incl) to param (incl)
+// If two params are given, the intervall will be p1 (incl) to p2 (incl) 
+this.rndInt = function () {
+	if(arguments.length === 1){
+		return Math.floor(Math.random() * (arguments['0'] + 1));
+	}
+	if(arguments.length === 2){
+		return Math.floor(Math.random() * (arguments['1'] - arguments['0'] + 1)) + arguments['0'];
+	}
+}
+
+
 /////////////////////A//R//R//A//Y/////////////////////
 
 
@@ -23,6 +38,23 @@ Array.prototype.removeAll = function (items) {
 	items.forEach(function (act) {
 		func.splice(func.indexOf(act), 1);
 	});
+};
+
+
+// Returns a new array from original, but the items will be shaked
+Array.prototype.shaked = function () {
+	var ret = [],
+		idxs = [];
+
+	this.forEach(function (a, i) {
+		idxs.push(i);
+	});
+
+	while (idxs.length !== 0) {
+		ret.push(this[idxs.splice(rndInt(idxs.length-1),1)]);
+	}
+
+	return ret;
 };
 
 
@@ -54,6 +86,17 @@ Array.prototype.contains = function () {
 	return true;
 };
 
+// Returns the index of value in the array of objects. Otherwise -1
+Array.prototype.indexOfKeyValue = function (key, value) {
+	for (var i = 0; i < this.length; i++) {
+		for (var prop in this[i]) {
+			if (prop !== key) continue;
+			if ((this[i])[prop] === value) return i;
+		}
+	};
+	return -1;
+};
+
 
 // Returns a value from the Array for the given index. If the index is out of bounds, default value will be returned.
 Array.prototype.fetch = function (idx, def) {
@@ -68,7 +111,7 @@ Array.prototype.first = function () {
 };
 
 
-// Returns the lasr value of the Array. If the array is empty, it will be undefinded.
+// Returns the last value of the Array. If the array is empty, it will be undefinded.
 Array.prototype.last = function () {
 	if (this.length === 0) {return undefined;};
 	return this[this.length-1];

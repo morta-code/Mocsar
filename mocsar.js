@@ -1,8 +1,11 @@
 module.exports = function () {
 	require('./jsexpansion');
+	var ai = require('./ai');
 	var pack = require("./cards");
 	var players = [];
 	var gameStarted = false;
+	var currentRound;
+	var ais = []; // collection of ids
 
 
 	/*	Játékoslista kliensoldali célokra
@@ -77,11 +80,12 @@ module.exports = function () {
 		var needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
 
 
-		// De facto konstruktor (osztás) TODO keverés, demokratikus kör esetén mindenkinek egyenlően
-		var __deal = function (p) {
+		// De facto konstruktor (osztás), TODO demokratikus kör esetén mindenkinek egyenlően
+		function __deal (p) {
 			//////L//O//G//////
 			console.log("DEAL");
 			//////L//O//G//////
+
 			var oID = currentOrder.length-1;
 			function nxt (o) {
 				if (!o)	{
@@ -91,7 +95,7 @@ module.exports = function () {
 			};
 
 			(currentOrder.length < 9 ? 2 : 3).times(function () {
-				pack.forEach(function (card) {
+				pack.shaked().forEach(function (card) {
 					 p[currentOrder[oID]].cards.push(card);
 					oID = nxt(oID);
 				});
@@ -123,11 +127,27 @@ module.exports = function () {
 			return putValue;
 		};
 
+		// A legjobb lapok kivétele a pakliból, és visszaadása
 		var __bestCards = function (player, num) {
-			// TODO a legjobbak átadása, nem az első hármat!
+
 			var bests = [];
 			num.times(function () {
-				bests.push(player.cards.splice(0, 1));
+				var idx = -1;
+
+				idx = player.cards.indexOfKeyValue('value', 15);
+				if (idx === -1) idx = player.cards.indexOfKeyValue('value', 2);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 14);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 13);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 12);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 11);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 10);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 9);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 8);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 7);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 6);
+				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 5);
+
+				bests.push(player.cards.splice(idx, 1));
 			});
 			return bests;
 		}
@@ -273,23 +293,25 @@ module.exports = function () {
 		};
 	};
 
-	var currentRound;
 
 
 	/*	MI játékosok hozzáadása
 	*		param: MI játékosok száma
-	*	(ettől függetlenül nem adódik hozzá több, mint amennyi a mayximum)
+	*	(ettől függetlenül nem adódik hozzá több, mint amennyi a maximum)
 	*		callback: ha kész, visszahívódik
 	*/
-	var aiPlayersNum = function (param, callback){
+	var aiPlayersNum = function (param, callback, funcs){
 		for (var i = 0; i < param && players.length < 12; i++) {
 			players.push({
 				name: "player_" + i,
-				id: players.length,
 				ai: true,
 				cards: []
 			});
+			players.last().id = players.length-1;
+			ais.push(players.length-1);
+			ai.newAiPlayer(players.last(), players.length-1);
 		};
+		ai.callbacks(funcs);
 		//////L//O//G//////
 		console.log("AIs added ", param);
 		//////L//O//G//////
@@ -331,16 +353,24 @@ module.exports = function () {
 		return players;
 	}
 
+	var callAIs = function (ev, data) {
+		ais.forEach(function (a, i) {
+			(ai.aiPlayers[i])[ev](data);
+		});
+	}
+
 	return {
 		players: getPlayers, // ok
 		playerlist: playerlist, // ok
 		newPlayer: newPlayer, // ok
-		aiPlayersNum: aiPlayersNum, // TODO AI vezérlés, eseménykezelés
+		aiPlayersNum: aiPlayersNum, 
 		startGame: startGame, // ok
 		newRound: newRound, // ok
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
-		cardnums: cardnums
+		cardnums: cardnums,
+		callAIs: callAIs,
+
 	};
 }();
 
