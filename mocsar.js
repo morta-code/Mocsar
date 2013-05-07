@@ -80,26 +80,23 @@ module.exports = function () {
 		var needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
 
 
-		// De facto konstruktor (osztás), TODO demokratikus kör esetén mindenkinek egyenlően
+		// De facto konstruktor (osztás). Nem demokratikus kör esetén a hátsóknak több lapja lesz.
 		function __deal (p) {
 			//////L//O//G//////
 			console.log("DEAL");
 			//////L//O//G//////
 
-			var oID = currentOrder.length-1;
-			function nxt (o) {
-				if (!o)	{
-					return currentOrder.length-1;
-				}
-				return o -= 1;
-			};
-
 			(currentOrder.length < 9 ? 2 : 3).times(function () {
-				pack.shaked().forEach(function (card) {
-					 p[currentOrder[oID]].cards.push(card);
-					oID = nxt(oID);
-				});
+				shakedPck.push.apply(shakedPck, pack.shaked());
 			});
+
+
+			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= currentOrder.length)) {
+				for (var i = currentOrder.length - 1; i >= 0; i--) {
+					p[currentOrder[i]].cards.push(shakedPck.shift());
+				};
+			}
+
 		}(players);
 		
 
