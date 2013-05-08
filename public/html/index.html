@@ -3,20 +3,22 @@
 		<title>Mocsar Game</title>
 
 		<script type='text/javascript' src="/js/require.js" data-main="/js/main.js"></script>
-		<link rel="stylesheet/less" type="text/css" href="/css/style.less" />
-		<link rel="stylesheet/css" type="text/css" href="/css/styleCardDondorf.css" />
+		
+		<link rel="stylesheet" href="/css/style.css" type="text/css"> 
+		<link rel="stylesheet" type="text/css" href="/css/styleCardDondorf_less.css" />
 
 		<script type="text/html" id="gamer">
-			<div data-bind="text: player.name"></div>
-			<div data-bind="text: player.id"></div>
-			<div data-bind="text: player.ai"></div>
-			<div data-bind="text: player.card"></div>
+			<div data-bind="attr: {id: player.id, class: player.htmlClass}">
+				<div data-bind="text: player.name"></div>
+				<div data-bind="text: player.id"></div>
+				<div data-bind="text: player.ai"></div>
+				<div data-bind="text: player.card"></div>
+			</div>
 		</script>
 
 		<script type="text/html" id="templateCard">
-			<i data-bind="attr: {class: card}"></i>
+			<span data-bind="cardBindings: card, cardIndex: $index"></span>
 		</script>
-
 	</head>
 	<body>
 		<div class="wrapper">
@@ -45,7 +47,8 @@
 					</div>
 				</div>
 				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted">
-					<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }"></div>
+					<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" id="gamerTemplateArea"></div>
+					<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" id="gameTemplateArea"></div>
 				</div>
 			</div>
 		</div>

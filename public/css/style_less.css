@@ -51,3 +51,19 @@ p {
   padding: 150px 30px 30px 30px;
   text-align: center;
 }
+
+#gameTemplateArea {
+    height: 510px;
+    padding: 10px;
+    position: absolute;
+    width: 1080px;
+}
+
+.player{
+    display: block;
+    margin-left: auto;
+    position: relative;
+    right: 0;
+    text-align: center;
+    width: 100px;
+}

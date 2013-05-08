@@ -1,11 +1,42 @@
 define(["jquery", "ko"], function ($, ko) {
 
-    ko.bindingHandlers.card = {
+    ko.bindingHandlers.cardBindings = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        	var card = valueAccessor(), allBindings = allBindingsAccessor();       
+        
+        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
+        	var eltolas =  -1 * cardIndex * 100;
+        	
+        	var theCard = "card-";
+			switch(card.color){
+				case 0: theCard+="treff-"; break;
+				case 1: theCard+="karo-"; break;
+				case 2: theCard+="kor-"; break;
+				case 3: theCard+="pikk-"; break;
+			};
+
+			switch(card.value){
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+				case 7:
+				case 8:
+				case 9:
+				case 10: theCard+=card.value; break;
+				case 11: theCard+="J"; break;
+				case 12: theCard+="Q"; break;
+				case 13: theCard+="K"; break;
+				case 14: theCard+="asz"; break;
+				case 15: theCard+="joker"; break;
+			};
+			
+        	$(element).attr({class: theCard});
+        	$(element).css("left", cardIndex * 50);
         },
         update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-
-        }
+    	}
     };
 
 	return function(){
@@ -64,6 +95,7 @@ define(["jquery", "ko"], function ($, ko) {
     		players.removeAll();
 			for (var i = 0; i < data.length; i++) {
 				data[i].card = 0;
+				data[i].htmlClass = "player-" + ((i % 3 > 0) ? ((i % 3 > 1) ? "left" : "center" ) : "right" );
     		}
             players(data);
   		};
@@ -173,6 +205,10 @@ define(["jquery", "ko"], function ($, ko) {
 			return players;
 		};
 
+		var getCards = function(){
+			return cards;
+		};
+
 		var userList = ko.computed(function(){
 			var html = "";
 			
@@ -194,8 +230,11 @@ define(["jquery", "ko"], function ($, ko) {
 			isAdmin: isAdmin,
 			isInit: isInit,
 			isGameStarted: isGameStarted,
+
 			players: players,
 			getPlayers: getPlayers,
+			getCards: getCards,
+
 			sendUserName: sendUserName,
 			sendAi: sendAi,
 			userList: userList

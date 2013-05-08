@@ -13,12 +13,20 @@
 	}
 }
 
-
+/*
 (global ? global : window).compareCards = function (a, b) {
+
+//	if(typeof b === 'undefined'){
+//		console.log("b is undefined");
+//		return 1;
+//	}
+
+	if(typeof a !== "object" || typeof b !== "object")
+		return 0;
 	if (a.value === 2 && b.value !== 2) return 1;
 	return a.value - b.value;
 }
-
+*/
 
 /////////////////////A//R//R//A//Y/////////////////////
 

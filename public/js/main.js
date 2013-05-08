@@ -1,3 +1,4 @@
+/*
 less = {
 	env: "development", // or "production"
 	async: false,       // load imports async
@@ -9,6 +10,7 @@ less = {
                             // entry less file
     rootpath: ":/css/"// a path to add on to the start of every url resource
 };
+*/
 
 requirejs.config({
     baseUrl:    "../",
