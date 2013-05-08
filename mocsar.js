@@ -81,11 +81,11 @@ module.exports = function () {
 
 
 		// De facto konstruktor (osztás). Nem demokratikus kör esetén a hátsóknak több lapja lesz.
-		function __deal (p) {
+		var __deal = function (p) {
 			//////L//O//G//////
-			console.log("DEAL");
+			console.log("DEAL  DEAL  DEAL  DEAL  DEAL");
 			//////L//O//G//////
-
+			var shakedPck = [];
 			(currentOrder.length < 9 ? 2 : 3).times(function () {
 				shakedPck.push.apply(shakedPck, pack.shaked());
 			});
@@ -93,6 +93,7 @@ module.exports = function () {
 
 			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= currentOrder.length)) {
 				for (var i = currentOrder.length - 1; i >= 0; i--) {
+					console.log(p[currentOrder[i]].name, shakedPck.first());
 					p[currentOrder[i]].cards.push(shakedPck.shift());
 				};
 			}
