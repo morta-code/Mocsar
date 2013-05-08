@@ -5,6 +5,7 @@
 		<script type='text/javascript' src="/js/require.js" data-main="/js/main.js"></script>
 		<link rel="stylesheet/less" type="text/css" href="/css/style.less" />
 		<link rel="stylesheet/css" type="text/css" href="/css/styleCardDondorf.css" />
+
 		<script type="text/html" id="gamer">
 			<div data-bind="text: player.name"></div>
 			<div data-bind="text: player.id"></div>
@@ -12,10 +13,10 @@
 			<div data-bind="text: player.card"></div>
 		</script>
 
-		<script type="text/html">
-
+		<script type="text/html" id="templateCard">
+			<i data-bind="attr: {class: card}"></i>
 		</script>
-		
+
 	</head>
 	<body>
 		<div class="wrapper">
