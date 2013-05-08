@@ -1,5 +1,5 @@
 module.exports = function () {
-	require('./jsexpansion');
+	require('./public/js/jsexpansion');
 	var aiModule = (require('./ai'))();
 	var pack = require("./cards");
 	var players = [];
@@ -89,7 +89,7 @@ module.exports = function () {
 			(currentOrder.length < 9 ? 2 : 3).times(function () {
 				shakedPck.push.apply(shakedPck, pack.shaked());
 			});
-
+			shakedPck = shakedPck.shaked();
 
 			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= currentOrder.length)) {
 				for (var i = currentOrder.length - 1; i >= 0; i--) {

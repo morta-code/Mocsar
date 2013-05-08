@@ -14,6 +14,12 @@
 }
 
 
+(global ? global : window).compareCards = function (a, b) {
+	if (a.value === 2 && b.value !== 2) return 1;
+	return a.value - b.value;
+}
+
+
 /////////////////////A//R//R//A//Y/////////////////////
 
 

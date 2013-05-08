@@ -1,6 +1,6 @@
 module.exports = function () {
 
-	require('./jsexpansion');
+	require('./public/js/jsexpansion');
 
 	var cards = [];
 
