@@ -1,11 +1,11 @@
 module.exports = function () {
 	require('./jsexpansion');
-	var ai = require('./ai');
+	var aiModule = (require('./ai'))();
 	var pack = require("./cards");
 	var players = [];
 	var gameStarted = false;
 	var currentRound;
-	var ais = []; // collection of ids
+	var ais = []; // collection of ids. Length: num of ais, content: player index of ai
 
 
 	/*	Játékoslista kliensoldali célokra
@@ -185,7 +185,7 @@ module.exports = function () {
 				};
 				cardsOnTable.push({id: currentPlayerId, value: putValue, cards: cards});
 				nobids.splice(0);
-				// TODO putValue === 15 esetén nextcircle
+				// TODO putValue === 15 esetén nextcircle -> helyett autopassz
 				if (players[currentPlayerId].cards.length === 0) {
 					// elfogyott
 
@@ -306,9 +306,9 @@ module.exports = function () {
 			});
 			players.last().id = players.length-1;
 			ais.push(players.length-1);
-			ai.newAiPlayer(players.last(), players.length-1);
+			aiModule.newAiPlayer(players.last(), players.length-1);
 		};
-		ai.callbacks(funcs);
+		aiModule.callbacks(funcs);
 		//////L//O//G//////
 		console.log("AIs added ", param);
 		//////L//O//G//////
@@ -351,8 +351,11 @@ module.exports = function () {
 	}
 
 	var callAIs = function (ev, data) {
+		//////L//O//G//////
+		console.log("CALL AIs:  ", ais, aiModule.aiPlayers, ev, data);
+		//////L//O//G//////
 		ais.forEach(function (a, i) {
-			(ai.aiPlayers[i])[ev](data);
+			(aiModule.aiPlayers()[i])[ev](data);
 		});
 	}
 
@@ -366,8 +369,7 @@ module.exports = function () {
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
 		cardnums: cardnums,
-		callAIs: callAIs,
-
+		callAIs: callAIs
 	};
 }();
 
