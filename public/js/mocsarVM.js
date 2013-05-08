@@ -94,6 +94,7 @@ define(["jquery", "ko"], function ($, ko) {
   		var __mycards = function(data){
   			cards.removeAll();
                   // ez csak log
+                  console.log(data);
   			for (var i = 0; i < data.length; i++) {
   				console.log(data[i]);
   			}
