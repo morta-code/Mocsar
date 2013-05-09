@@ -49,10 +49,14 @@
 				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted">
 					<div id="gamerTemplateArea">
 						<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" ></div>
-						<div id="lapok"></div>
+						<div id="lapok">
+						</div>
 					</div>
 					<div id="gameTemplateArea">
-						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" ></div>
+						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" class="cardArea"></div>
+						<button data-bind="click: sendCards" class="buttonGroup"> SEND </button>
+						<button data-bind="click: logg" class="buttonGroup"> PASSZ </button>
+						<button data-bind="click: logg" class="buttonGroup"> LOG </button>
 					</div>
 				</div>
 			</div>
