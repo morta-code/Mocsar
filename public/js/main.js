@@ -25,7 +25,8 @@ requirejs.config({
 require(["jquery", "ko", "socket.io", "less"], function($, ko) {
     require(["js/mocsarVM"], function (mocsar) {
         $(document).ready (function () {
-            ko.applyBindings (mocsar());
+            var o = mocsar();
+            ko.applyBindings (o);
         });
     });
 });

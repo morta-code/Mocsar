@@ -33,20 +33,53 @@ define(["jquery", "ko"], function ($, ko) {
 			};
 			
         	$(element).attr({class: theCard});
+        	if(card.isSelected){
+        		$(element).addClass("selected");
+        	}
+   
         	$(element).css("left", cardIndex * 50);
+			
+			$(element).bind('contextmenu', function(event){
+    			console.log(event);
+    			card.isSelected = false;
+        		var osztaly = $(element).attr('class');
+        		var splitted = osztaly.split("-");
+        		if(splitted[0]==="selected"){
+        			splitted.splice(0,1);
+        			osztaly = splitted.join("-");
+        		}
+        		$(element).attr({class: osztaly});
+     			return false;
+			});
+
+        	$(element).click(function(event){
+        		console.log(event);
+        		card.isSelected = true;
+
+        		var cl = $(element).attr('class');
+        		$(element).attr({class: "selected-" + cl});
+        	});
+
+
         },
         update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        	var card = valueAccessor(), allBindings = allBindingsAccessor();       
+        
+         	if(card.isSelected){
+        		$(element).addClass("selected");
+        	}
     	}
     };
 
 	return function(){
-		this.userName  = ko.observable("");
-		this.id 	   = ko.observable("");
-		this.aiNumbers = ko.observable("5");
-		this.badname   = ko.observable(false);
-		this.players   = ko.observableArray([]);
-		this.cards     = ko.observableArray([]);
-		this.state     = ko.observable(0);
+		this.userName       = ko.observable("");
+		this.id 	        = ko.observable("");
+		this.aiNumbers      = ko.observable("5");
+		this.badname        = ko.observable(false);
+		this.players        = ko.observableArray([]);
+		this.cards          = ko.observableArray([]);
+		this.depositedCards = ko.observableArray([]);
+		this.state          = ko.observable(0);
 			
 		var socket = null;
 		var nameError = "username is used";
@@ -125,12 +158,17 @@ define(["jquery", "ko"], function ($, ko) {
 
   		var __mycards = function(data){
   			cards.removeAll();
-                  // ez csak log
-                  console.log(data);
+  			for (var i = 0; i < data.length; i++) {
+  				data[i].isSelected = false;
+  			}
+            
+            // ez csak log
+            console.log(data);
   			for (var i = 0; i < data.length; i++) {
   				console.log(data[i]);
   			}
-                  cards(data);
+            
+            cards(data);
   			sendData("cardnums", null);
   		};
 
@@ -209,6 +247,12 @@ define(["jquery", "ko"], function ($, ko) {
 			return cards;
 		};
 
+		var logg = function(){
+			for (var i = 0; i < cards().length; i++) {
+  				console.log(cards()[i]);
+  			}
+		};
+
 		var userList = ko.computed(function(){
 			var html = "";
 			
@@ -234,6 +278,7 @@ define(["jquery", "ko"], function ($, ko) {
 			players: players,
 			getPlayers: getPlayers,
 			getCards: getCards,
+			logg: logg,
 
 			sendUserName: sendUserName,
 			sendAi: sendAi,

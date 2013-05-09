@@ -47,8 +47,13 @@
 					</div>
 				</div>
 				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted">
-					<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" id="gamerTemplateArea"></div>
-					<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" id="gameTemplateArea"></div>
+					<div id="gamerTemplateArea">
+						<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" ></div>
+						<div id="lapok"></div>
+					</div>
+					<div id="gameTemplateArea">
+						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" ></div>
+					</div>
 				</div>
 			</div>
 		</div>
