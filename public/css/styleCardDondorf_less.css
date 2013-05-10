@@ -11,6 +11,13 @@
   background-size: 1632.6px 909.6px;
   position: absolute;
 }
+[class^="cards-"]:hover {
+  -webkit-transform: translate(0px, -40px);
+  -moz-transform: translate(0px, -40px);
+  -o-transform: translate(0px, -40px);
+  -ms-transform: translate(0px, -40px);
+  transition: all 0.2s ease-in-out;
+}
 [class*="selected"] {
   top: -40px;
 }
@@ -191,6 +198,17 @@
 
 }
 @keyframes negyzet {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(0px, -20px);
+  }
+  100% {
+    transform: translate(0px, -80px);
+  }
+}
+@keyframes negyzet2 {
   0% {
     top: 0px;
   }

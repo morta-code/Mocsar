@@ -133,7 +133,7 @@ io.sockets.on('connection', function (socket) {
 				*/
 				socket.on('startgame', function (ainum) {
 					if (playerid != 0) {return;};
-					if (mocsar.gameStarted()) {return;};
+				//	if (mocsar.gameStarted()) {return;};
 					if (mocsar.players().length + ainum <= 6) {return;};
 					mocsar.aiPlayersNum(ainum, function() {
 						broadcast('newplayer', mocsar.playerlist());
