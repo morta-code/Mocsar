@@ -280,8 +280,12 @@ module.exports = function () {
 			};
 		}
 
+		var getCurrentPlayerId = function () {
+			return currentPlayerId;
+		}
+
 		return {
-			currentPlayerId: currentPlayerId, // ok
+			currentPlayerId: getCurrentPlayerId, // ok
 			putCards: putCards,	// ok
 			readyFrom: readyFrom, // ok
 			canTribute: whoCanTribute, // ok 

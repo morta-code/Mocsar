@@ -39,7 +39,7 @@ var broadcast = function (ev, data) {
 *	Érvénytelen lépés esetén 'badcards' üzenetet küld vissza	
 */
 var onPut = function (playerid, socket, cards) {
-	if (mocsar.currentRound().currentPlayerId != playerid) return;
+	if (mocsar.currentRound().currentPlayerId() != playerid) return;
 	mocsar.currentRound().putCards(cards, function () {
 		broadcast('put', {from: playerid, cards: cards});
 	}, function () {
