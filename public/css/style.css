@@ -107,8 +107,17 @@ p {
 }
 
 [class*="player-left"]{
-  
+  text-align: left;
 }
+
+[class*="player-center"]{
+  text-align: center;
+}
+
+[class*="player-right"]{
+  text-align: right;
+}
+
 
 .player-left-0{
   transform: translateY(200px);
