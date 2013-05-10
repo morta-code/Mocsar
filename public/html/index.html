@@ -9,7 +9,7 @@
 
 		<script type="text/html" id="gamer">
 			<span data-bind="attr: {id: player.id, class: player.htmlClass}">
-				<div data-bind="if: player.active, attr: {id: player.htmlClass}"></div>
+				<div data-bind="visible: player.active, attr: {id: player.htmlClass}"></div>
 				<div data-bind="text: player.name"></div>
 				<div data-bind="text: player.id"></div>
 				<div data-bind="text: player.ai"></div>
@@ -56,8 +56,8 @@
 					<div id="gameTemplateArea">
 						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" class="cardArea"></div>
 						<button data-bind="click: sendCards" class="buttonGroup"> SEND </button>
-						<button data-bind="click: logg" class="buttonGroup"> PASSZ </button>
-						<button data-bind="click: logg" class="buttonGroup"> LOG </button>
+						<button data-bind="click: logPlayer" class="buttonGroup"> PASSZ </button>
+						<button data-bind="click: logCard" class="buttonGroup"> LOG </button>
 					</div>
 				</div>
 			</div>

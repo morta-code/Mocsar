@@ -11,7 +11,7 @@ define(["jquery", "ko"], function ($, ko) {
 		var INFO = 3;
 		var ALL = 4;
 
-		var levelSzint = SIGNAL;
+		var levelSzint = TEST;
 
 		var log = function(data, level=INFO){
 			if(level <= levelSzint)
@@ -169,7 +169,7 @@ define(["jquery", "ko"], function ($, ko) {
     		players.removeAll();
 			for (var i = 0; i < data.length; i++) {
 				data[i].card = 0;
-				data[i].active = true;
+				data[i].active = false;
 				//data[i].htmlClass = "player-" + ((i % 3 > 0) ? ((i % 3 > 1) ? "left" : "center" ) : "right" );
 				if(i<2)
 					data[i].htmlClass = "player-left-" + i;
@@ -225,7 +225,9 @@ define(["jquery", "ko"], function ($, ko) {
 
   		var __nextcircle = function(data){
   			log("SIGNAL NEXTCIRCLE", SIGNAL);
+  			log("TEST " + data, TEST);
   			depositedCards.removeAll();
+  			setActivePlayer(data);
 
   			// 	TODO 
   				// játéktér ürítése
@@ -243,6 +245,7 @@ define(["jquery", "ko"], function ($, ko) {
 
 		var __next = function(data){
 			log("SIGNAL NEXT", SIGNAL);
+			setActivePlayer(data);
 			// 	TODO 
 				// játéktér ürítése nincs, nem rakhat akármit
 				// data id játékos jön
@@ -308,11 +311,25 @@ define(["jquery", "ko"], function ($, ko) {
 			return cards;
 		};
 
-		var logg = function(){
+		var logCard = function(){
 			for (var i = 0; i < cards().length; i++) {
-  				log(cards()[i]);
+  				log(cards()[i], TEST);
   			}
-		};
+  		};
+
+  		var logPlayer = function(){
+			for (var i = 0; i < players().length; i++) {
+  				log(players()[i], TEST);
+  			}
+  		};
+		
+  		var setActivePlayer = function(id){
+  			for (var i = 0; i < players().length; i++) {
+  				players()[i].active = false;
+  				if(players()[i].id == id)
+  					players()[i].active = true;
+  			};
+  		};
 
 		var userList = ko.computed(function(){
 			var html = "";
@@ -339,7 +356,8 @@ define(["jquery", "ko"], function ($, ko) {
 			players: players,
 			getPlayers: getPlayers,
 			getCards: getCards,
-			logg: logg,
+			logCard: logCard,
+			logPlayer: logPlayer,
 
 			sendUserName: sendUserName,
 			sendPassz: sendPassz,
