@@ -104,9 +104,30 @@ Array.prototype.contains = function () {
 Array.prototype.indexOfKeyValue = function (key, value) {
 	for (var i = 0; i < this.length; i++) {
 		for (var prop in this[i]) {
-			if (prop !== key) continue;
-			if ((this[i])[prop] === value) return i;
+			if (prop != key) continue;
+			if ((this[i])[prop] == value) return i;
 		}
+	};
+	return -1;
+};
+
+// Returns the index of given object in the array of objects. Otherwise -1
+Array.prototype.indexOfObject = function (obj) {
+	for (var i = this.length - 1; i >= 0; i--) {
+		var it = true;
+		for (var prop in this[i]) {
+			if (obj[prop] != this[i][prop]) {
+				it = false;
+				break;
+			}
+		}
+		for (var prop in obj) {
+			if (obj[prop] != this[i][prop]) {
+				it = false;
+				break;
+			}
+		}
+		if (it) return i;
 	};
 	return -1;
 };
