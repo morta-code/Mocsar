@@ -38,12 +38,12 @@ var broadcast = function (ev, data) {
 *	Ezután érvényes lapok esetén mindenki magkapja a kártyák értékeit. Mindenki 'ready'-t válaszol!
 *	Érvénytelen lépés esetén 'badcards' üzenetet küld vissza	
 */
-var onPut = function (playerid, reply, cards) {
+var onPut = function (playerid, socket, cards) {
 	if (mocsar.currentRound().currentPlayerId != playerid) return;
 	mocsar.currentRound().putCards(cards, function () {
 		broadcast('put', {from: playerid, cards: cards});
 	}, function () {
-		reply('badcards');
+		socket.emit('badcards');
 	});
 }
 
@@ -89,13 +89,13 @@ var onTributes = function (playerid, tributes) {
 *	Ha mindenki végrehajtotta a cserét, az utolsó callback hívódik, ami ezt a tényt kürtöli szét.
 *	Erre mindenki kérdezze le a lapjait, majd válaszoljon 'ready'-vel.
 */
-var onTributeBack = function (playerid, reply, cards) {
+var onTributeBack = function (playerid, socket, cards) {
 	if (mocsar.players()[playerid].toTributeBack !== cards.length) {
-		reply('tributeback', false);
+		socket.emit('tributeback', false);
 		return;
 	};
 	mocsar.currentRound().tributeBack(playerid, cards, function() {
-		reply('tributeback', true);
+		socket.emit('tributeback', true);
 	}, function () {
 		broadcast('tributeback'); 
 	});
@@ -172,7 +172,7 @@ io.sockets.on('connection', function (socket) {
 			});
 
 			socket.on('put', function (cards) {
-				onPut(playerid, socket.emit, cards);
+				onPut(playerid, socket, cards);
 			});
 
 			socket.on('ready', function () {
@@ -184,7 +184,7 @@ io.sockets.on('connection', function (socket) {
 			});
 
 			socket.on('tributeback', function (cards) {
-				onTributeBack(playerid, socket.emit, cards);
+				onTributeBack(playerid, socket, cards);
 			});
 
 			socket.emit('badname', {state: false, id: playerid, name: nam});
