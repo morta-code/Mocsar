@@ -113,16 +113,15 @@ module.exports = function () {
 		};
 
 		var __goodput = function (cards) {
-			console.log('GOODPUT', cards);
 			var putValue = 0;
 			for (var i = cards.length - 1; i >= 0; i--) {
-				if (players[currentPlayerId].cards.indexOfKeyValue(cards[i].color, cards[i].value) === -1) return;
+				if (players[currentPlayerId].cards.indexOf(cards[i]) === -1) {return;};
 				if (putValue === 0) {putValue = cards[i].value; continue;};
 				if ((putValue === 15 || putValue === 2) && (cards[i].value !== 15 && cards[i].value !== 2)) {putValue = cards[i].value; continue;};
 				if ((putValue !== 15 && putValue !== 2 && cards[i].value !== 15 && cards[i].value !== 2) && cards[i].value !== putValue) {return;};
 			};
-			if (putValue === 2) putValue = 15;
-			if (cardsOnTable.length > 0 && putValue <= cardsOnTable.last().value) return;
+			if (putValue === 2) {putValue = 15;};
+			if (cardsOnTable.length > 0 && putValue <= cardsOnTable[cardsOnTable.length-1].value) {return;};
 			return putValue;
 		};
 
