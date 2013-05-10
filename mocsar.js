@@ -113,14 +113,19 @@ module.exports = function () {
 		};
 
 		var __goodput = function (cards) {
-			console.log('GOODPUT', cards);
+			console.log('GOODPUT', cards, currentPlayerId);
 			var putValue = 0;
 			for (var i = cards.length - 1; i >= 0; i--) {
-				if (players[currentPlayerId].cards.indexOfKeyValue(cards[i].color, cards[i].value) === -1) return;
+				if (players[currentPlayerId].cards.indexOfObject(cards[i]) === -1) return;
+				console.log('GOODPUT', 'contains');
 				if (putValue === 0) {putValue = cards[i].value; continue;};
+				console.log('GOODPUT', 'putValue', putValue);
 				if ((putValue === 15 || putValue === 2) && (cards[i].value !== 15 && cards[i].value !== 2)) {putValue = cards[i].value; continue;};
+				console.log('GOODPUT', 'putValue', putValue);
 				if ((putValue !== 15 && putValue !== 2 && cards[i].value !== 15 && cards[i].value !== 2) && cards[i].value !== putValue) {return;};
+				console.log('GOODPUT','putValue', putValue);
 			};
+			console.log('GOODPUT PUTVALUE', putValue);
 			if (putValue === 2) putValue = 15;
 			if (cardsOnTable.length > 0 && putValue <= cardsOnTable.last().value) return;
 			return putValue;
@@ -354,7 +359,7 @@ module.exports = function () {
 
 	var callAIs = function (ev, data) {
 		//////L//O//G//////
-		console.log("CALL AIs:  ", ais, aiModule.aiPlayers(), ev, data);
+		console.log("CALL AIs:  ", ev, data);
 		//////L//O//G//////
 		ais.forEach(function (a, i) {
 			(aiModule.aiPlayers()[i])[ev](data);
