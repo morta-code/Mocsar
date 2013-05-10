@@ -120,7 +120,7 @@ module.exports = function () {
 				if ((putValue !== 15 && putValue !== 2 && cards[i].value !== 15 && cards[i].value !== 2) && cards[i].value !== putValue) {return;};
 			};
 			if (putValue === 2) putValue = 15;
-			if (cardsOnTable.length > 0 && putValue <= cardsOnTable.last().value) return;
+			if (cardsOnTable.length > 0 && (putValue <= cardsOnTable.last().value || cardsOnTable.last().cards.length !== cards.length)) return;
 			return putValue;
 		};
 
@@ -165,13 +165,14 @@ module.exports = function () {
 					__next();
 				} else {								
 					// Körbeért a passz
-					currentPlayerId = cardsOnTable[cardsOnTable.length-1].id;
+					currentPlayerId = cardsOnTable.last().id;
 					while (order.indexOf(currentPlayerId) === -1) {
 						currentPlayerId = nobids.shift();
 					};
 					currentPlayerOrder = order.indexOf(currentPlayerId);
 					rdyCb.cb = 1;
 					rdyCb.param = currentPlayerId;
+					cardsOnTable.splice(0);
 				};
 
 			} else {
