@@ -152,12 +152,10 @@ define(["jquery", "ko"], function ($, ko) {
   			var c = [];
   			for (var i = 0; i < cards().length; i++) {
   				if(cards()[i].isSelected)
-  					c.push(cards()[i]);
+  					c.push({ color: cards()[i].color, value: cards()[i].value });
   			};
-//			sendData("put", c);
-
-
-
+			sendData("put", c);
+			log(c, TEST);
   		};
 
   		var sendPassz = function(){
