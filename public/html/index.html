@@ -9,6 +9,7 @@
 
 		<script type="text/html" id="gamer">
 			<span data-bind="attr: {id: player.id, class: player.htmlClass}">
+				<div data-bind="if: player.active, attr: {id: player.htmlClass}"></div>
 				<div data-bind="text: player.name"></div>
 				<div data-bind="text: player.id"></div>
 				<div data-bind="text: player.ai"></div>

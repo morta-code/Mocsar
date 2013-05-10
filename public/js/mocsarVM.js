@@ -156,7 +156,7 @@ define(["jquery", "ko"], function ($, ko) {
   			};
 //			sendData("put", c);
 
-			
+
 
   		};
 
@@ -169,6 +169,7 @@ define(["jquery", "ko"], function ($, ko) {
     		players.removeAll();
 			for (var i = 0; i < data.length; i++) {
 				data[i].card = 0;
+				data[i].active = true;
 				//data[i].htmlClass = "player-" + ((i % 3 > 0) ? ((i % 3 > 1) ? "left" : "center" ) : "right" );
 				if(i<2)
 					data[i].htmlClass = "player-left-" + i;
@@ -224,6 +225,8 @@ define(["jquery", "ko"], function ($, ko) {
 
   		var __nextcircle = function(data){
   			log("SIGNAL NEXTCIRCLE", SIGNAL);
+  			depositedCards.removeAll();
+
   			// 	TODO 
   				// játéktér ürítése
   				// data id játékos jön

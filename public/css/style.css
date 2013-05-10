@@ -146,3 +146,39 @@ p {
 [class*="player-right"]{
   transform: translate(980px, -900px);
 }
+
+[id*="player-left"]{
+    background-color: red;
+    border: 3px solid black;
+    border-radius: 5px 0 0 5px;
+    box-shadow: -4px 0 5px 1px #E8E8E8;
+    float: left;
+    height: 80px;
+    left: -24px;
+    position: relative;
+    width: 10px;
+}
+
+[id*="player-right"]{
+    background-color: red;
+    border: 3px solid black;
+    float: right;
+    height: 80px;
+    right: -24px;
+    position: relative;
+    width: 10px;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 4px 0 5px 1px #E8E8E8;
+}
+
+[id*="player-center"]{
+    background-color: red;
+    border: 3px solid black;
+    height: 10px;
+    top: -24px;
+    position: relative;
+    width: 80px;
+    left: 10px;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 1px -6px 5px 2px #E8E8E8;
+}
