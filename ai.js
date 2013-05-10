@@ -1,5 +1,5 @@
 module.exports = function () {
-	require('./public/js/jsexpansion');
+	require('./jsexpansion');
 
 	return function (db, players) {
 		var aiPlayers = [],
