@@ -70,6 +70,7 @@ module.exports = function () {
 			var onNewRound = function (data) {
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
+				if (data.democratic) _ready();
 				if (currentOrder.first() === id && !data.democratic) {
 					_iTribute();
 				};

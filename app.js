@@ -25,6 +25,9 @@ server.listen(7500);
 /////////////////////////////////////////////////
 
 var broadcast = function (ev, data) {
+	//////L//O//G//////
+	console.log("BROADCAST: ----> " + ev, data);
+	//////L//O//G//////
 	io.sockets.emit(ev, data);
 	mocsar.callAIs(ev, data);
 };
