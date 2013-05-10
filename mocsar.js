@@ -64,7 +64,6 @@ module.exports = function () {
 		//////L//O//G//////
 		console.log("ROUND " + order);
 		//////L//O//G//////
-		var currentOrder = order; 					// [] Játékosok sorrendje a fordulóban
 		var currentPlayerOrder = 0;					// A soron következő játékos a sorban
 		var currentPlayerId = order[0];				// A soron következő játékos ID-je
 		var readies = [];							// Beérkezett 'ready' flag-ek
@@ -76,7 +75,7 @@ module.exports = function () {
 		var cardsOnTable = [];						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
 		var neworder = [];							// A következő kör sorrendje (folyamatosan töltődik)
 
-		var whoCanTribute = (democratic ? null : currentOrder[0]);// Tárolja a király id-jét, amíg nem hirdet adózást
+		var whoCanTribute = (democratic ? null : order[0]);// Tárolja a király id-jét, amíg nem hirdet adózást
 		var needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
 
 
@@ -86,15 +85,15 @@ module.exports = function () {
 			console.log("DEAL  DEAL  DEAL  DEAL  DEAL");
 			//////L//O//G//////
 			var shakedPck = [];
-			(currentOrder.length < 9 ? 2 : 3).times(function () {
+			(order.length < 9 ? 2 : 3).times(function () {
 				shakedPck.push.apply(shakedPck, pack.shaked());
 			});
 			shakedPck = shakedPck.shaked();
 
-			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= currentOrder.length)) {
-				for (var i = currentOrder.length - 1; i >= 0; i--) {
-					console.log(p[currentOrder[i]].name, shakedPck.first());
-					p[currentOrder[i]].cards.push(shakedPck.shift());
+			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= order.length)) {
+				for (var i = order.length - 1; i >= 0; i--) {
+					console.log(p[order[i]].name, shakedPck.first());
+					p[order[i]].cards.push(shakedPck.shift());
 				};
 			}
 
@@ -115,13 +114,13 @@ module.exports = function () {
 		var __goodput = function (cards) {
 			var putValue = 0;
 			for (var i = cards.length - 1; i >= 0; i--) {
-				if (players[currentPlayerId].cards.indexOf(cards[i]) === -1) {return;};
+				if (players[currentPlayerId].cards.indexOfObject(cards[i]) === -1) return;
 				if (putValue === 0) {putValue = cards[i].value; continue;};
 				if ((putValue === 15 || putValue === 2) && (cards[i].value !== 15 && cards[i].value !== 2)) {putValue = cards[i].value; continue;};
 				if ((putValue !== 15 && putValue !== 2 && cards[i].value !== 15 && cards[i].value !== 2) && cards[i].value !== putValue) {return;};
 			};
-			if (putValue === 2) {putValue = 15;};
-			if (cardsOnTable.length > 0 && putValue <= cardsOnTable[cardsOnTable.length-1].value) {return;};
+			if (putValue === 2) putValue = 15;
+			if (cardsOnTable.length > 0 && putValue <= cardsOnTable.last().value) return;
 			return putValue;
 		};
 
@@ -249,13 +248,13 @@ module.exports = function () {
 
 			tributes.forEach(function(t, i) {
 				//////L//O//G//////
-				console.log("TRIBUTE ", players[currentOrder[i]].name, players[currentOrder[currentOrder.length-(1+i)]]);
+				console.log("TRIBUTE ", players[order[i]].name, players[order[order.length-(1+i)]]);
 				//////L//O//G//////
-				players[currentOrder[i]].toTributeBack = t;
-				players[currentOrder[i]].toTributeBackFor = currentOrder[currentOrder.length-(1+i)];
+				players[order[i]].toTributeBack = t;
+				players[order[i]].toTributeBackFor = order[order.length-(1+i)];
 
-				players[currentOrder[i]].cards = players[currentOrder[i]].cards.concat(
-					__bestCards(players[currentOrder[currentOrder.length-(1+i)]], t));
+				players[order[i]].cards = players[order[i]].cards.concat(
+					__bestCards(players[order[order.length-(1+i)]], t));
 			});
 			needsTributeBack = tributes.length;
 			canTribute = null;
@@ -353,7 +352,7 @@ module.exports = function () {
 
 	var callAIs = function (ev, data) {
 		//////L//O//G//////
-		console.log("CALL AIs:  ", ais, aiModule.aiPlayers(), ev, data);
+		console.log("CALL AIs:  ", ev, data);
 		//////L//O//G//////
 		ais.forEach(function (a, i) {
 			(aiModule.aiPlayers()[i])[ev](data);
