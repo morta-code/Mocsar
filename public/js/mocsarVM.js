@@ -235,6 +235,23 @@ define(["jquery", "ko"], function ($, ko) {
 
  		var __put = function (data) {
  			log("SIGNAL PUT", SIGNAL);
+ 			log(data, TEST);
+
+ 			if(id() == data.from){
+ 				log("ID STIMMEL", TEST);
+ 				for (var i = 0 ; i < data.cards.length; i++) {
+ 					log("FOR", TEST);
+ 					var index = cards().MindexOfObjectWithCustomEquals(data.cards[i], function(a,b){
+ 						if(a.color == b.color && a.value == b.value)
+ 							return true;
+ 						return false;
+ 					});
+ 					log("INDEX", TEST);
+ 					log(index, TEST);
+	 				if (index>-1) {log("REMOVE", TEST); cards().splice(index, 1);}
+ 				};
+ 				refreshCards();
+ 			}
  			
  			
   			//	TODO  data = {from: playerid, cards: cards};
@@ -247,7 +264,7 @@ define(["jquery", "ko"], function ($, ko) {
 			log("SIGNAL NEXT", SIGNAL);
 			setActivePlayer(data);
 			//players.valueHasMutated();
-			refresh();
+			refreshPlayers();
 			// 	TODO 
 				// játéktér ürítése nincs, nem rakhat akármit
 				// data id játékos jön
@@ -333,10 +350,22 @@ define(["jquery", "ko"], function ($, ko) {
   			};
   		};
 
-  		var refresh = function(){
+  		var refreshPlayers = function(){
         	var data = players().slice(0);
         	players([]);
         	players(data);
+    	};
+
+    	var refreshDepositedCards = function(){
+    		var data = depositedCards().slice(0);
+        	depositedCards([]);
+        	depositedCards(data);	
+    	};
+
+    	var refreshCards = function(){
+    		var data = cards().slice(0);
+        	cards([]);
+        	cards(data);	
     	};
 
 		var userList = ko.computed(function(){

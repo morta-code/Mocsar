@@ -134,6 +134,33 @@ Array.prototype.MindexOfObject = function (obj) {
 	return -1;
 };
 
+// Returns the index of given object in the array of objects. Otherwise -1
+Array.prototype.MindexOfObjectWithCustomEquals = function (obj, eq) {
+
+	eq = eq || function(a,b){
+		var it = true;
+		for (var prop in b) {
+			if (a[prop] != b[prop]) {
+				it = false;
+				break;
+			}
+		}
+		for (var prop in a) {
+			if (a[prop] != b[prop]) {
+				it = false;
+				break;
+			}
+		}
+		if (it) return true;
+		return false;
+	}
+
+	for (var i = this.length - 1; i >= 0; i--) {
+		if( eq(obj, this[i]) ) 
+			return i;
+	};
+	return -1;
+};
 
 // Returns a value from the Array for the given index. If the index is out of bounds, default value will be returned.
 Array.prototype.Mfetch = function (idx, def) {
