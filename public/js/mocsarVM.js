@@ -226,7 +226,7 @@ define(["jquery", "ko"], function ($, ko) {
   			log("TEST " + data, TEST);
   			depositedCards.removeAll();
   			setActivePlayer(data);
-
+			players.valueHasMutated();
   			// 	TODO 
   				// játéktér ürítése
   				// data id játékos jön
@@ -235,6 +235,8 @@ define(["jquery", "ko"], function ($, ko) {
 
  		var __put = function (data) {
  			log("SIGNAL PUT", SIGNAL);
+
+ 			
   			//	TODO  data = {from: playerid, cards: cards};
   			// grafikus
 
@@ -244,6 +246,8 @@ define(["jquery", "ko"], function ($, ko) {
 		var __next = function(data){
 			log("SIGNAL NEXT", SIGNAL);
 			setActivePlayer(data);
+			//players.valueHasMutated();
+			refresh();
 			// 	TODO 
 				// játéktér ürítése nincs, nem rakhat akármit
 				// data id játékos jön
@@ -302,7 +306,7 @@ define(["jquery", "ko"], function ($, ko) {
 		};
 
 		var getPlayers = function(){
-			return players;
+			return players();
 		};
 
 		var getCards = function(){
@@ -328,6 +332,12 @@ define(["jquery", "ko"], function ($, ko) {
   					players()[i].active = true;
   			};
   		};
+
+  		var refresh = function(){
+        	var data = players().slice(0);
+        	players([]);
+        	players(data);
+    	};
 
 		var userList = ko.computed(function(){
 			var html = "";

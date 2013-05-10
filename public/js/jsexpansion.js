@@ -1,9 +1,10 @@
-
+console.log("JSEXPANSION LOADED");
 /////////////////////T//O//O//L//S/////////////////////
 
 // Get random integer.
 // If one param is given, the intervall will be 0 (incl) to param (incl)
 // If two params are given, the intervall will be p1 (incl) to p2 (incl) 
+
 (global ? global : window).rndInt = function () {
 	if(arguments.length === 1){
 		return Math.floor(Math.random() * (arguments['0'] + 1));
@@ -27,7 +28,7 @@
 	return a.value - b.value;
 }
 */
-
+	
 /////////////////////A//R//R//A//Y/////////////////////
 
 

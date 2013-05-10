@@ -18,11 +18,12 @@ requirejs.config({
         "jquery":       "js/jquery-1.9.1",
         "ko":           "js/knockout-2.2.1.debug",
         "less":         "js/less-1.3.3.min",
-        "socket.io":    "js/socket.io"
+        "socket.io":    "js/socket.io",
+        "jsexpansion":  "js/jsexpansion"
     }
 });
             
-require(["jquery", "ko", "socket.io", "less"], function($, ko) {
+require(["jquery", "ko", "socket.io", "less", "jsexpansion"], function($, ko) {
     require(["js/mocsarVM"], function (mocsar) {
         $(document).ready (function () {
             var o = mocsar();
