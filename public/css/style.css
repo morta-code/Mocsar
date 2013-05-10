@@ -72,7 +72,7 @@ p {
 [class^="player-"]
 {
     display: block;
-    margin-left: auto;
+    
     position: relative;
     text-align: center;
     width: 100px;
@@ -88,6 +88,7 @@ p {
 .player-center{
   top: 0px;
   text-align: center;
+  clear: both;
 }
 
 .player-right{
@@ -103,4 +104,45 @@ p {
 
 .cardArea{
   width: 960px;
+}
+
+[class*="player-left"]{
+  
+}
+
+.player-left-0{
+  transform: translateY(200px);
+}
+
+.player-left-1{
+  transform: translateY(0px);
+}
+
+.player-center-2{
+  transform: translate(140px, -200px);
+}
+.player-center-3{
+  transform: translate(240px, -300px);
+}
+.player-center-4{
+  transform: translate(340px, -400px);
+}
+.player-center-5{
+  transform: translate(440px, -500px);
+}
+.player-center-6{
+  transform: translate(540px, -600px);
+}
+.player-center-7{
+  transform: translate(640px, -700px);
+}
+.player-center-8{
+  transform: translate(740px, -800px);
+}
+.player-center-9{
+  transform: translate(840px, -900px);
+}
+
+[class*="player-right"]{
+  transform: translate(980px, -900px);
 }

@@ -111,3 +111,33 @@
 			
 [class*="card-joker"]     { background-position: -1 * ((@widthU + @szunetXU) * 0  + @eltolasX - 3)  -1 * ((@heightU + @szunetYU) * 4 + @eltolasY - 2); }
 [class*="card-hatlap"]    { background-position: -1 * ((@widthU + @szunetXU) * 1  + @eltolasX)  -1 * ((@heightU + @szunetYU) * 4 + @eltolasY - 2); }
+
+
+
+[class*="card-"]:hover{
+		  animation:negyzet 1s linear alternate; /*5 másodperc alatt, "loop"-olva*/
+	 -moz-animation:negyzet 1s linear alternate; /* Firefox */
+  -webkit-animation:negyzet 1s linear alternate; /* Safari és Chrome */
+ 	   -o-animation:negyzet 1s linear alternate; /* Opera */
+
+
+}
+ 
+@keyframes negyzet
+{
+	0% {
+		top:0px;
+	}
+	25% {
+		top: -10px
+	}
+	50%{
+		top: -20px
+	}
+	75%{
+		top: -30px
+	}
+	100%{
+		top: -40px;
+	}
+}

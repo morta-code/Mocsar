@@ -11,13 +11,6 @@
   background-size: 1632.6px 909.6px;
   position: absolute;
 }
-[class^="card-"]:hover {
-  -webkit-transform: translate(0px, -40px);
-  -moz-transform: translate(0px, -40px);
-  -o-transform: translate(0px, -40px);
-  -ms-transform: translate(0px, -40px);
-  transition: all 0.2s ease-in-out;
-}
 [class*="selected"] {
   top: -40px;
 }
@@ -182,4 +175,35 @@
 }
 [class*="card-hatlap"] {
   background-position: -130.6px -744.4px;
+}
+[class*="card-"]:hover {
+  animation: negyzet 1s linear alternate;
+  /*5 másodperc alatt, "loop"-olva*/
+
+  -moz-animation: negyzet 1s linear alternate;
+  /* Firefox */
+
+  -webkit-animation: negyzet 1s linear alternate;
+  /* Safari és Chrome */
+
+  -o-animation: negyzet 1s linear alternate;
+  /* Opera */
+
+}
+@keyframes negyzet {
+  0% {
+    top: 0px;
+  }
+  25% {
+    top: -10px;
+  }
+  50% {
+    top: -20px;
+  }
+  75% {
+    top: -30px;
+  }
+  100% {
+    top: -40px;
+  }
 }

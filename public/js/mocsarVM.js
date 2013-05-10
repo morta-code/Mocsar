@@ -1,5 +1,10 @@
 define(["jquery", "ko"], function ($, ko) {
 
+		$(window).bind('contextmenu', function(event){
+    		log(event, INFO);
+     		return false;
+		});
+
 		var ERROR = 0;
 		var SIGNAL = 1;
 		var TEST = 2;
@@ -55,23 +60,25 @@ define(["jquery", "ko"], function ($, ko) {
 			
 			$(element).bind('contextmenu', function(event){
     			log(event, INFO);
-    			card.isSelected = false;
-        		var osztaly = $(element).attr('class');
-        		var splitted = osztaly.split("-");
-        		if(splitted[0]==="selected"){
-        			splitted.splice(0,1);
-        			osztaly = splitted.join("-");
-        		}
-        		$(element).attr({class: osztaly});
      			return false;
 			});
 
         	$(element).click(function(event){
         		log(event);
-        		card.isSelected = true;
+        		card.isSelected = !card.isSelected;
+				var osztaly = $(element).attr('class');
 
-        		var cl = $(element).attr('class');
-        		$(element).attr({class: "selected-" + cl});
+        		if(card.isSelected){
+	       			osztaly = "selected-" + osztaly;
+        		}
+        		else{
+        			var splitted = osztaly.split("-");
+        			if(splitted[0]==="selected"){
+	        			splitted.splice(0,1);
+        				osztaly = splitted.join("-");
+        			}
+        		}
+        		$(element).attr({class: osztaly});
         	});
 
 
@@ -147,7 +154,10 @@ define(["jquery", "ko"], function ($, ko) {
   				if(cards()[i].isSelected)
   					c.push(cards()[i]);
   			};
-  			sendData("put", c);
+//			sendData("put", c);
+
+			
+
   		};
 
   		var sendPassz = function(){
@@ -159,7 +169,13 @@ define(["jquery", "ko"], function ($, ko) {
     		players.removeAll();
 			for (var i = 0; i < data.length; i++) {
 				data[i].card = 0;
-				data[i].htmlClass = "player-" + ((i % 3 > 0) ? ((i % 3 > 1) ? "left" : "center" ) : "right" );
+				//data[i].htmlClass = "player-" + ((i % 3 > 0) ? ((i % 3 > 1) ? "left" : "center" ) : "right" );
+				if(i<2)
+					data[i].htmlClass = "player-left-" + i;
+				else if(i<10)
+					data[i].htmlClass = "player-center-" + i;
+				else
+					data[i].htmlClass = "player-right-" + i;
     		}
             players(data);
   		};
