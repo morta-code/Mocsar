@@ -353,7 +353,7 @@ module.exports = function () {
 
 	var callAIs = function (ev, data) {
 		//////L//O//G//////
-		console.log("CALL AIs:  ", ais, aiModule.aiPlayers, ev, data);
+		console.log("CALL AIs:  ", ais, aiModule.aiPlayers(), ev, data);
 		//////L//O//G//////
 		ais.forEach(function (a, i) {
 			(aiModule.aiPlayers()[i])[ev](data);
