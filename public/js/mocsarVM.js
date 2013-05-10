@@ -238,20 +238,28 @@ define(["jquery", "ko"], function ($, ko) {
  			log(data, TEST);
 
  			if(id() == data.from){
- 				log("ID STIMMEL", TEST);
+ 				log("ID STIMMEL", INFO);
  				for (var i = 0 ; i < data.cards.length; i++) {
- 					log("FOR", TEST);
+ 					log("FOR", INFO);
  					var index = cards().MindexOfObjectWithCustomEquals(data.cards[i], function(a,b){
  						if(a.color == b.color && a.value == b.value)
  							return true;
  						return false;
  					});
- 					log("INDEX", TEST);
- 					log(index, TEST);
-	 				if (index>-1) {log("REMOVE", TEST); cards().splice(index, 1);}
+ 					log("INDEX", INFO);
+ 					log(index, INFO);
+	 				if (index>-1) {log("REMOVE", INFO); cards().splice(index, 1);}
  				};
  				refreshCards();
  			}
+
+ 			var pIndex = players().MindexOfObjectWithCustomEquals(data.from, function(a, b){
+ 				if(a == b.id)
+ 					return true;
+ 				return false;
+ 			});
+ 			players()[pIndex].card -= data.cards.length;
+ 			refreshPlayers();
  			
  			
   			//	TODO  data = {from: playerid, cards: cards};
