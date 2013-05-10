@@ -5,7 +5,7 @@ console.log("JSEXPANSION LOADED");
 // If one param is given, the intervall will be 0 (incl) to param (incl)
 // If two params are given, the intervall will be p1 (incl) to p2 (incl) 
 
-(this.window ? window : global).rndInt = function () {
+(global ? global : window).rndInt = function () {
 	if(arguments.length === 1){
 		return Math.floor(Math.random() * (arguments['0'] + 1));
 	}

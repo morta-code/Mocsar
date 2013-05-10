@@ -1,5 +1,5 @@
 module.exports = function () {
-	require('./public/js/jsexpansion');
+	require('./jsexpansion');
 	var aiModule = (require('./ai'))();
 	var pack = require("./cards");
 	var players = [];
