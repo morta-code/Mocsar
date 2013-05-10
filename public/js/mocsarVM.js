@@ -235,7 +235,7 @@ define(["jquery", "ko"], function ($, ko) {
 
  		var __put = function (data) {
  			log("SIGNAL PUT", SIGNAL);
-
+ 			
  			
   			//	TODO  data = {from: playerid, cards: cards};
   			// grafikus
