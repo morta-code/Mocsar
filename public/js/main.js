@@ -19,7 +19,7 @@ requirejs.config({
         "ko":           "js/knockout-2.2.1.debug",
         "less":         "js/less-1.3.3.min",
         "socket.io":    "js/socket.io",
-        "jsexpansion":  "js/jsexpansion"
+        "jsexpansion":  "js/jsexpansion_client"
     }
 });
             

@@ -18,23 +18,18 @@ define(["jquery", "ko"], function ($, ko) {
 				console.log(data);
 		};
 
-
-    ko.bindingHandlers.cardBindings = {
-        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        	var card = valueAccessor(), allBindings = allBindingsAccessor();       
-        
-        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
-        	var eltolas =  -1 * cardIndex * 100;
-        	
-        	var theCard = "card-";
-			switch(card.color){
-				case 0: theCard+="treff-"; break;
-				case 1: theCard+="karo-"; break;
-				case 2: theCard+="kor-"; break;
-				case 3: theCard+="pikk-"; break;
+		var switchColor = function(color){
+			switch(color){
+				case 0: return "treff-";
+				case 1: return "karo-";
+				case 2: return "kor-";
+				case 3: return "pikk-";
 			};
+			return "";
+		};
 
-			switch(card.value){
+		var switchValue = function(value){
+			switch(value){
 				case 2:
 				case 3:
 				case 4:
@@ -43,13 +38,24 @@ define(["jquery", "ko"], function ($, ko) {
 				case 7:
 				case 8:
 				case 9:
-				case 10: theCard+=card.value; break;
-				case 11: theCard+="J"; break;
-				case 12: theCard+="Q"; break;
-				case 13: theCard+="K"; break;
-				case 14: theCard+="asz"; break;
-				case 15: theCard+="joker"; break;
+				case 10: return value;
+				case 11: return "J";
+				case 12: return "Q";
+				case 13: return "K";
+				case 14: return "asz";
+				case 15: return "joker";
 			};
+			return 0;
+		};
+
+    ko.bindingHandlers.cardBindings = {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        	var card = valueAccessor(), allBindings = allBindingsAccessor();       
+      
+        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
+        	var eltolas =  -1 * cardIndex * 100;
+        	
+        	var theCard = "card-" + switchColor(card.color) + switchValue(card.value);
 			
         	$(element).attr({class: theCard});
         	if(card.isSelected){
@@ -90,6 +96,28 @@ define(["jquery", "ko"], function ($, ko) {
         		$(element).addClass("selected");
         	}
     	}
+    };
+
+    ko.bindingHandlers.cardsDepositedBindings = {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+			var card = valueAccessor(), allBindings = allBindingsAccessor();       
+        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
+			
+			var cardCount =  card.values.length;
+			
+			for(var i=cardCount-1;i>=0;i--){
+				var theCard = "de-card-" + switchColor(card.colors[i]) + switchValue(card.values[i]);
+				var elem = $(document.createElement('span'));
+					elem.attr({
+						class: (theCard + "_" + (cardCount - i - 1))
+					});
+				log(elem, TEST);
+				log(element, TEST);
+				$(element).append(elem);
+			}
+        },
+        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        }
     };
 
 	return function(){
@@ -168,7 +196,6 @@ define(["jquery", "ko"], function ($, ko) {
 			for (var i = 0; i < data.length; i++) {
 				data[i].card = 0;
 				data[i].active = false;
-				//data[i].htmlClass = "player-" + ((i % 3 > 0) ? ((i % 3 > 1) ? "left" : "center" ) : "right" );
 				if(i<2)
 					data[i].htmlClass = "player-left-" + i;
 				else if(i<10)
@@ -217,6 +244,29 @@ define(["jquery", "ko"], function ($, ko) {
   				log(data[i]);
   			}
             
+  			data.sort(function(a, b){
+
+  				if(a.value == 2 || b.value == 2){
+  					if(a.value == 2 && b.value != 2) return  1;
+  					if(a.value != 2 && b.value == 2) return -1;
+  					if(a.value == 2 && b.value == 2) {
+	  					if(a.color <  b.color) return -1;
+  						if(a.color >  b.color) return  1;
+  						if(a.color == b.color) return  0;
+  					}
+  				}
+  				else{
+	  				if(a.value <  b.value) return -1;
+  					if(a.value >  b.value) return  1;
+  					if(a.value == b.value){
+	  					if(a.color <  b.color) return -1;
+  						if(a.color >  b.color) return  1;
+  						if(a.color == b.color) return  0;
+   					}
+   				}
+   				return 0;
+  			});
+
             cards(data);
   			sendData("cardnums", null);
   		};
@@ -239,6 +289,15 @@ define(["jquery", "ko"], function ($, ko) {
 
  			if(id() == data.from){
  				log("ID STIMMEL", INFO);
+ 				
+ 				var cardGroup = (function(){
+ 					return {
+ 						values: [],
+ 						colors: [],
+ 						isActive: false
+ 					};
+ 				}());
+
  				for (var i = 0 ; i < data.cards.length; i++) {
  					log("FOR", INFO);
  					var index = cards().MindexOfObjectWithCustomEquals(data.cards[i], function(a,b){
@@ -248,8 +307,18 @@ define(["jquery", "ko"], function ($, ko) {
  					});
  					log("INDEX", INFO);
  					log(index, INFO);
-	 				if (index>-1) {log("REMOVE", INFO); cards().splice(index, 1);}
+	 				if (index>-1) {
+	 					log("REMOVE", INFO); 
+	 					var kartya = cards()[index];
+	 					cardGroup.values.push(kartya.value);
+	 					cardGroup.colors.push(kartya.color);
+	 					cardGroup.isActive = true;
+	 					cards().splice(index, 1);}
  				};
+
+				if (cardGroup.isActive)
+ 					depositedCards().push(cardGroup);
+ 				refreshDepositedCards();
  				refreshCards();
  			}
 
@@ -337,10 +406,20 @@ define(["jquery", "ko"], function ($, ko) {
 		var getCards = function(){
 			return cards;
 		};
+		
+		var getDepositedCards = function(){
+			return depositedCards;
+		};
 
 		var logCard = function(){
 			for (var i = 0; i < cards().length; i++) {
   				log(cards()[i], TEST);
+  			}
+  		};
+
+  		var logDepositedCards = function(){
+			for (var i = 0; i < depositedCards().length; i++) {
+  				log(depositedCards()[i], TEST);
   			}
   		};
 
@@ -401,8 +480,10 @@ define(["jquery", "ko"], function ($, ko) {
 			players: players,
 			getPlayers: getPlayers,
 			getCards: getCards,
+			getDepositedCards: getDepositedCards,
 			logCard: logCard,
 			logPlayer: logPlayer,
+			logDepositedCards: logDepositedCards,
 
 			sendUserName: sendUserName,
 			sendPassz: sendPassz,
