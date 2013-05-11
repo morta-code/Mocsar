@@ -287,17 +287,17 @@ define(["jquery", "ko"], function ($, ko) {
  			log("SIGNAL PUT", SIGNAL);
  			log(data, TEST);
 
+ 			var cardGroup = (function(){
+ 				return {
+ 					values: [],
+ 					colors: [],
+ 					isActive: false
+ 				};
+ 			}());
+
  			if(id() == data.from){
  				log("ID STIMMEL", INFO);
  				
- 				var cardGroup = (function(){
- 					return {
- 						values: [],
- 						colors: [],
- 						isActive: false
- 					};
- 				}());
-
  				for (var i = 0 ; i < data.cards.length; i++) {
  					log("FOR", INFO);
  					var index = cards().MindexOfObjectWithCustomEquals(data.cards[i], function(a,b){
@@ -316,12 +316,21 @@ define(["jquery", "ko"], function ($, ko) {
 	 					cards().splice(index, 1);}
  				};
 
-				if (cardGroup.isActive)
- 					depositedCards().push(cardGroup);
- 				refreshDepositedCards();
+				
+ 				
  				refreshCards();
  			}
+ 			else{
+ 				for (var i = 0 ; i < data.cards.length; i++) {
+ 					cardGroup.values.push(data.cards[i].value);
+	 				cardGroup.colors.push(data.cards[i].color);
+	 				cardGroup.isActive = true;
+ 				}
+ 			}
 
+ 			if (cardGroup.isActive)
+ 					depositedCards().push(cardGroup);
+			refreshDepositedCards();
  			var pIndex = players().MindexOfObjectWithCustomEquals(data.from, function(a, b){
  				if(a == b.id)
  					return true;
