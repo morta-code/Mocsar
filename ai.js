@@ -26,7 +26,16 @@ module.exports = function () {
 			var _iCall = function () {
 				// TODO Ne a legelső lappal nyisson, hanem ésszel
 				var cards = [];
-				cards.push(player.cards.first());
+				for (var i = 0; (i < player.cards.length); i++) {
+					var c = player.cards[i];
+					
+					if (cards.length == 0) {
+						cards.push(c);
+					} else {
+						if (cards[0].value != c.value && c.value != 2 && c.value != 15) break;
+						cards.push(c);
+					}
+				};
 				callbacks.put(id, function() {}, cards);
 			};
 			var _iPut = function () {
@@ -35,17 +44,23 @@ module.exports = function () {
 					num = callbacks.currentRound().cardsOnTable().last().cards.length,
 					val = callbacks.currentRound().cardsOnTable().last().value;
 				
-					for (var i = 0; (i < player.cards.length); i++) {
-						var c = player.cards[i];
-						if (c.value != 2 && c.value <= val) continue;
-						if (cards.length == 0) {
-							cards.push(c);
-						} else {
-							if (cards[0].value != c.value && c.value != 2 && c.value != 15) cards.splice(0);
-							cards.push(c);
-						}
-						if (cards.length == num) break;
-					};
+				if (val == 15) {
+					callbacks.put(id, function() {}, cards);
+					return;
+				};
+
+				for (var i = 0; (i < player.cards.length); i++) {
+					var c = player.cards[i];
+					if (c.value != 2 && c.value <= val) continue;
+					if (cards.length == 0) {
+						cards.push(c);
+					} else {
+						if (cards[0].value != c.value && c.value != 2 && c.value != 15) cards.splice(0);
+						cards.push(c);
+					}
+					if (cards.length == num) break;
+				};
+				if (cards.length !== num) cards.splice(0);
 				console.log('I PUT', cards);
 				callbacks.put(id, function() {}, cards);
 			};
