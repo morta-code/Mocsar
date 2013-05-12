@@ -19,7 +19,7 @@ module.exports = function () {
 		return arr;
 	};
 
-	var cardnums = function () {
+	var getCardnums = function () {
 		var arr = [];
 		players.forEach(function (act) {
 			arr.push(act.cards.length);
@@ -96,6 +96,30 @@ module.exports = function () {
 					p[order[i]].cards.push(shakedPck.shift());
 				};
 			}
+
+			p.forEach(function (actP) {
+				actP.cards.sort(function(a, b){
+	  				if(a.value == 2 || b.value == 2){
+	  					if(a.value == 2 && b.value != 2) return  1;
+	  					if(a.value != 2 && b.value == 2) return -1;
+	  					if(a.value == 2 && b.value == 2) {
+		  					if(a.color <  b.color) return -1;
+	  						if(a.color >  b.color) return  1;
+	  						if(a.color == b.color) return  0;
+	  					}
+	  				}
+	  				else{
+		  				if(a.value <  b.value) return -1;
+	  					if(a.value >  b.value) return  1;
+	  					if(a.value == b.value){
+		  					if(a.color <  b.color) return -1;
+	  						if(a.color >  b.color) return  1;
+	  						if(a.color == b.color) return  0;
+	   					}
+	   				}
+	   				return 0;
+	  			});
+			});
 
 		}(players);
 		
@@ -285,13 +309,18 @@ module.exports = function () {
 			return currentPlayerId;
 		}
 
+		var getCardsOnTable = function () {
+			return cardsOnTable;
+		}
+
 		return {
 			currentPlayerId: getCurrentPlayerId, // ok
 			putCards: putCards,	// ok
 			readyFrom: readyFrom, // ok
 			canTribute: whoCanTribute, // ok 
 			tribute: tribute,	// ok
-			tributeBack: tributeBack // ok
+			tributeBack: tributeBack, // ok
+			cardsOnTable: getCardsOnTable
 		};
 	};
 
@@ -313,7 +342,7 @@ module.exports = function () {
 			ais.push(players.length-1);
 			aiModule.newAiPlayer(players.last(), players.length-1);
 		};
-		aiModule.callbacks(funcs);
+		aiModule.callbacks(funcs.merge({players: getPlayers, currentRound: getCurrentRound}));
 		//////L//O//G//////
 		console.log("AIs added ", param);
 		//////L//O//G//////
@@ -373,7 +402,7 @@ module.exports = function () {
 		newRound: newRound, // ok
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
-		cardnums: cardnums,
+		cardnums: getCardnums,
 		callAIs: callAIs
 	};
 }();

@@ -237,11 +237,12 @@ Object.prototype.keyOf = function(value) {
 };
 
 
-// Merge the given object to the current object.
+// Merge the given object to the current object. Returns the object.
 Object.prototype.merge = function(otherObject) {
 	for (var prop in otherObject) {
 		this[prop] = otherObject[prop];
 	}
+	return this;
 };
 
 ////////////////////N//U//M//B//E//R///////////////////

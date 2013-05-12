@@ -1,7 +1,7 @@
 module.exports = function () {
 	require('./jsexpansion');
 
-	return function (db, players) {
+	return function () {
 		var aiPlayers = [],
 		    callbacks;
 
@@ -31,7 +31,22 @@ module.exports = function () {
 			};
 			var _iPut = function () {
 				// TODO Ne passzoljon, hanem ésszel
-				var cards = [];
+				var cards = [],
+					num = callbacks.currentRound().cardsOnTable().last().cards.length,
+					val = callbacks.currentRound().cardsOnTable().last().value;
+				
+					for (var i = 0; (i < player.cards.length); i++) {
+						var c = player.cards[i];
+						if (c.value != 2 && c.value <= val) continue;
+						if (cards.length == 0) {
+							cards.push(c);
+						} else {
+							if (cards[0].value != c.value && c.value != 2 && c.value != 15) cards.splice(0);
+							cards.push(c);
+						}
+						if (cards.length == num) break;
+					};
+				console.log('I PUT', cards);
 				callbacks.put(id, function() {}, cards);
 			};
 			var _ready = function () {
