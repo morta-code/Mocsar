@@ -111,8 +111,6 @@ define(["jquery", "ko"], function ($, ko) {
 					elem.attr({
 						class: (theCard + "_" + (cardCount - i - 1))
 					});
-				log(elem, TEST);
-				log(element, TEST);
 				$(element).append(elem);
 			}
         },
@@ -288,10 +286,26 @@ define(["jquery", "ko"], function ($, ko) {
  			log(data, TEST);
 
  			var cardGroup = (function(){
+ 				var colors = [];
+ 				var values = [];
+
+ 				var isLargestCard = function(){
+ 					var magas = true;
+ 					for (var i = 0; i < values.length; i++) {
+ 						if(values[i] != 15 && values[i] != 2){
+ 							magas = false;
+ 							break;
+ 						}
+ 					};
+ 					return magas;
+ 				};
+
  				return {
- 					values: [],
- 					colors: [],
- 					isActive: false
+ 					values: values,
+ 					colors: colors,
+ 					isActive: false,
+
+ 					isLargestCard: isLargestCard
  				};
  			}());
 
@@ -314,9 +328,7 @@ define(["jquery", "ko"], function ($, ko) {
 	 					cardGroup.colors.push(kartya.color);
 	 					cardGroup.isActive = true;
 	 					cards().splice(index, 1);}
- 				};
-
-				
+ 				};		
  				
  				refreshCards();
  			}
@@ -351,9 +363,13 @@ define(["jquery", "ko"], function ($, ko) {
 			setActivePlayer(data);
 			//players.valueHasMutated();
 			refreshPlayers();
+			var hossz = depositedCards().length;
+			if(depositedCards()[hossz-1].isLargestCard())
+				sendPassz();
 			// 	TODO 
 				// játéktér ürítése nincs, nem rakhat akármit
 				// data id játékos jön
+				// ha legfelül 2/joker van autopassz
 				// sendData('put', cards);
 		};
 
@@ -388,7 +404,7 @@ define(["jquery", "ko"], function ($, ko) {
 			else{
 				//	TODO
 			}
-                state(2);
+            state(2);
 			log(data);
 		};
 		var init = function(){
