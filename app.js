@@ -43,7 +43,7 @@ var onPut = function (playerid, socket, cards) {
 	mocsar.currentRound().putCards(cards, function () {
 		broadcast('put', {from: playerid, cards: cards});
 	}, function () {
-		socket.emit('badcards');
+		if (socket) socket.emit('badcards');
 	});
 }
 
@@ -78,9 +78,8 @@ var onReady = function (playerid) {
 */
 var onTributes = function (playerid, tributes) {
 	if (mocsar.currentRound().canTribute !== playerid || tributes.length > mocsar.players().length/2) {return;};
-	mocsar.currentRound().tribute(tributes, function() {
-		broadcast('tributes', tributes);
-	});
+	mocsar.currentRound().tribute(tributes);
+	broadcast('tributes', tributes);
 }
 
 /*	Akik lapot kaptak, visszaadnak megfelelő számút
@@ -91,11 +90,11 @@ var onTributes = function (playerid, tributes) {
 */
 var onTributeBack = function (playerid, socket, cards) {
 	if (mocsar.players()[playerid].toTributeBack !== cards.length) {
-		socket.emit('tributeback', false);
+		if (socket) socket.emit('tributeback', false);
 		return;
 	};
 	mocsar.currentRound().tributeBack(playerid, cards, function() {
-		socket.emit('tributeback', true);
+		if (socket) socket.emit('tributeback', true);
 	}, function () {
 		broadcast('tributeback'); 
 	});

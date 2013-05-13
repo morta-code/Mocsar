@@ -62,7 +62,7 @@ module.exports = function () {
 				};
 				if (cards.length !== num) cards.splice(0);
 				console.log('I PUT', cards);
-				callbacks.put(id, function() {}, cards);
+				callbacks.put(id, null, cards);
 			};
 			var _ready = function () {
 				callbacks.ready(id);
@@ -80,7 +80,7 @@ module.exports = function () {
 				num.downto(1, function (i) {
 					cards.push(player.cards[i]);
 				});
-				callbacks.tributeback(id, function() {}, cards);
+				callbacks.tributeback(id, null, cards);
 			};
 
 			////////////////////////////////////////////////////
@@ -98,10 +98,13 @@ module.exports = function () {
 			};
 
 			var onNewRound = function (data) {
+				console.log("ONNEWROUND", data);
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
+				console.log("ONNEWROUND index", myCurrentIndex);
 				if (data.democratic) _ready();
 				if (currentOrder.first() === id && !data.democratic) {
+				console.log("ONNEWROUND", "I WILL TRIBUTE");
 					_iTribute();
 				};
 			};

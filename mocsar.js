@@ -64,19 +64,16 @@ module.exports = function () {
 		//////L//O//G//////
 		console.log("ROUND " + order);
 		//////L//O//G//////
-		var currentPlayerOrder = 0;					// A soron következő játékos a sorban
-		var currentPlayerId = order[0];				// A soron következő játékos ID-je
-		var readies = [];							// Beérkezett 'ready' flag-ek
-		var rdyCb = {cb: 1, param: currentPlayerId};// Utolsó 'ready'-ra adandó válasz
-
-		var circles = [];							// A forduló körei. Object-eket tartalmaz (egyfajta history)
-
-		var nobids = [];							// Az egymást követő passzok.
-		var cardsOnTable = [];						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
-		var neworder = [];							// A következő kör sorrendje (folyamatosan töltődik)
-
-		var whoCanTribute = (democratic ? null : order[0]);// Tárolja a király id-jét, amíg nem hirdet adózást
-		var needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
+		var currentPlayerOrder = 0,					// A soron következő játékos a sorban
+			currentPlayerId = order[0],				// A soron következő játékos ID-je
+			readies = [],							// Beérkezett 'ready' flag-ek
+			rdyCb = {cb: 1, param: currentPlayerId},// Utolsó 'ready'-ra adandó válasz
+			circles = [],							// A forduló körei. Object-eket tartalmaz (egyfajta history)
+			nobids = [],							// Az egymást követő passzok.
+			cardsOnTable = [],						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
+			neworder = [],							// A következő kör sorrendje (folyamatosan töltődik)
+			whoCanTribute = (democratic ? null : order[0]),// Tárolja a király id-jét, amíg nem hirdet adózást
+			needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
 
 
 		// De facto konstruktor (osztás). Nem demokratikus kör esetén a hátsóknak több lapja lesz.
@@ -93,7 +90,7 @@ module.exports = function () {
 			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= order.length)) {
 				for (var i = order.length - 1; i >= 0; i--) {
 					console.log(p[order[i]].name, shakedPck.first());
-					p[order[i]].cards.push(shakedPck.shift());
+					if (shakedPck.length > 0) p[order[i]].cards.push(shakedPck.shift());
 				};
 			}
 
@@ -120,7 +117,6 @@ module.exports = function () {
 	   				return 0;
 	  			});
 			});
-
 		}(players);
 		
 
@@ -209,17 +205,21 @@ module.exports = function () {
 					return;
 				};
 				cardsOnTable.push({id: currentPlayerId, value: putValue, cards: cards});
+				cards.forEach(function (a, i) {
+					players[currentPlayerId].cards.splice(players[currentPlayerId].cards.indexOfObject(a),1);
+				});
 				nobids.splice(0);
+
 				// TODO putValue === 15 esetén nextcircle -> helyett autopassz
 				if (players[currentPlayerId].cards.length === 0) {
 					// elfogyott
 
-					neworder.push(order.splice(currentPlayerOrder, 1));
+					neworder.push(order.splice(currentPlayerOrder, 1)[0]);
 
 					if (order.length == 1) {
 						// vége van
 						players[currentPlayerId].cards.splice(0); // TODO betenni a history-ba
-						neworder.push(order.splice(0,1));
+						neworder.push(order.splice(0,1)[0]);
 						rdyCb.cb = 2;
 						rdyCb.param = {order: neworder};
 
@@ -266,7 +266,7 @@ module.exports = function () {
 		};
 
 
-		var tribute = function (tributes, callback) {
+		var tribute = function (tributes) {
 			//////L//O//G//////
 			console.log("TRIBUTE " + tributes);
 			//////L//O//G//////
