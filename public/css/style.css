@@ -58,14 +58,14 @@ p {
     height: 350px;
     padding: 10px;
     position: absolute;
-    width: 1080px;
+    width: 1090px;
 }
 
 #gameTemplateArea {
     height: 170px;
     padding: 5px;
     position: absolute;
-    width: 1080px;
+    width: 1090px;
     top: 410px;
 }
 
@@ -98,12 +98,16 @@ p {
 }
 
 .buttonGroup{
-  margin-left: 960px;
+  /*margin-left: 960px;*/
   width: 120px;
+  top: 140px;
+  position: relative;
 }
 
 .cardArea{
-  width: 960px;
+  width: 1090px;
+  position: absolute;
+  top: -30px;
 }
 
 [class*="player-left"]{
@@ -121,39 +125,61 @@ p {
 
 .player-left-0{
   transform: translateY(200px);
+  -ms-transform: translateY(200px);
+  -webkit-transform: translateY(200px);
 }
 
 .player-left-1{
   transform: translateY(0px);
+  -ms-transform: translateY(0px);
+  -webkit-transform: translateY(0px);
 }
 
 .player-center-2{
   transform: translate(140px, -200px);
+  -ms-transform: translate(140px, -200px);
+  -webkit-transform: translate(140px, -200px);
 }
 .player-center-3{
   transform: translate(240px, -300px);
+  -ms-transform: translate(240px, -300px);
+  -webkit-transform: translate(240px, -300px);
 }
 .player-center-4{
   transform: translate(340px, -400px);
+  -ms-transform: translate(340px, -400px);
+  -webkit-transform: translate(340px, -400px);
 }
 .player-center-5{
   transform: translate(440px, -500px);
+  -ms-transform: translate(440px, -500px);
+  -webkit-transform: translate(440px, -500px);
 }
 .player-center-6{
   transform: translate(540px, -600px);
+  -ms-transform: translate(540px, -600px);
+  -webkit-transform: translate(540px, -600px);
 }
 .player-center-7{
   transform: translate(640px, -700px);
+  -ms-transform: translate(640px, -700px);
+  -webkit-transform: translate(640px, -700px);
 }
 .player-center-8{
   transform: translate(740px, -800px);
+  -ms-transform: translate(740px, -800px);
+  -webkit-transform: translate(740px, -800px);
 }
 .player-center-9{
   transform: translate(840px, -900px);
+  -ms-transform: translate(840px, -900px);
+  -webkit-transform: translate(840px, -900px);
 }
 
 [class*="player-right"]{
   transform: translate(980px, -900px);
+  -ms-transform: translate(980px, -900px);
+  -webkit-transform: translate(980px, -900px);
 }
 
 [id*="player-left"]{

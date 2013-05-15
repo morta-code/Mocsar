@@ -13,7 +13,8 @@ define(["jquery", "ko"], function ($, ko) {
 
 		var levelSzint = TEST;
 
-		var log = function(data, level=INFO){
+		var log = function(data, level){
+			var level = level || INFO;
 			if(level <= levelSzint)
 				console.log(data);
 		};
@@ -360,6 +361,7 @@ define(["jquery", "ko"], function ($, ko) {
 
 		var __next = function(data){
 			log("SIGNAL NEXT", SIGNAL);
+			log("TEST " + data, TEST);
 			setActivePlayer(data);
 			//players.valueHasMutated();
 			refreshPlayers();
@@ -377,15 +379,33 @@ define(["jquery", "ko"], function ($, ko) {
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
 			sendData('mycards', null);
-			if(players[this.id()].order<data.length)
+			if(players[id()].order<data.length)
 			{
-				data[players[this.id()].order];
+				data[players[id()].order];
 				// 	TODO   ennyi lapot kell visszaadnom
+
+
+				// 1. rang ellenőrzése (felső vagy alsó n-ben)
+				// 2. ha igen, mycards és cardnums emit
+				// 3. ha felső, akkor felület, mit adjunk vissza
+				//    ha alsó, akkor csak rendezés
 			}
 		};
 		// TODO tributeback eseményt visszaküldeni cards paraméterrel. formátum: [{color: 0, value: 8}, {color: x, value: y}...]
-		var __tributeback = function(){
+		var __tributeback = function(data){
 			log("SIGNAL TRIBUTEBACK", SIGNAL);
+
+			if(typeof data == "undefined"){
+				// ready
+				sendData('ready', null);
+			}
+			else if(data){
+				// kilép az adózási módból
+			}
+			else{
+				// alert
+			}
+
 			sendData('mycards', null);
 			sendData('ready', null);
 		};
@@ -402,7 +422,8 @@ define(["jquery", "ko"], function ($, ko) {
 				sendData('ready', null);
 			}
 			else{
-				//	TODO
+				//	TODO itt nincs semmiképpen sem ready
+				//  adózás kihirdetése ha én vagyok az új nulla
 			}
             state(2);
 			log(data);
