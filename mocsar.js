@@ -61,25 +61,22 @@ module.exports = function () {
 
 
 	function Round (order, democratic) {
-		//////L//O//G//////
-		console.log("ROUND " + order);
-		//////L//O//G//////
-		var currentPlayerOrder = 0,					// A soron következő játékos a sorban
-			currentPlayerId = order[0],				// A soron következő játékos ID-je
+		var currentPlayerOrder = 0 | 0,					// A soron következő játékos a sorban
+			currentPlayerId = -1 | 0,				// A soron következő játékos ID-je
 			readies = [],							// Beérkezett 'ready' flag-ek
-			rdyCb = {cb: 1, param: currentPlayerId},// Utolsó 'ready'-ra adandó válasz
+			rdyCb = {cb: 1, param: order[0]},		// Utolsó 'ready'-ra adandó válasz
 			circles = [],							// A forduló körei. Object-eket tartalmaz (egyfajta history)
 			nobids = [],							// Az egymást követő passzok.
 			cardsOnTable = [],						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
 			neworder = [],							// A következő kör sorrendje (folyamatosan töltődik)
-			whoCanTribute = (democratic ? null : order[0]),// Tárolja a király id-jét, amíg nem hirdet adózást
-			needsTributeBack = 0;					// Ennyi játékosnak kell még lapot visszaadni
+			whoCanTribute = (democratic ? null : order[0]) | 0,// Tárolja a király id-jét, amíg nem hirdet adózást
+			needsTributeBack = 0 | 0;				// Ennyi játékosnak kell még lapot visszaadni
 
 
 		// De facto konstruktor (osztás). Nem demokratikus kör esetén a hátsóknak több lapja lesz.
 		var __deal = function (p) {
 			//////L//O//G//////
-			console.log("DEAL  DEAL  DEAL  DEAL  DEAL");
+			console.log("DEAL - DEAL - DEAL - DEAL - DEAL");
 			//////L//O//G//////
 			var shakedPck = [];
 			(order.length < 9 ? 2 : 3).times(function () {
@@ -89,7 +86,6 @@ module.exports = function () {
 
 			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= order.length)) {
 				for (var i = order.length - 1; i >= 0; i--) {
-					console.log(p[order[i]].name, shakedPck.first());
 					if (shakedPck.length > 0) p[order[i]].cards.push(shakedPck.shift());
 				};
 			}
@@ -177,6 +173,11 @@ module.exports = function () {
 
 			if (cards.length === 0) {
 				// Passzolás
+				if (cardsOnTable.length === 0) {
+					console.log('ILYENKOR NEM SZABAD PASSZOLNI');
+					callbackBad();
+					return;
+				};
 
 				nobids.push(currentPlayerId);
 
@@ -210,18 +211,21 @@ module.exports = function () {
 				});
 				nobids.splice(0);
 
-				// TODO putValue === 15 esetén nextcircle -> helyett autopassz
 				if (players[currentPlayerId].cards.length === 0) {
 					// elfogyott
 
 					neworder.push(order.splice(currentPlayerOrder, 1)[0]);
-
+					console.log('SOMEBODY EXITED, NEW NUM OF PLAYERS:', order.length);
 					if (order.length == 1) {
 						// vége van
-						players[currentPlayerId].cards.splice(0); // TODO betenni a history-ba
+						// TODO betenni a history-ba
+						players.forEach(function (a) {
+							a.cards.splice(0);
+						});
 						neworder.push(order.splice(0,1)[0]);
 						rdyCb.cb = 2;
 						rdyCb.param = {order: neworder};
+						cardsOnTable.splice(0);
 
 					} else {
 						// nincs vége
@@ -239,7 +243,6 @@ module.exports = function () {
 				};
 
 			};
-
 			readies.splice(0);
 			callbackOK();
 		};
@@ -255,8 +258,16 @@ module.exports = function () {
 				return;
 			};
 			if (readies.length === players.length) {
-				if (rdyCb.cb === 0) {cbNext(rdyCb.param); return;};
-				if (rdyCb.cb === 1) {cbNextCircle(rdyCb.param); return;};
+				if (rdyCb.cb === 0) {
+					currentPlayerId = rdyCb.param;
+					cbNext(rdyCb.param); 
+					return;
+				};
+				if (rdyCb.cb === 1) {
+					currentPlayerId = rdyCb.param;
+					cbNextCircle(rdyCb.param); 
+					return;}
+					;
 				if (rdyCb.cb === 2) {
 					cbNextRound(rdyCb.param.order);
 					neworder.splice(0);
@@ -287,10 +298,6 @@ module.exports = function () {
 
 
 		var tributeBack = function (id, cards, callbackOK, callbackReady) {
-			//////L//O//G//////
-			console.log("TRIBUTEBACK ", players[id], cards);
-			//////L//O//G//////
-
 			var fromCards = players[id].cards;
 			var forCards = players[ players[id].toTributeBackFor ].cards;
 			cards.forEach(function (c, i) {
@@ -362,7 +369,7 @@ module.exports = function () {
 		currentRound = Round(order, true);
 		gameStarted = true;
 		//////L//O//G//////
-		console.log("GAME STARTED", currentRound);
+		console.log("GAME STARTED");
 		//////L//O//G//////
 		callback(order);
 	};
@@ -370,7 +377,7 @@ module.exports = function () {
 	var newRound = function (order) {
 		currentRound = Round(order, false);
 		//////L//O//G//////
-		console.log("ROUND STARTED", currentRound);
+		console.log("ROUND STARTED");
 		//////L//O//G//////
 	};
 
@@ -385,9 +392,6 @@ module.exports = function () {
 	}
 
 	var callAIs = function (ev, data) {
-		//////L//O//G//////
-		console.log("CALL AIs:  ", ev, data);
-		//////L//O//G//////
 		ais.forEach(function (a, i) {
 			(aiModule.aiPlayers()[i])[ev](data);
 		});

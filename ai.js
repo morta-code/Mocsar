@@ -61,7 +61,6 @@ module.exports = function () {
 					if (cards.length == num) break;
 				};
 				if (cards.length !== num) cards.splice(0);
-				console.log('I PUT', cards);
 				callbacks.put(id, null, cards);
 			};
 			var _ready = function () {
@@ -98,13 +97,10 @@ module.exports = function () {
 			};
 
 			var onNewRound = function (data) {
-				console.log("ONNEWROUND", data);
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
-				console.log("ONNEWROUND index", myCurrentIndex);
 				if (data.democratic) _ready();
 				if (currentOrder.first() === id && !data.democratic) {
-				console.log("ONNEWROUND", "I WILL TRIBUTE");
 					_iTribute();
 				};
 			};
