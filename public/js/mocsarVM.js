@@ -122,7 +122,7 @@ define(["jquery", "ko"], function ($, ko) {
 	return function(){
 
 		this.userName       = ko.observable("");
-		this.id 	        = ko.observable("");
+		this.userId 	    = ko.observable("");
 		this.aiNumbers      = ko.observable("5");
 		this.badname        = ko.observable(false);
 		this.players        = ko.observableArray([]);
@@ -134,15 +134,15 @@ define(["jquery", "ko"], function ($, ko) {
 		var nameError = "username is used";
 
 		var isLogin = ko.computed(function(){
-			return (this.userName() == "" || this.id() == "") && this.state() == 0;
+			return (this.userName() == "" || this.userId() == "") && this.state() == 0;
 		}, this);
 
 		var isSettings = ko.computed(function(){
-			return (this.userName() !== "" && this.id() !== "") && this.state() == 1;
+			return (this.userName() !== "" && this.userId() !== "") && this.state() == 1;
 		}, this);
 
 		var isAdmin = ko.computed(function(){
-			return this.id() == "0";
+			return this.userId() == "0";
 		}, this);
 
 		var isInit = ko.computed(function(){
@@ -189,12 +189,61 @@ define(["jquery", "ko"], function ($, ko) {
   			sendData("put", []);
   		};
 
+  		var sendTribute = function(){
+  			var c = [];
+  			for (var i = 0; i < cards().length; i++) {
+  				if(cards()[i].isSelected)
+  					c.push({ color: cards()[i].color, value: cards()[i].value });
+  			};
+			log(c, TEST);
+  			sendData('tributeback', c);
+  		};
+
+  		var cardsSort = function(a, b){
+  			if(a.value == 2 || b.value == 2){
+  				if(a.value == 2 && b.value != 2) return  1;
+  				if(a.value != 2 && b.value == 2) return -1;
+  				if(a.value == 2 && b.value == 2) {
+	  				if(a.color <  b.color) return -1;
+  					if(a.color >  b.color) return  1;
+  					if(a.color == b.color) return  0;
+  				}
+  			}
+  			else{
+	  			if(a.value <  b.value) return -1;
+  				if(a.value >  b.value) return  1;
+  				if(a.value == b.value){
+	  				if(a.color <  b.color) return -1;
+  					if(a.color >  b.color) return  1;
+  					if(a.color == b.color) return  0;
+   				}
+   			}
+   			return 0;
+  		};
+
+  		var updatePlayerClass = function(){
+  			for (var i = 0; i < players().length; i++) {
+				if(players()[i].order < 2)
+					players()[i].htmlClass = "player-left-" + i;
+				else if(players()[i].order < 10)
+					players()[i].htmlClass = "player-center-" + i;
+				else
+					players()[i].htmlClass = "player-right-" + i;
+    		}
+  		};
+
+  		var getNumberOfCardsSelected = function(){
+
+  		};
+
   		var __newplayer = function (data) {
   			log("SIGNAL NEWPLAYER", SIGNAL);
     		players.removeAll();
 			for (var i = 0; i < data.length; i++) {
 				data[i].card = 0;
 				data[i].active = false;
+				data[i].dignity = "";
+				data[i].order = i;
 				if(i<2)
 					data[i].htmlClass = "player-left-" + i;
 				else if(i<10)
@@ -225,8 +274,8 @@ define(["jquery", "ko"], function ($, ko) {
 	  		badname(data.state);
 	  		if(!data.state){	  					
 	  			userName(data.name);
-				  id(data.id);
-				  state(state()+1);
+				userId(data.id);
+				state(state()+1);
 			  }
   		};
 
@@ -243,28 +292,7 @@ define(["jquery", "ko"], function ($, ko) {
   				log(data[i]);
   			}
             
-  			data.sort(function(a, b){
-
-  				if(a.value == 2 || b.value == 2){
-  					if(a.value == 2 && b.value != 2) return  1;
-  					if(a.value != 2 && b.value == 2) return -1;
-  					if(a.value == 2 && b.value == 2) {
-	  					if(a.color <  b.color) return -1;
-  						if(a.color >  b.color) return  1;
-  						if(a.color == b.color) return  0;
-  					}
-  				}
-  				else{
-	  				if(a.value <  b.value) return -1;
-  					if(a.value >  b.value) return  1;
-  					if(a.value == b.value){
-	  					if(a.color <  b.color) return -1;
-  						if(a.color >  b.color) return  1;
-  						if(a.color == b.color) return  0;
-   					}
-   				}
-   				return 0;
-  			});
+  			data.sort(cardsSort);
 
             cards(data);
   			sendData("cardnums", null);
@@ -310,7 +338,7 @@ define(["jquery", "ko"], function ($, ko) {
  				};
  			}());
 
- 			if(id() == data.from){
+ 			if(userId() == data.from){
  				log("ID STIMMEL", INFO);
  				
  				for (var i = 0 ; i < data.cards.length; i++) {
@@ -369,26 +397,29 @@ define(["jquery", "ko"], function ($, ko) {
 			if(depositedCards()[hossz-1].isLargestCard())
 				sendPassz();
 			// 	TODO 
-				// játéktér ürítése nincs, nem rakhat akármit
-				// data id játékos jön
-				// ha legfelül 2/joker van autopassz
-				// sendData('put', cards);
+				// INFO játéktér ürítése nincs, nem rakhat akármit
+				// INFO data id játékos jön
+				// INFO ha legfelül 2/joker van autopassz
+				// INFO sendData('put', cards);
 		};
 
 
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
+			// INFO mycards és cardnums emit
 			sendData('mycards', null);
-			if(players[id()].order<data.length)
+			sendData('cardnums', null);
+
+			// INFO rang ellenőrzése (felső vagy alsó n-ben)
+			if(players()[userId()].order < data.length) // INFO felső ha order 0, 1, 2 ...
 			{
-				data[players[id()].order];
-				// 	TODO   ennyi lapot kell visszaadnom
-
-
-				// 1. rang ellenőrzése (felső vagy alsó n-ben)
-				// 2. ha igen, mycards és cardnums emit
-				// 3. ha felső, akkor felület, mit adjunk vissza
-				//    ha alsó, akkor csak rendezés
+				data[players()[userId()].order];
+				// TODO ennyi lapot kell visszaadnom
+				// INFO ha felső, akkor felület, mit adjunk vissza
+			}
+			else if(players()[userId()].order >= players().length - data.length){ // INFO alsó ha n-1, n-2, n-3 ...
+				// INFO ha alsó, akkor csak rendezés
+				cards.sort(cardsSort);
 			}
 		};
 		// TODO tributeback eseményt visszaküldeni cards paraméterrel. formátum: [{color: 0, value: 8}, {color: x, value: y}...]
@@ -396,14 +427,14 @@ define(["jquery", "ko"], function ($, ko) {
 			log("SIGNAL TRIBUTEBACK", SIGNAL);
 
 			if(typeof data == "undefined"){
-				// ready
+				// INFO ready
 				sendData('ready', null);
 			}
 			else if(data){
-				// kilép az adózási módból
+				// TODO kilép az adózási módból
 			}
 			else{
-				// alert
+				// TODO alert
 			}
 
 			sendData('mycards', null);
@@ -412,33 +443,35 @@ define(["jquery", "ko"], function ($, ko) {
 
 		var __newround = function(data){
 			log("SIGNAL NEWROUND", SIGNAL);
+			depositedCards.removeAll();
 			for (var i = 0; i < players.length && i < data.order.length; i++) {
 				players[data.order[i]].order = i;
 				// TODO ne egyesével mozgassa az embereket
 			};
+			updatePlayerClass();
 			sendData('mycards', null);
 			if(data.democratic)
 			{
 				sendData('ready', null);
 			}
 			else{
-				//	TODO itt nincs semmiképpen sem ready
-				//  adózás kihirdetése ha én vagyok az új nulla
+				//	INFO itt nincs semmiképpen sem ready
+				//  TODO adózás kihirdetése ha én vagyok az új nulla
 			}
             state(2);
 			log(data);
 		};
 		var init = function(){
-			socket.on('newplayer', __newplayer);
-			socket.on('badname', __badname);
-			socket.on('newround', __newround);
-			socket.on('mycards', __mycards);
-			socket.on('cardnums', __cardnums);
-			socket.on('tributes', __tributes);
-			socket.on('tributeback', __tributeback);
-			socket.on('nextcircle', __nextcircle);
-			socket.on('put', __put);
-			socket.on('next', __next);
+			socket.on('newplayer',		__newplayer);
+			socket.on('badname', 		__badname);
+			socket.on('newround', 		__newround);
+			socket.on('mycards', 		__mycards);
+			socket.on('cardnums', 		__cardnums);
+			socket.on('tributes', 		__tributes);
+			socket.on('tributeback', 	__tributeback);
+			socket.on('nextcircle', 	__nextcircle);
+			socket.on('put', 			__put);
+			socket.on('next', 			__next);
         };
 
 		var connectToServer = function(){
@@ -470,7 +503,9 @@ define(["jquery", "ko"], function ($, ko) {
   		};
 
   		var logPlayer = function(){
+  			log("LOGPLAYER", TEST);
 			for (var i = 0; i < players().length; i++) {
+  				log(i + " -> ", TEST);
   				log(players()[i], TEST);
   			}
   		};
@@ -478,7 +513,7 @@ define(["jquery", "ko"], function ($, ko) {
   		var setActivePlayer = function(id){
   			for (var i = 0; i < players().length; i++) {
   				players()[i].active = false;
-  				if(players()[i].id == id)
+  				if(players()[i].order == id)
   					players()[i].active = true;
   			};
   		};
@@ -501,6 +536,23 @@ define(["jquery", "ko"], function ($, ko) {
         	cards(data);	
     	};
 
+    	var isTribute = function(){
+    		return false;
+    	};
+
+    	var isYourNext = function(){
+    		log("ISYOURNEXT", TEST);
+    		log(userId(), TEST);
+    		log(players()[ userId() ], TEST);
+    		if( players().length > 0 )
+    			if( typeof userId() != "undefined" )
+    				if( typeof players()[ userId() ] != "undefined" )
+    					if( typeof players()[ userId() ].active != "undefined" )
+    						return players()[ userId() ].active;
+    		//return state() > 1 && players()[ userId() ].active;
+    		return false;
+    	};
+
 		var userList = ko.computed(function(){
 			var html = "";
 			
@@ -516,12 +568,15 @@ define(["jquery", "ko"], function ($, ko) {
 			userName: userName,
 			nameError: nameError,
 			badname: badname,
+
 			isLogin: isLogin,
 			isError: isError,
 			isSettings: isSettings,
 			isAdmin: isAdmin,
 			isInit: isInit,
 			isGameStarted: isGameStarted,
+			isTribute: isTribute,
+			isYourNext: isYourNext,
 
 			players: players,
 			getPlayers: getPlayers,
@@ -535,6 +590,8 @@ define(["jquery", "ko"], function ($, ko) {
 			sendPassz: sendPassz,
 			sendCards: sendCards,
 			sendAi: sendAi,
+			sendTribute: sendTribute,
+
 			userList: userList
 		};
 	};

@@ -34,7 +34,7 @@ p {
   background-image: url('/images/hatter.png');
   background-repeat: repeat-x;
   height: 609px;
-  padding-top: 50px;
+  padding-top: 25px;
 }
 .data {
   height: 530px;
@@ -68,7 +68,7 @@ p {
     padding: 5px;
     position: absolute;
     width: 1090px;
-    top: 410px;
+    top: 385px;
 }
 
 [class^="player-"]
