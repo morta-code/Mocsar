@@ -122,13 +122,14 @@ define(["jquery", "ko"], function ($, ko) {
 	return function(){
 
 		this.userName       = ko.observable("");
-		this.userId 	    = ko.observable("");
+		this.userId 		    = ko.observable("");
 		this.aiNumbers      = ko.observable("5");
 		this.badname        = ko.observable(false);
 		this.players        = ko.observableArray([]);
 		this.cards          = ko.observableArray([]);
 		this.depositedCards = ko.observableArray([]);
 		this.state          = ko.observable(0);
+		this.isTributeState = ko.observable(false);
 			
 		var socket = null;
 		var nameError = "username is used";
@@ -199,6 +200,22 @@ define(["jquery", "ko"], function ($, ko) {
   			sendData('tributeback', c);
   		};
 
+  		var sendTributeAd = function(){
+  			log("sendtributead", TEST);
+			var ad = [];
+			for (var i = players().length - 1; i >= 0; i--) {
+				if(players()[i].tribute > 0)
+					ad.push(players()[i].tribute);
+			};
+			ad.sort(function(a,b){
+				if(a == b) return 0;
+				if(a >  b) return -1;
+				return 1;
+			});
+			log(ad, TEST);
+			sendData('tributes', ad);
+  		};
+
   		var cardsSort = function(a, b){
   			if(a.value == 2 || b.value == 2){
   				if(a.value == 2 && b.value != 2) return  1;
@@ -222,18 +239,19 @@ define(["jquery", "ko"], function ($, ko) {
   		};
 
   		var updatePlayerClass = function(){
-  			for (var i = 0; i < players().length; i++) {
-				if(players()[i].order < 2)
-					players()[i].htmlClass = "player-left-" + i;
-				else if(players()[i].order < 10)
-					players()[i].htmlClass = "player-center-" + i;
-				else
-					players()[i].htmlClass = "player-right-" + i;
-    		}
   		};
 
   		var getNumberOfCardsSelected = function(){
 
+  		};
+
+  		var getUserObject = function(id){
+  			id = id || userId();
+  			return players().MgetObjectWithCustomEquals(id, function(a,b){
+  				if(a == b.id)
+  					return true;
+  				return false;
+  			});
   		};
 
   		var __newplayer = function (data) {
@@ -244,12 +262,16 @@ define(["jquery", "ko"], function ($, ko) {
 				data[i].active = false;
 				data[i].dignity = "";
 				data[i].order = i;
-				if(i<2)
-					data[i].htmlClass = "player-left-" + i;
-				else if(i<10)
-					data[i].htmlClass = "player-center-" + i;
-				else
-					data[i].htmlClass = "player-right-" + i;
+				data[i].tribute = 0;
+				data[i].getHtmlClass = function(){
+					log("getHtmlClass", ERROR);
+					if(this.order<2)
+						return "player-left-" + this.order;
+					else if(this.order<10)
+						return "player-center-" + this.order;
+					else
+						return "player-right-" + this.order;
+				};
     		}
             players(data);
   		};
@@ -410,14 +432,16 @@ define(["jquery", "ko"], function ($, ko) {
 			sendData('mycards', null);
 			sendData('cardnums', null);
 
+			var myObject = getUserObject();
 			// INFO rang ellenőrzése (felső vagy alsó n-ben)
-			if(players()[userId()].order < data.length) // INFO felső ha order 0, 1, 2 ...
+			if(myObject().order < data.length) // INFO felső ha order 0, 1, 2 ...
 			{
-				data[players()[userId()].order];
+				isTributeState(true);
+				//data[players()[userId()].order];
 				// TODO ennyi lapot kell visszaadnom
 				// INFO ha felső, akkor felület, mit adjunk vissza
 			}
-			else if(players()[userId()].order >= players().length - data.length){ // INFO alsó ha n-1, n-2, n-3 ...
+			else if(myObject().order >= players().length - data.length){ // INFO alsó ha n-1, n-2, n-3 ...
 				// INFO ha alsó, akkor csak rendezés
 				cards.sort(cardsSort);
 			}
@@ -444,11 +468,21 @@ define(["jquery", "ko"], function ($, ko) {
 		var __newround = function(data){
 			log("SIGNAL NEWROUND", SIGNAL);
 			depositedCards.removeAll();
-			for (var i = 0; i < players.length && i < data.order.length; i++) {
-				players[data.order[i]].order = i;
-				// TODO ne egyesével mozgassa az embereket
+
+			var lista = players().slice(0);
+			for (var i = 0; i < lista.length && i < data.order.length; i++) {
+				lista[data.order[i]].order = i;
 			};
-			updatePlayerClass();
+			lista.sort(function(a,b){
+				if(a.order == b.order) return 0;
+				else if(a.order < b.order) return -1;
+				else return 1;
+			});
+			log("NEWROUND ORDER LOG", TEST);
+			log(lista[0].order, TEST);
+			log(lista[0].id, TEST);
+			players(lista);
+
 			sendData('mycards', null);
 			if(data.democratic)
 			{
@@ -475,10 +509,20 @@ define(["jquery", "ko"], function ($, ko) {
         };
 
 		var connectToServer = function(){
-			socket = io.connect('http://localhost');
+			//socket = io.connect('http://localhost');
 		};
 
-		var getPlayers = function(){
+		var getPlayers = function(isTributePlayers){
+			var tributeIs = isTributePlayers || false;
+			var hossz = players().length;
+			if(tributeIs){
+				var lista = [];
+				for (var i = 0; i < hossz; i++) {
+					if(players()[i].order >= hossz/2)
+						lista.push(players()[i]);
+				};
+				return lista;
+			}
 			return players();
 		};
 
@@ -537,30 +581,48 @@ define(["jquery", "ko"], function ($, ko) {
     	};
 
     	var isTribute = function(){
-    		return false;
+    		log("ISTRIBUTE", TEST);
+    		if(isTributeState()){
+    			log("istribute_1", TEST);
+    			if( players().length > 0 ){
+    				log("istribute_2", TEST);
+	    			var userObject = getUserObject();
+    				if( typeof userId() != "undefined" )
+    				{log("istribute_3", TEST);
+	    				if( typeof userObject != "undefined" ){
+	    					log("istribute_4", TEST);
+    						if( typeof userObject.order != "undefined" ){
+    							log("istribute_5", TEST);
+	    						return userObject.order > -1;
+	    					}
+	    				}
+	    			}
+    			}
+    		}
+      		return false;
     	};
 
     	var isYourNext = function(){
     		log("ISYOURNEXT", TEST);
-    		log(userId(), TEST);
-    		log(players()[ userId() ], TEST);
     		if( players().length > 0 )
+    		{
+    			var userObject = getUserObject();
     			if( typeof userId() != "undefined" )
-    				if( typeof players()[ userId() ] != "undefined" )
-    					if( typeof players()[ userId() ].active != "undefined" )
-    						return players()[ userId() ].active;
-    		//return state() > 1 && players()[ userId() ].active;
+    				if( typeof userObject != "undefined" )
+    					if( typeof userObject.active != "undefined" )
+    						return userObject.active;
+    		}
     		return false;
     	};
 
 		var userList = ko.computed(function(){
 			var html = "";
-			
 			for (var i = 0; i < players().length; i++) {
 				html += ("<div>" + players()[i].name + "</div>");
 			};
 			return html;
 		}, this);
+
 		connectToServer();
 		init();
 		
@@ -591,6 +653,7 @@ define(["jquery", "ko"], function ($, ko) {
 			sendCards: sendCards,
 			sendAi: sendAi,
 			sendTribute: sendTribute,
+			sendTributeAd: sendTributeAd,
 
 			userList: userList
 		};

@@ -236,4 +236,34 @@ p {
 .depositedCardsContainer{
    position: absolute;
     width: 850px;
-  }
+}
+
+.input_field {
+    background-color: #0C0C0B;
+    border: medium solid white;
+    border-radius: 10px 10px 10px 10px;
+    left: 380px;
+    padding: 20px;
+    position: absolute;
+    top: 125px;
+}
+
+.gamerTributeItemInput{
+  width: 40px;
+}
+
+.gamerTributeItem{
+  color: white;
+}
+
+label[for*="tribute"] {
+float: right;
+width: 10em;
+margin-left: 1em;
+text-align: left;
+}
+
+#sendTributeList{
+  margin-top: 10px;
+  width: 215px;
+}

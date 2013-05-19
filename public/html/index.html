@@ -9,14 +9,23 @@
 		<link rel="stylesheet" type="text/css" href="/css/styleCardDondorf_less.css" />
 
 		<script type="text/html" id="gamer">
-			<span data-bind="attr: {id: player.id, class: player.htmlClass}">
-				<div data-bind="visible: player.active, attr: {id: player.htmlClass}"></div>
+			<span data-bind="attr: {id: player.id, class: player.getHtmlClass()}">
+				<div data-bind="visible: player.active, attr: {id: player.getHtmlClass()}"></div>
 				<div data-bind="text: player.name"></div>
 				<div data-bind="text: player.id"></div>
 				<div data-bind="text: player.ai"></div>
 				<div data-bind="text: player.card"></div>
 				<div data-bind="text: player.active"></div>
 			</span>
+		</script>
+
+		<script type="text/html" id="gamerTribute">
+			<div class="gamerTributeItem">
+			 <span>
+				<input type="text" data-bind="value: player.tribute, attr:{'id': 'tribute_' + player.name }" class="gamerTributeItemInput" />
+				<label data-bind="text: player.name, attr: {'for': 'tribute_' + player.name} "></label>
+			</span>
+			</div>
 		</script>
 
 		<script type="text/html" id="templateCard">
@@ -58,6 +67,10 @@
 					<div id="gamerTemplateArea">
 						<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" id="players"></div>
 						<div data-bind="template: { name: 'templateDepositedCards', foreach: getDepositedCards(), as: 'dcard'}" id="lapok"></div>
+						<div data-bind="visible: isTribute(), enable: isTribute()" class="input_field">
+							<div data-bind="template: { name: 'gamerTribute', foreach: getPlayers(true), as: 'player' }" id="tributePlayers"></div>
+							<button id="sendTributeList" data-bind="click: sendTributeAd">Send</button>
+						</div>
 					</div>
 					<div id="gameTemplateArea">
 						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" class="cardArea"></div>
