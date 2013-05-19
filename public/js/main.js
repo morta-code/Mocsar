@@ -19,14 +19,19 @@ requirejs.config({
         "ko":           "js/knockout-2.2.1.debug",
         "less":         "js/less-1.3.3.min",
         "socket.io":    "js/socket.io",
-        "jsexpansion":  "js/jsexpansion_client",
-        "connection":   "js/connection"
+        
+        "jsexpansion":  "js/moduls/jsexpansion_client",
+        "connection":   "js/moduls/connection",
+        "initialize":   "js/moduls/initialize"
     }
 });
             
 require(["jquery", "ko", "socket.io", "less"], function($, ko) {
     require(["js/mocsarVM"], function (mocsar) {
         $(document).ready (function () {
+            $(window).bind('contextmenu', function(event){
+                return false;
+            });
             var o = mocsar();
             ko.applyBindings (o);
         });

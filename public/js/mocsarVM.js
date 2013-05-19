@@ -1,128 +1,22 @@
-define(["jquery", "ko"], function ($, ko) {
+define(["jquery", "ko", "connection", "initialize"], function ($, ko, bridge) {
 
-		$(window).bind('contextmenu', function(event){
-    		log(event, INFO);
-     		return false;
-		});
+	var ERROR = 0;
+	var SIGNAL = 1;
+	var TEST = 2;
+	var INFO = 3;
+	var ALL = 4;
+	var levelSzint = TEST;
 
-		var ERROR = 0;
-		var SIGNAL = 1;
-		var TEST = 2;
-		var INFO = 3;
-		var ALL = 4;
-
-		var levelSzint = TEST;
-
-		var log = function(data, level){
-			var level = level || INFO;
-			if(level <= levelSzint)
-				console.log(data);
-		};
-
-		var switchColor = function(color){
-			switch(color){
-				case 0: return "treff-";
-				case 1: return "karo-";
-				case 2: return "kor-";
-				case 3: return "pikk-";
-			};
-			return "";
-		};
-
-		var switchValue = function(value){
-			switch(value){
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-				case 6:
-				case 7:
-				case 8:
-				case 9:
-				case 10: return value;
-				case 11: return "J";
-				case 12: return "Q";
-				case 13: return "K";
-				case 14: return "asz";
-				case 15: return "joker";
-			};
-			return 0;
-		};
-
-    ko.bindingHandlers.cardBindings = {
-        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        	var card = valueAccessor(), allBindings = allBindingsAccessor();       
-      
-        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
-        	var eltolas =  -1 * cardIndex * 100;
-        	
-        	var theCard = "card-" + switchColor(card.color) + switchValue(card.value);
-			
-        	$(element).attr({class: theCard});
-        	if(card.isSelected){
-        		$(element).addClass("selected");
-        	}
-   
-        	$(element).css("left", cardIndex * 50);
-			
-			$(element).bind('contextmenu', function(event){
-    			log(event, INFO);
-     			return false;
-			});
-
-        	$(element).click(function(event){
-        		log(event);
-        		card.isSelected = !card.isSelected;
-				var osztaly = $(element).attr('class');
-
-        		if(card.isSelected){
-	       			osztaly = "selected-" + osztaly;
-        		}
-        		else{
-        			var splitted = osztaly.split("-");
-        			if(splitted[0]==="selected"){
-	        			splitted.splice(0,1);
-        				osztaly = splitted.join("-");
-        			}
-        		}
-        		$(element).attr({class: osztaly});
-        	});
-
-
-        },
-        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        	var card = valueAccessor(), allBindings = allBindingsAccessor();       
-        
-         	if(card.isSelected){
-        		$(element).addClass("selected");
-        	}
-    	}
-    };
-
-    ko.bindingHandlers.cardsDepositedBindings = {
-        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-			var card = valueAccessor(), allBindings = allBindingsAccessor();       
-        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
-			
-			var cardCount =  card.values.length;
-			
-			for(var i=cardCount-1;i>=0;i--){
-				var theCard = "de-card-" + switchColor(card.colors[i]) + switchValue(card.values[i]);
-				var elem = $(document.createElement('span'));
-					elem.attr({
-						class: (theCard + "_" + (cardCount - i - 1))
-					});
-				$(element).append(elem);
-			}
-        },
-        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        }
-    };
+	var log = function(data, level){
+		var level = level || INFO;
+		if(level <= levelSzint)
+			console.log(data);
+	};
 
 	return function(){
 
 		this.userName       = ko.observable("");
-		this.userId 		    = ko.observable("");
+		this.userId 	    = ko.observable("");
 		this.aiNumbers      = ko.observable("5");
 		this.badname        = ko.observable(false);
 		this.players        = ko.observableArray([]);
@@ -131,7 +25,7 @@ define(["jquery", "ko"], function ($, ko) {
 		this.state          = ko.observable(0);
 		this.isTributeState = ko.observable(false);
 			
-		var socket = null;
+		
 		var nameError = "username is used";
 
 		var isLogin = ko.computed(function(){
@@ -158,21 +52,12 @@ define(["jquery", "ko"], function ($, ko) {
 			return this.state() == 2;
 		}, this);
 
-		var sendData = function(name, data){
-			if(socket==null){
-				connectToServer();
-				init();
-			}
-			log("SEND " + name.toUpperCase(), SIGNAL);
-			socket.emit(name, data);
-		};
-
 		var sendUserName = function(){
-  			sendData('myname', this.userName());	
+  			bridge.sendData('myname', this.userName());	
   		};
 
   		var sendAi = function(){
-  			sendData('startgame', aiNumbers());	
+  			bridge.sendData('startgame', aiNumbers());	
   		};
 
 		// [{color: 0, value: 8}, {color: x, value: y}...]
@@ -182,12 +67,12 @@ define(["jquery", "ko"], function ($, ko) {
   				if(cards()[i].isSelected)
   					c.push({ color: cards()[i].color, value: cards()[i].value });
   			};
-			sendData("put", c);
+			bridge.sendData("put", c);
 			log(c, TEST);
   		};
 
   		var sendPassz = function(){
-  			sendData("put", []);
+  			bridge.sendData("put", []);
   		};
 
   		var sendTribute = function(){
@@ -197,7 +82,7 @@ define(["jquery", "ko"], function ($, ko) {
   					c.push({ color: cards()[i].color, value: cards()[i].value });
   			};
 			log(c, TEST);
-  			sendData('tributeback', c);
+  			bridge.sendData('tributeback', c);
   		};
 
   		var sendTributeAd = function(){
@@ -213,7 +98,7 @@ define(["jquery", "ko"], function ($, ko) {
 				return 1;
 			});
 			log(ad, TEST);
-			sendData('tributes', ad);
+			bridge.sendData('tributes', ad);
   		};
 
   		var cardsSort = function(a, b){
@@ -317,7 +202,7 @@ define(["jquery", "ko"], function ($, ko) {
   			data.sort(cardsSort);
 
             cards(data);
-  			sendData("cardnums", null);
+  			bridge.sendData("cardnums", null);
   		};
 
   		var __nextcircle = function(data){
@@ -329,7 +214,7 @@ define(["jquery", "ko"], function ($, ko) {
   			// 	TODO 
   				// játéktér ürítése
   				// data id játékos jön
-  				// sendData('put', cards);
+  				// bridge.sendData('put', cards);
   		};
 
  		var __put = function (data) {
@@ -406,7 +291,7 @@ define(["jquery", "ko"], function ($, ko) {
   			//	TODO  data = {from: playerid, cards: cards};
   			// grafikus
 
-  			sendData('ready', null);
+  			bridge.sendData('ready', null);
   		};
 
 		var __next = function(data){
@@ -422,15 +307,15 @@ define(["jquery", "ko"], function ($, ko) {
 				// INFO játéktér ürítése nincs, nem rakhat akármit
 				// INFO data id játékos jön
 				// INFO ha legfelül 2/joker van autopassz
-				// INFO sendData('put', cards);
+				// INFO bridge.sendData('put', cards);
 		};
 
 
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
 			// INFO mycards és cardnums emit
-			sendData('mycards', null);
-			sendData('cardnums', null);
+			bridge.sendData('mycards', null);
+			bridge.sendData('cardnums', null);
 
 			var myObject = getUserObject();
 			// INFO rang ellenőrzése (felső vagy alsó n-ben)
@@ -452,7 +337,7 @@ define(["jquery", "ko"], function ($, ko) {
 
 			if(typeof data == "undefined"){
 				// INFO ready
-				sendData('ready', null);
+				bridge.sendData('ready', null);
 			}
 			else if(data){
 				// TODO kilép az adózási módból
@@ -461,8 +346,8 @@ define(["jquery", "ko"], function ($, ko) {
 				// TODO alert
 			}
 
-			sendData('mycards', null);
-			sendData('ready', null);
+			bridge.sendData('mycards', null);
+			bridge.sendData('ready', null);
 		};
 
 		var __newround = function(data){
@@ -483,10 +368,10 @@ define(["jquery", "ko"], function ($, ko) {
 			log(lista[0].id, TEST);
 			players(lista);
 
-			sendData('mycards', null);
+			bridge.sendData('mycards', null);
 			if(data.democratic)
 			{
-				sendData('ready', null);
+				bridge.sendData('ready', null);
 			}
 			else{
 				//	INFO itt nincs semmiképpen sem ready
@@ -496,20 +381,34 @@ define(["jquery", "ko"], function ($, ko) {
 			log(data);
 		};
 		var init = function(){
-			socket.on('newplayer',		__newplayer);
-			socket.on('badname', 		__badname);
-			socket.on('newround', 		__newround);
-			socket.on('mycards', 		__mycards);
-			socket.on('cardnums', 		__cardnums);
-			socket.on('tributes', 		__tributes);
-			socket.on('tributeback', 	__tributeback);
-			socket.on('nextcircle', 	__nextcircle);
-			socket.on('put', 			__put);
-			socket.on('next', 			__next);
+			/*
+			bridge.on('newplayer',		__newplayer);
+			bridge.on('badname', 		__badname);
+			bridge.on('newround', 		__newround);
+			bridge.on('mycards', 		__mycards);
+			bridge.on('cardnums', 		__cardnums);
+			bridge.on('tributes', 		__tributes);
+			bridge.on('tributeback', 	__tributeback);
+			bridge.on('nextcircle', 	__nextcircle);
+			bridge.on('put', 			__put);
+			bridge.on('next', 			__next);
+			*/
+			bridge.registerSignal('newplayer',		__newplayer);
+			bridge.registerSignal('badname', 		__badname);
+			bridge.registerSignal('newround', 		__newround);
+			bridge.registerSignal('mycards', 		__mycards);
+			bridge.registerSignal('cardnums', 		__cardnums);
+			bridge.registerSignal('tributes', 		__tributes);
+			bridge.registerSignal('tributeback', 	__tributeback);
+			bridge.registerSignal('nextcircle', 	__nextcircle);
+			bridge.registerSignal('put', 			__put);
+			bridge.registerSignal('next', 			__next);
         };
 
 		var connectToServer = function(){
-			//socket = io.connect('http://localhost');
+			//bridge = io.connect('http://localhost');
+			
+			bridge.connectToServer('http://localhost');
 		};
 
 		var getPlayers = function(isTributePlayers){
