@@ -2,8 +2,7 @@
 	<head>
 		<title>Mocsar Game</title>
 
-		<script type='text/javascript' src="/js/require.js" data-main="/js/main.js"></script>
-		<script type='text/javascript' src="/js/jsexpansion_client.js"></script>
+		<script type='text/javascript' src="/js/libraries/require.js" data-main="/js/main.js"></script>
 		
 		<link rel="stylesheet" href="/css/style.css" type="text/css"> 
 		<link rel="stylesheet" type="text/css" href="/css/styleCardDondorf_less.css" />
@@ -50,7 +49,7 @@
 							<label for="nev"> Felhasználónév: </label>
 							<input type="text" name="Nev" id="nev" data-bind="value: userName, valueUpdate: 'afterkeydown'" />
 							<div data-bind="text: userName"></div>
-							<span id="errorLoginArea" data-bind="text: nameError, visible: isError"></span><br />
+							<span id="errorLoginArea" data-bind="text: getMessage('BADNAME'), visible: isError"></span><br />
 							<button name="ok" id="send" data-bind="click: sendUserName, enabled: isLogin">Send</button>
 						</div>
 						<div id="settingsArea" data-bind="visible: isSettings" style="display:none;">

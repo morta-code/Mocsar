@@ -1,4 +1,4 @@
-define([], function () {
+define(["jquery", "ko"], function ($, ko) {
 	/*
 	*	saját bindingHandler-ek létrehozása, vissza nem ad semmit sem
 	*/

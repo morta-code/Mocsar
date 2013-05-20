@@ -15,19 +15,24 @@ less = {
 requirejs.config({
     baseUrl:    "../",
     paths: {
-        "jquery":       "js/jquery-1.9.1",
-        "ko":           "js/knockout-2.2.1.debug",
-        "less":         "js/less-1.3.3.min",
-        "socket.io":    "js/socket.io",
+        "jquery":       "js/libraries/jquery-1.9.1",
+        "ko":           "js/libraries/knockout-2.2.1.debug",
+        "less":         "js/libraries/less-1.3.3.min",
+        "socket.io":    "js/libraries/socket.io",
         
         "jsexpansion":  "js/moduls/jsexpansion_client",
         "connection":   "js/moduls/connection",
-        "initialize":   "js/moduls/initialize"
+        "initialize":   "js/moduls/initialize",
+        "mocsarVM":     "js/moduls/mocsarVM",
+        "model":        "js/moduls/model",
+        "gameMessages": "js/moduls/gameMessages",
+        "log":          "js/moduls/log",
+        "protocols":    "js/moduls/protocols"
     }
 });
             
-require(["jquery", "ko", "socket.io", "less"], function($, ko) {
-    require(["js/mocsarVM"], function (mocsar) {
+require(["jquery", "ko", "socket.io", "less", "jsexpansion", "initialize"], function($, ko) {
+    require(["mocsarVM"], function (mocsar) {
         $(document).ready (function () {
             $(window).bind('contextmenu', function(event){
                 return false;

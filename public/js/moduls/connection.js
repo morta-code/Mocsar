@@ -1,4 +1,5 @@
 define(["socket.io"], function (io) {
+	
 	var socket;
 	var connectToServer = function(url){
 		socket = io.connect(url);
@@ -18,4 +19,5 @@ define(["socket.io"], function (io) {
 		registerSignal: registerSignal,
 		sendData: sendData
 	};
+	
 });

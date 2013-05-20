@@ -1,37 +1,9 @@
-console.log("JSEXPANSION CLIENT LOADED");
-/////////////////////T//O//O//L//S/////////////////////
-
-	
-// Get random integer.
-// If one param is given, the intervall will be 0 (incl) to param (incl)
-// If two params are given, the intervall will be p1 (incl) to p2 (incl) 
-
-(this.window ? window : global).rndInt = function () {
-	if(arguments.length === 1){
-		return Math.floor(Math.random() * (arguments['0'] + 1));
-	}
-	if(arguments.length === 2){
-		return Math.floor(Math.random() * (arguments['1'] - arguments['0'] + 1)) + arguments['0'];
-	}
-}
+define([], function () {
+	console.log("JSEXPANSION CLIENT LOADED");
 
 /*
-(global ? global : window).compareCards = function (a, b) {
-
-//	if(typeof b === 'undefined'){
-//		console.log("b is undefined");
-//		return 1;
-//	}
-
-	if(typeof a !== "object" || typeof b !== "object")
-		return 0;
-	if (a.value === 2 && b.value !== 2) return 1;
-	return a.value - b.value;
-}
-*/
-	
 /////////////////////A//R//R//A//Y/////////////////////
-
+*/
 
 // Removes the all given items from the Array. It modifies the original array.
 Array.prototype.Mremove = function () {
@@ -228,7 +200,7 @@ Array.prototype.MfortyTwo = function () {
 
 ////////////////////O//B//J//E//C//T///////////////////
 
-
+/*
 // Returns the array of all keys of the object.
 Object.prototype.Mkeys = function () {
 	var keys = [];
@@ -248,26 +220,15 @@ Object.prototype.Mvalues = function () {
 	return values;
 };
 
-/*
-// It iterates over all key-value pairs and call the parameter function.
-Object.prototype.MeachPair = function(cb) {
-	for (var prop in this) {
-		if (typeof this[prop] !== 'function'){
-				var ret = cb(prop, this[prop]);
-				if (ret === "break") {break;};
-			}
-	}
-};
-
 */
-
+/*
 // Returns a value from the Object for the given key. If the key can’t be found, default value will be returned.
 Object.prototype.Mfetch = function(key, def) {
 	var value = this[key];
 	if (value) {return value;} else {return def;};
 };
-
-
+*/
+/*
 // Returns true if the given key is present in the Object.
 Object.prototype.MhasKey = function(key) {
 	for (var prop in this) {
@@ -275,7 +236,8 @@ Object.prototype.MhasKey = function(key) {
 	}
 	return false;
 };
-
+*/
+/*
 // Returns true if the given value is present in the Object.
 Object.prototype.MhasValue = function(value) {
 	for (var prop in this) {
@@ -283,23 +245,24 @@ Object.prototype.MhasValue = function(value) {
 	}
 	return false;
 };
-
+*/
 // Returns the key of the given value if it present in the Object. Otherwise it returns undefined.
+/*
 Object.prototype.MkeyOf = function(value) {
 	for (var prop in this) {
 		if (this[prop] === value) {return prop;};
 	}
 	return undefined;
 };
-
-
+*/
+/*
 // Merge the given object to the current object.
 Object.prototype.Mmerge = function(otherObject) {
 	for (var prop in otherObject) {
 		this[prop] = otherObject[prop];
 	}
 };
-
+*/
 ////////////////////N//U//M//B//E//R///////////////////
 
 Number.prototype.Mtimes = function (cb) {
@@ -388,3 +351,7 @@ Function.prototype.Munless = function (condition){
 	 	}
 	};
  };
+
+
+
+});
