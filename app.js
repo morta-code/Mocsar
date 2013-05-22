@@ -96,7 +96,7 @@ var onTributeBack = function (playerid, socket, cards) {
 	mocsar.currentRound().tributeBack(playerid, cards, function() {
 		if (socket) socket.emit('tributeback', true);
 	}, function () {
-		broadcast('tributeback'); 
+		broadcast('tributeready'); 
 	});
 }
 
