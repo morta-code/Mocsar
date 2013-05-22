@@ -6,6 +6,15 @@ define([], function () {
 		obj.dignity = "";
 		obj.order = index;
 		obj.tribute = 0;
+		obj.isTributeHigh = function(num){
+			return this.order < num;
+		};
+		obj.isTributeLow = function(num){
+			return this.order >= num;	
+		};
+		obj.isTributeAd = function(){
+			return this.order == 0;
+		};
 		obj.setCardNums = function(num){
 			this.card = num;
 		};

@@ -12,7 +12,7 @@
 				<div data-bind="visible: player.active, attr: {id: player.getHtmlClass()}"></div>
 				<div data-bind="text: player.name"></div>
 				<div data-bind="text: player.id"></div>
-				<div data-bind="text: player.ai"></div>
+				<div data-bind="text: player.dignity"></div>
 				<div data-bind="text: player.card"></div>
 				<div data-bind="text: player.active"></div>
 			</span>
@@ -73,12 +73,15 @@
 					</div>
 					<div id="gameTemplateArea">
 						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" class="cardArea"></div>
-						<button data-bind="click: sendCards, enable: isYourNext()" class="buttonGroup"> SEND </button>
-						<button data-bind="click: sendPassz, enable: isYourNext()" class="buttonGroup"> PASSZ </button>
-						<button data-bind="click: sendTribute, enable: isTribute()" class="buttonGroup"> TRIBUTE BACK </button>
-						<button data-bind="click: logPlayer" class="buttonGroup"> LOG_PLAYER </button>
-						<button data-bind="click: logCard" class="buttonGroup"> LOG_CARD </button>
-						<button data-bind="click: logDepositedCards" class="buttonGroup"> LOG_DEP </button>
+						<div id="footer">
+							<button data-bind="click: sendCards, enable: isYourNext()" class="buttonGroup"> SEND </button>
+							<button data-bind="click: sendPassz, enable: isYourNext()" class="buttonGroup"> PASSZ </button>
+							<button data-bind="click: sendTribute, enable: isTribute()" class="buttonGroup"> TRIBUTE BACK </button>
+							<button data-bind="click: logPlayer" class="buttonGroup"> LOG_PLAYER </button>
+							<button data-bind="click: logCard" class="buttonGroup"> LOG_CARD </button>
+							<button data-bind="click: logDepositedCards" class="buttonGroup"> LOG_DEP </button>
+							<span   data-bind="text: messageToUser()" class="buttonGroup"></span>
+						</div>
 					</div>
 				</div>
 			</div>

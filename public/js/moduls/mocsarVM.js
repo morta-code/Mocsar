@@ -92,6 +92,11 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   		var __mycards = function(data){
   			log("SIGNAL MYCARDS", SIGNAL);
   			for (var i = 0; i < data.length; i++) {
+  				log(data[i], 1);
+  			}
+			log("SIGNAL MYCARDS2", SIGNAL);
+
+  			for (var i = 0; i < data.length; i++) {
   				data[i].isSelected = false;
   			}
 
@@ -106,6 +111,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   			log("TEST " + data, TEST);
   			model.emptyDepositedCards();
   			model.setActivePlayer(data);
+  			model.refreshPlayers();
   			// 	TODO 
   				// játéktér ürítése
   				// data id játékos jön
@@ -171,20 +177,21 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
+			log(data, SIGNAL);
 			// INFO mycards és cardnums emit
 			bridge.sendData('mycards', null);
 			bridge.sendData('cardnums', null);
 
-			var myObject = getUserObject();
+			var myObject = model.getUserObject();
 			// INFO rang ellenőrzése (felső vagy alsó n-ben)
-			if(myObject().order < data.length) // INFO felső ha order 0, 1, 2 ...
+			if(myObject.idTributeHigh(data.length)) // INFO felső ha order 0, 1, 2 ...
 			{
-				isTributeState(true);
+				model.isTributeState(true);
 				//data[players()[userId()].order];
 				// TODO ennyi lapot kell visszaadnom
 				// INFO ha felső, akkor felület, mit adjunk vissza
 			}
-			else if(myObject().order >= players().length - data.length){ // INFO alsó ha n-1, n-2, n-3 ...
+			else if(myObject.isTributeLow(players().length - data.length)){ // INFO alsó ha n-1, n-2, n-3 ...
 				// INFO ha alsó, akkor csak rendezés
 				cards.sort(cardsSort);
 			}
@@ -214,7 +221,14 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 
 			var lista = model.getPlayers();
 			for (var i = 0; i < lista.length && i < data.order.length; i++) {
-				lista[data.order[i]].order = i;
+				var item = lista.MgetObjectWithCustomEquals(data.order[i], function(a,b){
+  					if(a == b.id)
+	  					return true;
+  					return false;
+  				});
+  				item.order = i;
+  				item.dignity = i;
+//				lista[data.order[i]].order = i;
 			};
 			lista.sort(function(a,b){
 				if(a.order == b.order) return 0;
@@ -296,6 +310,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			sendTribute: 		sendTribute,
 			sendTributeAd: 		sendTributeAd,
 			
+			messageToUser: 		model.messageToUser,
 			getMessage: 		getMessage
 
 		};

@@ -9,17 +9,20 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 		this.depositedCards = ko.observableArray([]);
 		this.state          = ko.observable(0);
 		this.isTributeState = ko.observable(false);
+		this.messageCode	= ko.observable(false);
 	
 		var refreshPlayers = function(){
 	      	var data = players().slice(0);
 	       	players([]);
 	       	players(data);
 	   	};
+
 	   	var refreshDepositedCards = function(){
 	   		var data = depositedCards().slice(0);
 	       	depositedCards([]);
 	       	depositedCards(data);	
 	   	};
+
 	   	var refreshCards = function(){
 	   		var data = cards().slice(0);
 	       	cards([]);
@@ -42,11 +45,9 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 		var getCards = function(){
 			return cards();
 		};
-		
 		var getDepositedCards = function(){
 			return depositedCards();
 		};
-
 		var isLogin = function(){
 			return (this.userName() === "" || this.userId() === "") && this.state() == 0;
 		};
@@ -65,6 +66,9 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 		var isGameStarted = function(){
 			return state() == 2;
 		};
+		var messageToUser = function(){
+    		return "minta szöveg";
+    	};
 		var userList = function(){
 			var html = "";
 			for (var i = 0; i < players().length; i++) {
@@ -73,7 +77,6 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 			log(html, 0);
 			return html;
 		};
-
   		var getUserObject = function(id){
   			id = id || userId();
   			log(id, 0);
@@ -83,7 +86,6 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
   				return false;
   			});
   		};
-
 		var getTributeData = function(){
     		if(isTributeState()){
     			if( players().length > 0 ){
@@ -97,15 +99,13 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
     		}
       		return false;
     	};
-
     	var isYourNext = function(){
     		if( players().length > 0 )
     		{
     			var userObject = getUserObject();
     			if( userObject )
-    				if( typeof userObject != "undefined" )
-    					if( typeof userObject.active != "undefined" )
-    						return userObject.active;
+   					if( typeof userObject.active != "undefined" )
+   						return userObject.active;
     		}
     		return false;
     	};
@@ -223,6 +223,8 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
   			return userId();
   		};
 
+  		var isTributeAd = function(){};
+
 		return {
 			userName: 						userName, 
 			userId: 						userId, 
@@ -269,6 +271,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 
 			nextState: 						nextState,
 			removeAllfromPlayer: 			removeAllfromPlayer,
+			messageToUser: 					messageToUser,
 
 			isSettings: 					ko.computed(isSettings,    this),
 			isLogin: 						ko.computed(isLogin,       this),

@@ -1,11 +1,11 @@
 define([], function () {
-	var ERROR = 0;
-	var SIGNAL = 1;
-	var TEST = 2;
-	var INFO = 3;
-	var ALL = 4;
+	var ERROR = 1;
+	var SIGNAL = 2;
+	var TEST = 3;
+	var INFO = 4;
+	var ALL = 5;
 	
-	var levelSzint = TEST;
+	var levelSzint = SIGNAL;
 
 	var log = function(data, level){
 		var level = level || INFO;
