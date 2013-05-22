@@ -18,6 +18,10 @@
 			</span>
 		</script>
 
+		<script type="text/html" id="templateUserList">
+			<div data-bind="text: player.name"></div>
+		</script>
+
 		<script type="text/html" id="gamerTribute">
 			<div class="gamerTributeItem">
 			 <span>
@@ -42,7 +46,7 @@
                 <div class="data" id="initArea" data-bind="visible: isInit">
                     <div class="userList">
                     	<label for="userList"><p>Eddig csatlakozott Userek:</p></label>
-                    	<div id="userList" data-bind="html: userList()"></div>
+                    	<div id="userList" data-bind="template: {name: 'templateUserList', foreach: getPlayers(), as: 'player'}"></div>
                     </div>
 					<div class="content">
 						<div id="login" data-bind="visible: isLogin" style="display:none;">
@@ -66,7 +70,7 @@
 					<div id="gamerTemplateArea">
 						<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" id="players"></div>
 						<div data-bind="template: { name: 'templateDepositedCards', foreach: getDepositedCards(), as: 'dcard'}" id="lapok"></div>
-						<div data-bind="visible: isTribute(), enable: isTribute()" class="input_field">
+						<div data-bind="visible: isTributeState('AD'), enable: isTributeState('AD')" class="input_field">
 							<div data-bind="template: { name: 'gamerTribute', foreach: getPlayers(true), as: 'player' }" id="tributePlayers"></div>
 							<button id="sendTributeList" data-bind="click: sendTributeAd">Send</button>
 						</div>
