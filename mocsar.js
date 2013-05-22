@@ -112,6 +112,7 @@ module.exports = function () {
 	   				}
 	   				return 0;
 	  			});
+	  			console.log(actP.cards);
 			});
 		}(players);
 		
@@ -160,21 +161,16 @@ module.exports = function () {
 				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 6);
 				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 5);
 
-				bests.push(player.cards.splice(idx, 1));
+				bests.push(player.cards.splice(idx, 1)[0]);
 			});
 			return bests;
 		}
 
 		var putCards = function (cards, callbackOK, callbackBad) {
-			//////L//O//G//////
-			console.log("PUT CARDS: " + currentPlayerId + " " + cards);
-			//////L//O//G//////
-
 
 			if (cards.length === 0) {
 				// Passzolás
 				if (cardsOnTable.length === 0) {
-					console.log('ILYENKOR NEM SZABAD PASSZOLNI');
 					callbackBad();
 					return;
 				};
@@ -249,9 +245,6 @@ module.exports = function () {
 
 
 		var readyFrom = function (id, cbNext, cbNextCircle, cbNextRound) {
-			//////L//O//G//////
-			console.log("READY from", players[id].name);
-			//////L//O//G//////
 			if (readies.indexOf(id) === -1) {
 				readies.push(id);
 			} else {
@@ -283,9 +276,6 @@ module.exports = function () {
 			//////L//O//G//////
 
 			tributes.forEach(function(t, i) {
-				//////L//O//G//////
-				console.log("TRIBUTE ", players[order[i]].name, players[order[order.length-(1+i)]]);
-				//////L//O//G//////
 				players[order[i]].toTributeBack = t;
 				players[order[i]].toTributeBackFor = order[order.length-(1+i)];
 
@@ -301,7 +291,7 @@ module.exports = function () {
 			var fromCards = players[id].cards;
 			var forCards = players[ players[id].toTributeBackFor ].cards;
 			cards.forEach(function (c, i) {
-				forCards.push(fromCards.splice(fromCards.indexOf(c), 1));
+				forCards.push(fromCards.splice(fromCards.indexOf(c), 1)[0]);
 			});
 
 			needsTributeBack--;
@@ -350,9 +340,6 @@ module.exports = function () {
 			aiModule.newAiPlayer(players.last(), players.length-1);
 		};
 		aiModule.callbacks(funcs.merge({players: getPlayers, currentRound: getCurrentRound}));
-		//////L//O//G//////
-		console.log("AIs added ", param);
-		//////L//O//G//////
 		callback();
 	};
 
@@ -368,9 +355,6 @@ module.exports = function () {
 		});
 		currentRound = Round(order, true);
 		gameStarted = true;
-		//////L//O//G//////
-		console.log("GAME STARTED");
-		//////L//O//G//////
 		callback(order);
 	};
 
