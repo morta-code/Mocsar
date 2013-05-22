@@ -82,7 +82,7 @@ module.exports = function () {
 			(order.length < 9 ? 2 : 3).times(function () {
 				shakedPck.push.apply(shakedPck, pack.shaked());
 			});
-			shakedPck = shakedPck.shaked();
+			shakedPck = shakedPck.shaked().shaked();
 
 			while ((!democratic && shakedPck.length > 0) || (shakedPck.length >= order.length)) {
 				for (var i = order.length - 1; i >= 0; i--) {

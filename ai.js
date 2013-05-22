@@ -1,6 +1,39 @@
 module.exports = function () {
 	require('./jsexpansion');
 
+	function AIFuzzyCards (cards) {
+		var value = 0 | 0;
+		var numOfCardValues = [0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0]; //[2,3,4,5,6,7,8,9,10,J,Q,K,A,Y]
+		cards.forEach(function (a) {
+			numOfCardValues[a.value - 2] += 1;
+		});
+		numOfCardValues[13] += numOfCardValues[0];
+		numOfCardValues.shift();
+																						console.log(numOfCardValues);
+		numOfCardValues.forEach(function (a, i) {
+			var current = i+3;
+			if (a > 0) {
+					 if (current === 3) {value -= 5;}
+				else if (current === 4) {value -= 5;}
+				else if (current === 5) {value -= 3;}
+				else if (current === 6) {value -= 2;}
+				else if (current === 7) {value -= 1;}
+				else if (current === 8) {value += 1;}
+				else if (current === 9) {value += 1;}
+				else if (current === 10) {value += 2;}
+				else if (current === 11) {value += 3;}
+				else if (current === 12) {value += 3;}
+				else if (current === 13) {value += 4;}
+				else if (current === 14) {value += 5;}
+				else if (current === 15) {value += 7;}
+
+				if (a === 1) value -= 3;
+				else value += a;
+			};
+		});
+																						console.log(value);
+	}
+
 	return function () {
 		var aiPlayers = [],
 		    callbacks;
@@ -103,6 +136,7 @@ module.exports = function () {
 				if (currentOrder.first() === id && !data.democratic) {
 					_iTribute();
 				};
+				AIFuzzyCards(player.cards);
 			};
 
 			var onPut = function (data) {
