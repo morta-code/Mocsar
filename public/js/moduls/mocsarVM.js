@@ -31,7 +31,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   		};
 
   		var sendTributeAd = function(){
-			bridge.sendData('tributes', model.getTributeAd());
+			bridge.sendData('tributes', model.TributeAd.get());
 			model.TributeState.set("T");
   		};
 
@@ -110,13 +110,12 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   		var __nextcircle = function(data){
   			log("SIGNAL NEXTCIRCLE", SIGNAL);
   			log("TEST " + data, TEST);
+  			// INFO játéktér ürítése
   			model.DepositedCards.empty();
+  			// INFO data id játékos jön
   			model.ActivePlayer.set(data);
+  			// INFO játékosok frissítése
   			model.Players.refresh();
-  			// 	TODO 
-  				// játéktér ürítése
-  				// data id játékos jön
-  				// bridge.sendData('put', cards);
   		};
 
  		var __put = function (data) {
@@ -163,16 +162,16 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 		var __next = function(data){
 			log("SIGNAL NEXT", SIGNAL);
 			log("TEST " + data, TEST);
+			// INFO játéktér ürítése nincs, nem rakhat akármit
+			// INFO data id játékos jön
 			model.ActivePlayer.set(data);
 			model.Players.refresh();
-			var hossz = model.DepositedCards.get().length;
-			if(model.DepositedCards.get()[hossz-1].isLargestCard())
+			// INFO ha legfelül 2/joker van autopassz
+			// LAST var hossz = model.DepositedCards.get().length;
+			// LAST if(model.DepositedCards.get()[hossz-1].isLargestCard())
+			if(model.DepositedCards.get().last().isLargestCard())
 				sendPassz();
-			// 	TODO 
-				// INFO játéktér ürítése nincs, nem rakhat akármit
-				// INFO data id játékos jön
-				// INFO ha legfelül 2/joker van autopassz
-				// INFO bridge.sendData('put', cards);
+			// INFO bridge.sendData('put', cards);
 		};
 
 
@@ -197,15 +196,12 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 				cards.sort(cardsSort);
 			}
 		};
-		// TODO tributeback eseményt visszaküldeni cards paraméterrel. formátum: [{color: 0, value: 8}, {color: x, value: y}...]
+		// TODO tributeback eseményt visszaküldeni cards paraméterrel. 
+		//	formátum: [{color: 0, value: 8}, {color: x, value: y}...]
 		var __tributeback = function(data){
 			log("SIGNAL TRIBUTEBACK", SIGNAL);
 
-			if(typeof data == "undefined"){
-				// INFO ready
-				bridge.sendData('ready', null);
-			}
-			else if(data){
+			if(data){
 				// TODO kilép az adózási módból
 			}
 			else{
@@ -213,6 +209,13 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			}
 
 			bridge.sendData('mycards', null);
+			bridge.sendData('ready', null);
+		};
+
+		var __tributeready = function(){
+			// INFO lapok, kártyaszámok lekérése, utána ready
+			bridge.sendData('mycards', null);
+			bridge.sendData('cardnums', null);
 			bridge.sendData('ready', null);
 		};
 
@@ -229,14 +232,12 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   				});
   				item.order = i;
   				item.dignity = i;
-//				lista[data.order[i]].order = i;
 			};
 			lista.sort(function(a,b){
 				if(a.order == b.order) return 0;
 				else if(a.order < b.order) return -1;
 				else return 1;
 			});
-			log("NEWROUND ORDER LOG", TEST);
 			model.Players.set(lista);
 			model.Players.log();
 
@@ -247,8 +248,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			}
 			else{
 				//	INFO itt nincs semmiképpen sem ready
-				//  TODO adózás kihirdetése ha én vagyok az új nulla
-				if(lista[0].id == model.userId.get())
+				if(lista[0].id == model.UserId.get())
 					model.TributeState.set("AD");
 			}
             model.State.set(2);
@@ -262,6 +262,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			bridge.registerSignal('cardnums', 		__cardnums);
 			bridge.registerSignal('tributes', 		__tributes);
 			bridge.registerSignal('tributeback', 	__tributeback);
+			bridge.registerSignal('tributeready',	__tributeready);
 			bridge.registerSignal('nextcircle', 	__nextcircle);
 			bridge.registerSignal('put', 			__put);
 			bridge.registerSignal('next', 			__next);
@@ -293,7 +294,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			isInit: 	   		model.isInit,
 			isGameStarted: 		model.isGameStarted,
 			isYourNext: 		model.isYourNext,
-			isTributeState: 	model.isTributeState,
+			isTributeStateAD: 	model.isTributeStateAD,
 
 			//	tömbök elérése
 			getPlayers: 		model.Players.get,

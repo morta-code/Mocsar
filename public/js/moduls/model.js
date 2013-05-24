@@ -206,7 +206,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 	var getState = function(){return state;};
 	var getTributeState = function(){return isTributeState;};
 	var setTributeState = function(st){isTributeState(st);};
-	var isTributeState = function(st){
+	var isTributeStateAD = function(){
 		return TributeState() == st;
 	}
 
@@ -230,23 +230,23 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 		State: 			{ get: getState,			set: toState,			next: nextState },
 		SelectedCards: 	{ get: getSelectedCards },
 		TributeState: 	{ get: getTributeState,		set: setTributeState },
-
-/****************************************************************************************************/
-/********************  ********************************************************************/
-		getTributeAd: 	getTributeAd,
-		getTributeData: getTributeData,
-		messageToUser: 	messageToUser,
+		TributeAd: 		{ get: getTributeAd },
 
 /****************************************************************************************************/
 /******************** Computed-es függvények ********************************************************/
-		isSettings: 	ko.computed(isSettings,	    this),
-		isLogin: 		ko.computed(isLogin,      	this),
-		isAdmin: 		ko.computed(isAdmin,      	this),
-		isInit: 		ko.computed(isInit,       	this),
-		isError: 		ko.computed(isError,      	this),			
-		isGameStarted: 	ko.computed(isGameStarted,	this),
-		isYourNext: 	ko.computed(isYourNext,		this),
-		isTributeState: ko.computed(isTributeState,	this)
+		isSettings: 		ko.computed(isSettings,	    this),
+		isLogin: 			ko.computed(isLogin,      	this),
+		isAdmin: 			ko.computed(isAdmin,      	this),
+		isInit: 			ko.computed(isInit,       	this),
+		isError: 			ko.computed(isError,      	this),			
+		isGameStarted: 		ko.computed(isGameStarted,	this),
+		isYourNext: 		ko.computed(isYourNext,		this),
+		isTributeStateAD: 	ko.computed(isTributeStateAD,	this),
+
+/****************************************************************************************************/
+/********************  ********************************************************************/
+		getTributeData: getTributeData,
+		messageToUser: 	messageToUser
 	};
 
 });

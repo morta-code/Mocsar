@@ -70,7 +70,7 @@
 					<div id="gamerTemplateArea">
 						<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" id="players"></div>
 						<div data-bind="template: { name: 'templateDepositedCards', foreach: getDepositedCards(), as: 'dcard'}" id="lapok"></div>
-						<div data-bind="visible: isTributeState('AD'), enable: isTributeState('AD')" class="input_field">
+						<div data-bind="visible: isTributeStateAD, enable: isTributeStateAD" class="input_field">
 							<div data-bind="template: { name: 'gamerTribute', foreach: getPlayers(true), as: 'player' }" id="tributePlayers"></div>
 							<button id="sendTributeList" data-bind="click: sendTributeAd">Send</button>
 						</div>
