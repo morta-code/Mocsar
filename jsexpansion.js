@@ -1,4 +1,3 @@
-console.log("JSEXPANSION LOADED");
 /////////////////////T//O//O//L//S/////////////////////
 
 // Get random integer.

@@ -1,15 +1,10 @@
-Mocsar
-======
+# Mocsar
 
-Mocsár kártyajáték
+## TODO
 
-	// Returns the index of value in the array of objects. Otherwise -1
-	Array.prototype.indexOfKeyValue = function (key, value) {
-		for (var i = 0; i < this.length; i++) {
-			for (var prop in this[i]) {
-				if (prop !== key) continue;
-				if ((this[i])[prop] === value) return i;
-			}
-		};
-		return -1;
-	};
+* Animáció kártyák kirakásakor; ready az animáció végén
+* Adózás
+* Rangok szerveroldalról a newrounddal érkeznek -> írja ki a kliens
+* Stratégia kiválasztása
+* Lépés kiválasztása
+* Adatbázisba mentés

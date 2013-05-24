@@ -1,11 +1,11 @@
 module.exports = function () {
 	require('./jsexpansion');
-	var aiModule = (require('./ai'))();
-	var pack = require("./cards");
-	var players = [];
-	var gameStarted = false;
-	var currentRound;
-	var ais = []; // collection of ids. Length: num of ais, content: player index of ai
+	var aiModule = (require('./ai'))(),
+		pack = require("./cards"),
+		players = [],
+		gameStarted = false,
+		currentRound,
+		ais = []; // collection of ids. Length: num of ais, content: player index of ai
 
 
 	/*	Játékoslista kliensoldali célokra
@@ -160,21 +160,16 @@ module.exports = function () {
 				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 6);
 				else if (idx === -1) idx = player.cards.indexOfKeyValue('value', 5);
 
-				bests.push(player.cards.splice(idx, 1));
+				bests.push(player.cards.splice(idx, 1)[0]);
 			});
 			return bests;
 		}
 
 		var putCards = function (cards, callbackOK, callbackBad) {
-			//////L//O//G//////
-			console.log("PUT CARDS: " + currentPlayerId + " " + cards);
-			//////L//O//G//////
-
 
 			if (cards.length === 0) {
 				// Passzolás
 				if (cardsOnTable.length === 0) {
-					console.log('ILYENKOR NEM SZABAD PASSZOLNI');
 					callbackBad();
 					return;
 				};
@@ -249,9 +244,6 @@ module.exports = function () {
 
 
 		var readyFrom = function (id, cbNext, cbNextCircle, cbNextRound) {
-			//////L//O//G//////
-			console.log("READY from", players[id].name);
-			//////L//O//G//////
 			if (readies.indexOf(id) === -1) {
 				readies.push(id);
 			} else {
@@ -283,9 +275,6 @@ module.exports = function () {
 			//////L//O//G//////
 
 			tributes.forEach(function(t, i) {
-				//////L//O//G//////
-				console.log("TRIBUTE ", players[order[i]].name, players[order[order.length-(1+i)]]);
-				//////L//O//G//////
 				players[order[i]].toTributeBack = t;
 				players[order[i]].toTributeBackFor = order[order.length-(1+i)];
 
@@ -301,7 +290,7 @@ module.exports = function () {
 			var fromCards = players[id].cards;
 			var forCards = players[ players[id].toTributeBackFor ].cards;
 			cards.forEach(function (c, i) {
-				forCards.push(fromCards.splice(fromCards.indexOf(c), 1));
+				forCards.push(fromCards.splice(fromCards.indexOf(c), 1)[0]);
 			});
 
 			needsTributeBack--;
@@ -350,9 +339,6 @@ module.exports = function () {
 			aiModule.newAiPlayer(players.last(), players.length-1);
 		};
 		aiModule.callbacks(funcs.merge({players: getPlayers, currentRound: getCurrentRound}));
-		//////L//O//G//////
-		console.log("AIs added ", param);
-		//////L//O//G//////
 		callback();
 	};
 
@@ -368,9 +354,6 @@ module.exports = function () {
 		});
 		currentRound = Round(order, true);
 		gameStarted = true;
-		//////L//O//G//////
-		console.log("GAME STARTED");
-		//////L//O//G//////
 		callback(order);
 	};
 
@@ -407,7 +390,16 @@ module.exports = function () {
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
 		cardnums: getCardnums,
-		callAIs: callAIs
+		callAIs: callAIs,
+		ranks: {
+			'6':['Király','Nádor','Nemes','Polgár','Paraszt','Mocsár'],
+			'7':['Király','Nádor','Nemes','Polgár','Paraszt','Jobbágy','Mocsár'],
+			'8':['Király','Nádor','Ispán','Nemes','Polgár','Paraszt','Jobbágy','Mocsár'],
+			'9':['Király','Nádor','Ispán','Nemes','Polgár','Paraszt','Jobbágy','Zsellér','Mocsár'],
+			'10':['Király','Nádor','Ispán','Alispán','Nemes','Polgár','Paraszt','Jobbágy','Zsellér','Mocsár'],
+			'11':['Király','Nádor','Ispán','Alispán','Nemes','Polgár','Módos gazda','Paraszt','Jobbágy','Zsellér','Mocsár'],
+			'12':['Király','Nádor','Ispán','Alispán','Nemes','Dzsentri','Polgár','Módos gazda','Paraszt','Jobbágy','Zsellér','Mocsár']
+		}
 	};
 }();
 
