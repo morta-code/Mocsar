@@ -1,5 +1,5 @@
-define(["jquery", "connection", "gameMessages", "log", "model", "protocols"], 
-	function ($, bridge, getMessage, log, model, protocols) {
+define(["jquery", "connection", "log", "model", "protocols"], 
+	function ($, bridge, log, model, protocols) {
 
 	var ERROR = 0;
 	var SIGNAL = 1;
@@ -9,33 +9,7 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 	
 	return function(){
 
-		var sendUserName = function(){
-  			bridge.sendData('myname', model.UserName.get());	
-  		};
-
-  		var sendAi = function(){
-  			bridge.sendData('startgame', model.aiNumbers());	
-  		};
-
-		// [{color: 0, value: 8}, {color: x, value: y}...]
-  		var sendCards = function(){
-			bridge.sendData("put", model.SelectedCards.get());
-  		};
-
-  		var sendPassz = function(){
-  			bridge.sendData("put", []);
-  		};
-
-  		var sendTribute = function(){
-  			bridge.sendData('tributeback', model.SelectedCards.get());
-  		};
-
-  		var sendTributeAd = function(){
-			bridge.sendData('tributes', model.TributeAd.get());
-			model.TributeState.set("T");
-  		};
-
-  		var cardsSort = function(a, b){
+  		var cardsSortByValue = function(a, b){
   			if(a.value == 2 || b.value == 2){
   				if(a.value == 2 && b.value != 2) return  1;
   				if(a.value != 2 && b.value == 2) return -1;
@@ -57,26 +31,44 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
    			return 0;
   		};
 
-  		var __newplayer = function (data) {
-  			log("SIGNAL NEWPLAYER", SIGNAL);
-  			var lista = [];
-			for (var i = 0; i < data.length; i++) {
-				lista.push(protocols.Player(data[i], i));
-    		}
-    		model.Players.set(lista);
-    		model.Players.log();
-  		};
+  		var playersSortByOrder = function(a, b){
+			if(a.order == b.order) 
+				return 0;
+			else if(a.order < b.order) 
+				return -1;
+			return 1;
+		};
 
-  		var __cardnums = function(data){
-  			log("SIGNAL CARDNUMS", SIGNAL);
-            var elemek = model.Players.get().splice(0);
-            
-  			for (var i = 0; i < elemek.length && i < data.length; i++) {
-  				elemek[i].setCardNums(data[i]);
-  			};
-  			model.Players.set(elemek);
-  		};
+	/* Adatok küldése a szervernek */  		
 
+		var sendUserName = function(){
+  			bridge.sendData('myname', model.UserName.get());	
+  		};
+  		var sendAi = function(){
+  			bridge.sendData('startgame', model.aiNumbers());	
+  		};
+  		var sendCards = function(){		// INFO [{color: 0, value: 8}, {color: x, value: y}...]
+			bridge.sendData("put", model.SelectedCards.get());
+  		};
+  		var sendPassz = function(){
+  			bridge.sendData("put", []);
+  		};
+  		var sendTribute = function(){
+  			bridge.sendData('tributeback', model.SelectedCards.get());
+  		};
+  		var sendTributeAd = function(){
+			bridge.sendData('tributes', model.TributeAd.get());
+			model.TributeState.set(false);	// bár lehetne "T" is
+  		};
+  	
+  	/* Adatok fogadása a szervertől */
+
+    	var isTribute = function(){
+    		if( model.getTributeData() )
+    			if( model.getTributeData() > -1)
+    				return true;
+    		return false;
+    	};
   		var __badname = function(data){
   			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
@@ -89,7 +81,15 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 				model.State.next();
 			  }
   		};
-
+  		var __cardnums = function(data){
+  			log("SIGNAL CARDNUMS", SIGNAL);
+            var elemek = model.Players.get().splice(0);
+            
+  			for (var i = 0; i < elemek.length && i < data.length; i++) {
+  				elemek[i].setCardNums(data[i]);
+  			};
+  			model.Players.set(elemek);
+  		};
   		var __mycards = function(data){
   			log("SIGNAL MYCARDS", SIGNAL);
   			for (var i = 0; i < data.length; i++) {
@@ -101,12 +101,57 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   				data[i].isSelected = false;
   			}
 
-  			data.sort(cardsSort);
+  			data.sort(cardsSortByValue);
   			model.Cards.set(data);
 
   			bridge.sendData("cardnums", null);
   		};
+  		var __newplayer = function (data) {
+  			log("SIGNAL NEWPLAYER", SIGNAL);
+  			var lista = [];
+			for (var i = 0; i < data.length; i++) {
+				lista.push(protocols.Player(data[i], i));
+    		}
+    		model.Players.set(lista);
+    		model.Players.log();
+  		};
+		var __next = function(data){
+			log("SIGNAL NEXT", SIGNAL);
+			log("TEST " + data, TEST);
+			// INFO játéktér ürítése nincs, nem rakhat akármit
+			// INFO data id játékos jön
+			model.ActivePlayer.set(data);
+			model.Players.refresh();
+			// INFO ha legfelül 2/joker van autopassz
+			var hossz = model.DepositedCards.get().length;
+			if(model.DepositedCards.get()[hossz-1].isLargestCard())
+				sendPassz();
+			// INFO bridge.sendData('put', cards);
+		};
+		var __newround = function(data){
+			log("SIGNAL NEWROUND", SIGNAL);
+			model.DepositedCards.empty();
 
+			var lista = model.Players.get();
+			for (var i = 0; i < lista.length && i < data.order.length; i++) {
+				var item = lista.MgetObjectWithCustomEquals(data.order[i], function(a,b){
+  					if(a == b.id)
+	  					return true;
+  					return false;
+  				});
+  				item.order = i;
+  				item.dignity = data.ranks[i];
+			};
+			lista.sort(playersSortByOrder);
+			model.Players.set(lista);
+			model.Players.log();
+
+			bridge.sendData('mycards', null);
+			if(data.democratic)	bridge.sendData('ready', null);
+			else if(lista[0].id == model.UserId.get()) //	INFO itt nincs semmiképpen sem ready
+				model.TributeState.set("AD");
+            model.State.set(2);
+		};
   		var __nextcircle = function(data){
   			log("SIGNAL NEXTCIRCLE", SIGNAL);
   			log("TEST " + data, TEST);
@@ -117,7 +162,6 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
   			// INFO játékosok frissítése
   			model.Players.refresh();
   		};
-
  		var __put = function (data) {
  			log("SIGNAL PUT", SIGNAL);
 
@@ -158,23 +202,6 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
  			
   			bridge.sendData('ready', null);
   		};
-
-		var __next = function(data){
-			log("SIGNAL NEXT", SIGNAL);
-			log("TEST " + data, TEST);
-			// INFO játéktér ürítése nincs, nem rakhat akármit
-			// INFO data id játékos jön
-			model.ActivePlayer.set(data);
-			model.Players.refresh();
-			// INFO ha legfelül 2/joker van autopassz
-			// LAST var hossz = model.DepositedCards.get().length;
-			// LAST if(model.DepositedCards.get()[hossz-1].isLargestCard())
-			if(model.DepositedCards.get().last().isLargestCard())
-				sendPassz();
-			// INFO bridge.sendData('put', cards);
-		};
-
-
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
 			log(data, SIGNAL);
@@ -187,71 +214,28 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			if(myObject.isTributeHigh(data.length)) // INFO felső ha order 0, 1, 2 ...
 			{
 				model.TributeState.set("T");
-				//data[players()[userId()].order];
+				model.Message.set("TRIBUTEBACK");
 				// TODO ennyi lapot kell visszaadnom
 				// INFO ha felső, akkor felület, mit adjunk vissza
 			}
 			else if(myObject.isTributeLow(players().length - data.length)){ // INFO alsó ha n-1, n-2, n-3 ...
 				// INFO ha alsó, akkor csak rendezés
-				cards.sort(cardsSort);
+				cards.sort(cardsSortByValue);
 			}
 		};
-		// TODO tributeback eseményt visszaküldeni cards paraméterrel. 
-		//	formátum: [{color: 0, value: 8}, {color: x, value: y}...]
 		var __tributeback = function(data){
 			log("SIGNAL TRIBUTEBACK", SIGNAL);
 
-			if(data){
-				// TODO kilép az adózási módból
-			}
-			else{
-				// TODO alert
-			}
-
-			bridge.sendData('mycards', null);
-			bridge.sendData('ready', null);
+			if(data)
+				model.TributeState.set(false);
+			else
+				model.Message.set("BADTRIBUTEBACK");
 		};
 
 		var __tributeready = function(){
-			// INFO lapok, kártyaszámok lekérése, utána ready
 			bridge.sendData('mycards', null);
 			bridge.sendData('cardnums', null);
 			bridge.sendData('ready', null);
-		};
-
-		var __newround = function(data){
-			log("SIGNAL NEWROUND", SIGNAL);
-			model.DepositedCards.empty();
-
-			var lista = model.Players.get();
-			for (var i = 0; i < lista.length && i < data.order.length; i++) {
-				var item = lista.MgetObjectWithCustomEquals(data.order[i], function(a,b){
-  					if(a == b.id)
-	  					return true;
-  					return false;
-  				});
-  				item.order = i;
-  				item.dignity = i;
-			};
-			lista.sort(function(a,b){
-				if(a.order == b.order) return 0;
-				else if(a.order < b.order) return -1;
-				else return 1;
-			});
-			model.Players.set(lista);
-			model.Players.log();
-
-			bridge.sendData('mycards', null);
-			if(data.democratic)
-			{
-				bridge.sendData('ready', null);
-			}
-			else{
-				//	INFO itt nincs semmiképpen sem ready
-				if(lista[0].id == model.UserId.get())
-					model.TributeState.set("AD");
-			}
-            model.State.set(2);
 		};
 
 		var init = function(){
@@ -271,13 +255,6 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 		var connectToServer = function(){
 			bridge.connectToServer('http://localhost');
 		};
-		
-    	var isTribute = function(){
-    		if( model.getTributeData() )
-    			if( model.getTributeData() > -1)
-    				return true;
-    		return false;
-    	};
 
 		connectToServer();
 		init();
@@ -314,8 +291,8 @@ define(["jquery", "connection", "gameMessages", "log", "model", "protocols"],
 			sendTribute: 		sendTribute,
 			sendTributeAd: 		sendTributeAd,
 			
-			messageToUser: 		model.messageToUser,
-			getMessage: 		getMessage
+			getMessage: 		model.getMessage,
+			getMessageToUser: 	model.Message.get
 
 		};
 	};

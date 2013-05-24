@@ -8,3 +8,6 @@
 * Stratégia kiválasztása
 * Lépés kiválasztása
 * Adatbázisba mentés
+
+
+* Rangok demokratikus kör esetén egyformák legyenek

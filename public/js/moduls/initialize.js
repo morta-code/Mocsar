@@ -92,7 +92,8 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 			var card = valueAccessor(), allBindings = allBindingsAccessor();       
         	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
-			
+			log(card, 1);
+			if(typeof card != "undefined"){
 			var cardCount =  card.values.length;
 			
 			for(var i=cardCount-1;i>=0;i--){
@@ -103,6 +104,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 					});
 				$(element).append(elem);
 			}
+		}
         },
         update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
         }

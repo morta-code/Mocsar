@@ -1,4 +1,4 @@
-define(["jquery", "ko", "log"], function ($, ko, log) {
+define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log) {
 
 	this.userName       = ko.observable("");
 	this.userId         = ko.observable("");
@@ -25,6 +25,14 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
    		var data = cards().slice(0);
        	cards([]);
        	cards(data);	
+   	};
+   	var getMessageCode = function(){
+   		if(getMessage(messageCode()))
+   			return getMessage(messageCode());
+   		return "";
+   	};
+   	var setMessageCode = function(code){
+   		messageCode(code);
    	};
 	var getUserId = function(){
 		return userId();
@@ -58,7 +66,13 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
  			cards(data);
  			cards.valueHasMutated();
 	};
-	var getDepositedCards = function(){
+	var getDepositedCards = function(isLast){
+		var last = isLast || false;
+		if(last){
+			var c = [];
+			c.push(depositedCards()[depositedCards().length-1]);
+			return c;
+		}
 		return depositedCards();
 	};
 	var setDepositedCards = function(dpcards){
@@ -207,7 +221,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 	var getTributeState = function(){return isTributeState;};
 	var setTributeState = function(st){isTributeState(st);};
 	var isTributeStateAD = function(){
-		return TributeState() == st;
+		return isTributeState() == "AD";
 	}
 
 	return {
@@ -231,22 +245,23 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
 		SelectedCards: 	{ get: getSelectedCards },
 		TributeState: 	{ get: getTributeState,		set: setTributeState },
 		TributeAd: 		{ get: getTributeAd },
+		Message: 		{ get: getMessageCode, 		set: setMessageCode },
 
 /****************************************************************************************************/
 /******************** Computed-es függvények ********************************************************/
-		isSettings: 		ko.computed(isSettings,	    this),
-		isLogin: 			ko.computed(isLogin,      	this),
-		isAdmin: 			ko.computed(isAdmin,      	this),
-		isInit: 			ko.computed(isInit,       	this),
-		isError: 			ko.computed(isError,      	this),			
-		isGameStarted: 		ko.computed(isGameStarted,	this),
-		isYourNext: 		ko.computed(isYourNext,		this),
+		isSettings: 		ko.computed(isSettings,	    	this),
+		isLogin: 			ko.computed(isLogin,      		this),
+		isAdmin: 			ko.computed(isAdmin,      		this),
+		isInit: 			ko.computed(isInit,       		this),
+		isError: 			ko.computed(isError,      		this),			
+		isGameStarted: 		ko.computed(isGameStarted,		this),
+		isYourNext: 		ko.computed(isYourNext,			this),
 		isTributeStateAD: 	ko.computed(isTributeStateAD,	this),
 
 /****************************************************************************************************/
 /********************  ********************************************************************/
 		getTributeData: getTributeData,
-		messageToUser: 	messageToUser
+		getMessage: 	getMessage
 	};
 
 });
