@@ -1,11 +1,11 @@
 module.exports = function () {
 	require('./jsexpansion');
-	var aiModule = (require('./ai'))();
-	var pack = require("./cards");
-	var players = [];
-	var gameStarted = false;
-	var currentRound;
-	var ais = []; // collection of ids. Length: num of ais, content: player index of ai
+	var aiModule = (require('./ai'))(),
+		pack = require("./cards"),
+		players = [],
+		gameStarted = false,
+		currentRound,
+		ais = []; // collection of ids. Length: num of ais, content: player index of ai
 
 
 	/*	Játékoslista kliensoldali célokra
@@ -112,7 +112,6 @@ module.exports = function () {
 	   				}
 	   				return 0;
 	  			});
-	  			console.log(actP.cards);
 			});
 		}(players);
 		
@@ -391,7 +390,16 @@ module.exports = function () {
 		gameStarted: getGameStarted, // ok
 		currentRound: getCurrentRound, // ok
 		cardnums: getCardnums,
-		callAIs: callAIs
+		callAIs: callAIs,
+		ranks: {
+			'6':['Király','Nádor','Nemes','Polgár','Paraszt','Mocsár'],
+			'7':['Király','Nádor','Nemes','Polgár','Paraszt','Jobbágy','Mocsár'],
+			'8':['Király','Nádor','Ispán','Nemes','Polgár','Paraszt','Jobbágy','Mocsár'],
+			'9':['Király','Nádor','Ispán','Nemes','Polgár','Paraszt','Jobbágy','Zsellér','Mocsár'],
+			'10':['Király','Nádor','Ispán','Alispán','Nemes','Polgár','Paraszt','Jobbágy','Zsellér','Mocsár'],
+			'11':['Király','Nádor','Ispán','Alispán','Nemes','Polgár','Módos gazda','Paraszt','Jobbágy','Zsellér','Mocsár'],
+			'12':['Király','Nádor','Ispán','Alispán','Nemes','Dzsentri','Polgár','Módos gazda','Paraszt','Jobbágy','Zsellér','Mocsár']
+		}
 	};
 }();
 

@@ -64,7 +64,7 @@ var onReady = function (playerid) {
 		broadcast('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. A callid megkapja a promptot
 	}, function (neworder) {
 		mocsar.newRound(neworder);
-		broadcast('newround', {order: neworder, democratic: false}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek 
+		broadcast('newround', {order: neworder, democratic: false, ranks: mocsar.ranks[neworder.length]}); // Erre mindenki tudja, hogy vége, animációval átrendeződik a játéktér, és a lapok is kiosztásra kerülnek 
 		// A kliensek kérdezzék le a kártyájukat 'mycards'-szal
 		// Erre a király adózási törvényt hirdethet.
 	});
@@ -147,7 +147,7 @@ io.sockets.on('connection', function (socket) {
 					});
 
 					mocsar.startGame(function (neworder) {
-						broadcast('newround', {order: neworder, democratic: true}); // Nincs adózás, ready-t válaszolnak, ha kész.
+						broadcast('newround', {order: neworder, democratic: true, ranks: mocsar.ranks[neworder.length]}); // Nincs adózás, ready-t válaszolnak, ha kész.
 					});
 				});
 
