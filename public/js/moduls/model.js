@@ -13,22 +13,26 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	
 	var refreshPlayers = function(){
       	var data = players().slice(0);
+      	log("players slice", 1);
        	players([]);
        	players(data);
    	};
    	var refreshDepositedCards = function(){
    		var data = depositedCards().slice(0);
+   		log("dep slice", 1);
        	depositedCards([]);
        	depositedCards(data);	
    	};
    	var refreshCards = function(){
    		var data = cards().slice(0);
+   		log("cards slice", 1);
        	cards([]);
        	cards(data);	
    	};
    	var getMessageCode = function(){
-   		if(getMessage(messageCode()))
-   			return getMessage(messageCode());
+   		if(messageCode())
+   			if(getMessage(messageCode()))
+	   			return getMessage(messageCode());
    		return "";
    	};
    	var setMessageCode = function(code){
@@ -145,12 +149,6 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		};
 		return null;
 	};
-	var getErrorCode = function(){
-		return badname;
-	};
-	var setErrorCode = function(code){
-		badname(code);
-	};
 	var getSelectedCards = function(){
 		var c = [];
 		for (var i = 0; i < cards().length; i++) {
@@ -207,13 +205,16 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		}
 	};
 	var emptyPlayers = function(){
-		return players().slice(0);
+		log("empty players slice", 1);
+		return players().splice(0);
 	};
 	var emptyCards = function(){
-		return cards().slice(0);
+		log("empty cards slice", 1);
+		return cards().splice(0);
 	};
 	var emptyDepositedCards = function(){
-		return depositedCards().slice(0);
+		log("empty dep slice", 1);
+		return depositedCards().splice(0);
 	};
 	var isTributeAd = function(){};
 
@@ -222,8 +223,12 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	var setTributeState = function(st){isTributeState(st);};
 	var isTributeStateAD = function(){
 		return isTributeState() == "AD";
-	}
-
+	};
+	var deselectCards = function(){
+		for (var i = 0; i < cards().length; i++) {
+			cards()[i].isSelected = false;
+		}
+	};
 	return {
 /****************************************************************************************************/
 /******************** Default-ba kiadott válltozók **************************************************/
@@ -232,11 +237,10 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 
 /****************************************************************************************************/
 /******************** Property-k ********************************************************************/
-		Error: 			{ get: getErrorCode,		set: setErrorCode },
 		UserId: 		{ get: getUserId,			set: setUserId },	
 		UserName: 		{ get: getUserName,			set: setUserName },	
 		Players: 		{ get: getPlayers,			set: setPlayers,		empty: emptyPlayers,		log: logPlayer,			refresh: refreshPlayers },	
-		Cards: 			{ get: getCards,			set: setCards,			empty: emptyCards,			log: logCard,			refresh: refreshCards },	
+		Cards: 			{ get: getCards,			set: setCards,			empty: emptyCards,			log: logCard,			refresh: refreshCards, 			deselect: deselectCards },	
 		DepositedCards:	{ get: getDepositedCards,	set: setDepositedCards, empty: emptyDepositedCards,	log: logDepositedCards,	refresh: refreshDepositedCards,	add: addDepositedCards },
 		ActivePlayer: 	{ get: getActivePlayer,		set: setActivePlayer },	
 		UserObject: 	{ get: getUserObject },

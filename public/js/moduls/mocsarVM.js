@@ -49,9 +49,11 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		};
   		var sendCards = function(){		// INFO [{color: 0, value: 8}, {color: x, value: y}...]
 			bridge.sendData("put", model.SelectedCards.get());
+			model.Message.set(false);
   		};
   		var sendPassz = function(){
   			bridge.sendData("put", []);
+  			model.Message.set(false);
   		};
   		var sendTribute = function(){
   			bridge.sendData('tributeback', model.SelectedCards.get());
@@ -72,14 +74,19 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		var __badname = function(data){
   			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
-  				model.Error.set("BADNAME");
-  			else model.Error.set(false); 
+  				model.Message.set("BADNAME");
+  			else model.Message.set(false); 
 
 	  		if(!data.state){	  					
 	  			model.UserName.set(data.name);
 				model.UserId.set(data.id);
 				model.State.next();
 			  }
+  		};
+  		var __badcards = function(){
+  			model.Cards.deselect();
+  			model.Cards.refresh();
+  			model.Message.set("BADCARDS");
   		};
   		var __cardnums = function(data){
   			log("SIGNAL CARDNUMS", SIGNAL);
@@ -157,6 +164,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			log("TEST " + data, TEST);
   			// INFO játéktér ürítése
   			model.DepositedCards.empty();
+
   			// INFO data id játékos jön
   			model.ActivePlayer.set(data);
   			// INFO játékosok frissítése
@@ -167,17 +175,16 @@ define(["jquery", "connection", "log", "model", "protocols"],
 
  			var cardGroup = protocols.CardGroup();
 
- 			if(model.UserId.get() == data.from){				
+ 			if(model.UserId.get() == data.from){
+ 				model.Cards.deselect();			
  				for (var i = 0 ; i < data.cards.length; i++) {
  					var index = model.Cards.get().MindexOfObjectWithCustomEquals(data.cards[i], function(a,b){
- 						a.isSelected = false;
- 						b.isSelected = false;
  						if(a.color == b.color && a.value == b.value)
  							return true;
  						return false;
  					});
 	 				if (index>-1) {
-	 					var kartya = cards()[index];
+	 					var kartya = model.Cards.get()[index];
 	 					cardGroup.values.push(kartya.value);
 	 					cardGroup.colors.push(kartya.color);
 	 					cardGroup.isActive = true;
@@ -201,6 +208,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
  			model.UserObject.get(data.from).toLowerCardsNum(data.cards.length);
  			
   			bridge.sendData('ready', null);
+  			log("SIGNAL PUT END", SIGNAL);
   		};
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
@@ -241,6 +249,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 		var init = function(){
 			bridge.registerSignal('newplayer',		__newplayer);
 			bridge.registerSignal('badname', 		__badname);
+			bridge.registerSignal('badcards', 		__badcards);
 			bridge.registerSignal('newround', 		__newround);
 			bridge.registerSignal('mycards', 		__mycards);
 			bridge.registerSignal('cardnums', 		__cardnums);

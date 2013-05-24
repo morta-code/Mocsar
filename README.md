@@ -11,3 +11,5 @@
 
 
 * Rangok demokratikus kör esetén egyformák legyenek
+* Játékindítás után ha csatlakozni akar valaki, akkor kapjon vissza 1 signalt pl: accesdenied vagy valami hasonló
+* username max hossz jelenleg 12 karakter 
