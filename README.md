@@ -1,8 +1,10 @@
-Mocsar
-======
+# Mocsar
 
-** TODO
+## TODO
 
 * Animáció kártyák kirakásakor; ready az animáció végén
 * Adózás
-* Rangok szerveroldalon
+* Rangok szerveroldalról
+* Stratégia kiválasztása
+* Lépés kiválasztása
+* Adatbázisba mentés
