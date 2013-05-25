@@ -59,8 +59,14 @@ var onPut = function (playerid, socket, cards) {
 */
 var onReady = function (playerid) {
 	mocsar.currentRound().readyFrom(playerid, function (nextid) {
+		if (nextid === undefined) {
+			throw new Error();
+		};
 		broadcast('next', nextid); // Erre mindenki tudni fogja, hogy ki jön. Aki jön, az ezzel kapja meg a „promptot”.
 		}, function (callid) {
+		if (callid === undefined) {
+			throw new Error();
+		};
 		broadcast('nextcircle', callid); // Erre mindenki tudni fogja, hogy a passz körbeért, és kiteszi (animációval) a középen lévő lapokat. A callid megkapja a promptot
 	}, function (neworder) {
 		mocsar.newRound(neworder);

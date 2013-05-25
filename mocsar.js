@@ -61,24 +61,21 @@ module.exports = function () {
 	}
 
 
-	function Round (order, democratic) {
-		var currentPlayerOrder = 0 | 0,					// A soron következő játékos a sorban
-			currentPlayerId = -1 | 0,				// A soron következő játékos ID-je
+	function Round (order_, democratic) {
+		var currentPlayerOrder = 0,					// A soron következő játékos a sorban
+			order = order_.uniq(),
+			currentPlayerId = -1,				// A soron következő játékos ID-je
 			readies = [],							// Beérkezett 'ready' flag-ek
 			rdyCb = {cb: 1, param: order[0]},		// Utolsó 'ready'-ra adandó válasz
 			circles = [],							// A forduló körei. Object-eket tartalmaz (egyfajta history)
 			nobids = [],							// Az egymást követő passzok.
 			cardsOnTable = [],						// Az asztalon lévő kártyák: {id: i, value: v, cards: c}
 			neworder = [],							// A következő kör sorrendje (folyamatosan töltődik)
-			whoCanTribute = (democratic ? null : order[0]) | 0,// Tárolja a király id-jét, amíg nem hirdet adózást
+			whoCanTribute = (democratic ? null : order[0]),// Tárolja a király id-jét, amíg nem hirdet adózást
 			needsTributeBack = 0 | 0;				// Ennyi játékosnak kell még lapot visszaadni
-
 
 		// De facto konstruktor (osztás). Nem demokratikus kör esetén a hátsóknak több lapja lesz.
 		var __deal = function (p) {
-			//////L//O//G//////
-			console.log("DEAL - DEAL - DEAL - DEAL - DEAL");
-			//////L//O//G//////
 			var shakedPck = [];
 			(order.length < 9 ? 2 : 3).times(function () {
 				shakedPck.push.apply(shakedPck, pack.shaked());
@@ -116,7 +113,6 @@ module.exports = function () {
 			});
 		}(players);
 		
-
 		var __next = function () {
 			if (currentPlayerOrder == order.length-1) {
 				currentPlayerOrder = 0;
@@ -167,7 +163,6 @@ module.exports = function () {
 		}
 
 		var putCards = function (cards, callbackOK, callbackBad) {
-
 			if (cards.length === 0) {
 				// Passzolás
 				if (cardsOnTable.length === 0) {
@@ -271,12 +266,7 @@ module.exports = function () {
 
 
 		var tribute = function (tributes) {
-			//////L//O//G//////
-			console.log("TRIBUTING " + tributes);
-			//////L//O//G//////
-
 			tributes.forEach(function(t, i) {
-				console.log(t, i, order);
 
 				players[order[i]].toTributeBack = t;
 				players[order[i]].toTributeBackFor = order[order.length-(1+i)];

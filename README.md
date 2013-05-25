@@ -7,11 +7,11 @@
 * Adózás
 * Nextcircle esetén még mindig előfordul, hogy kártya marad középen
 * FONTOS! A cardnums-ra a lapok számát az id sorrendjében küldi ki, nem az aktuális sorrendben!!! 
+* FONTOS! A nextid a játékos id-et küldi ki, nem pedig az aktuális sorrendbeli számot! Tehát a 0 továbbra is a személyi játékos
 
 * username max hossz jelenleg 12 karakter 
 
 #### Szerver
-* AI usernevek
 * Lépés kiválasztása
 * Stratégia kiválasztása
 * Adatbázisba mentés

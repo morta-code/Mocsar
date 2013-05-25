@@ -119,9 +119,6 @@ module.exports = function () {
 				var b = rndInt(2, a-1);
 				var c = rndInt(1,b-1);
 				callbacks.tributes(id, [a,b,c]);
-				// setTimeout(function (id_, a_, b_, c_) {
-					
-				// }, 200, id, a, b, c);
 			};
 			var _iTributeBack = function (num) {
 				// TODO ne a legelső numt, hanem értelmesen
@@ -150,12 +147,10 @@ module.exports = function () {
 				iSendTribute = false;
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
-				console.log('NEWROUND AT AI', currentOrder, id, myCurrentIndex);
 				if (data.democratic) {
 					_ready();
 				}
 				if (currentOrder.first() === id && !data.democratic) {
-					//_iTribute();
 					iSendTribute = true;
 				};
 			};
@@ -166,11 +161,8 @@ module.exports = function () {
 			};
 
 			var onTributes = function (tributes) {
-				// TODO
-				console.log("TRIBUTES AT AI", tributes, myCurrentIndex);
 				if (tributes.length > myCurrentIndex) {
 					_iTributeBack(tributes[myCurrentIndex]);
-					console.log('NEKEM KELL VISSZAADNI', player.name, player.id, myCurrentIndex);
 				};
 				_updateModel('tributes', tributes);
 			};
