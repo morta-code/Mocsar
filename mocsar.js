@@ -5,7 +5,7 @@ module.exports = function () {
 		players = [],
 		gameStarted = false,
 		currentRound,
-		aiNames = ['Wapasha','Nayeli','Âviâja','Charulz','Dadenn','Darehl','Tifunee','Sharmaynn','Jayrehl','Izabylle','Lahteeffa','Klowee','Detoyaah','Óengus','Bradán','Svantepolk','Clodovicus','Vercingetorix','Gunnbjörg','Aðalsteinn','Ingvildr','Arthfael','Ingigerðr','Gyða','Wilhelm','Brunhilde','Sigfrøðr','Chlotichilda','Dagr','Haraldr','Suibhne','Boadicea','Gaufrid','Mildgyð','Eoforwine','Þeudhar','Feidlimid','Warin','Ásdís','Gisilbert','Carloman','Ewald','Waldo','Eysteinn','Helmut','Gebhard','Lucasta','Elanor','Figaro','Oberon','D\'Artagnan','Vivien','Olivette','Scheherazade','Angelica','Philomel','Mignon','Dulcinea','Pollyanna','Aramis','Caspian','Faust','Aminta','Nydia','Hermia'],
+		aiNames = ['Wapasha','Nayeli','Âviâja','Charulz','Dadenn','Darehl','Tifunee','Sharmaynn','Jayrehl','Izabylle','Lahteeffa','Klowee','Detoyaah','Óengus','Bradán','Svantepolk','Clodovicus','Vercingetorix','Gunnbjörg','Aðalsteinn','Ingvildr','Arthfael','Ingigerðr','Gyða','Wilhelm','Brunhilde','Sigfrøðr','Chlotichilda','Dagr','Haraldr','Suibhne','Boadicea','Gaufrid','Mildgyð','Eoforwine','Þeudhar','Arawn','Feidlimid','Warin','Ásdís','Gisilbert','Carloman','Ewald','Waldo','Eysteinn','Helmut','Gebhard','Lucasta','Elanor','Figaro','Oberon','D\'Artagnan','Vivien','Olivette','Scheherazade','Angelica','Philomel','Mignon','Dulcinea','Pollyanna','Aramis','Caspian','Faust','Aminta','Nydia','Hermia'],
 		ais = []; // collection of ids. Length: num of ais, content: player index of ai
 
 
@@ -272,10 +272,12 @@ module.exports = function () {
 
 		var tribute = function (tributes) {
 			//////L//O//G//////
-			console.log("TRIBUTE " + tributes);
+			console.log("TRIBUTING " + tributes);
 			//////L//O//G//////
 
 			tributes.forEach(function(t, i) {
+				console.log(t, i, order);
+
 				players[order[i]].toTributeBack = t;
 				players[order[i]].toTributeBackFor = order[order.length-(1+i)];
 
@@ -317,7 +319,8 @@ module.exports = function () {
 			canTribute: whoCanTribute, // ok 
 			tribute: tribute,	// ok
 			tributeBack: tributeBack, // ok
-			cardsOnTable: getCardsOnTable
+			cardsOnTable: getCardsOnTable,
+			democratic: democratic
 		};
 	};
 
@@ -331,7 +334,6 @@ module.exports = function () {
 	var aiPlayersNum = function (param, callback, funcs){
 		for (var i = 0; i < param && players.length < 12; i++) {
 			var ainame = aiNames.splice(rndInt(aiNames.length-1),1)[0];
-			console.log(ainame);
 			while (players.indexOfKeyValue('name', ainame) !== -1) {
 				ainame = aiNames.splice(rndInt(aiNames.length-1),1)[0];
 			}
@@ -384,6 +386,13 @@ module.exports = function () {
 		ais.forEach(function (a, i) {
 			(aiModule.aiPlayers()[i])[ev](data);
 		});
+		if (ev === 'newround' && !currentRound.democratic) {
+			aiModule.aiPlayers().forEach(function (a) {
+				if (a.iSendTribute() === true) {
+					a.sendTribute();
+				}
+			});
+		};
 	}
 
 	return {

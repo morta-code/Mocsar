@@ -9,7 +9,6 @@ module.exports = function () {
 		});
 		numOfCardValues[13] += numOfCardValues[0];
 		numOfCardValues.shift();
-																						console.log(numOfCardValues);
 		numOfCardValues.forEach(function (a, i) {
 			var current = i+3;
 			if (a > 0) {
@@ -34,6 +33,14 @@ module.exports = function () {
 																						console.log(value);
 	}
 
+	function ChooseStrategy (collection, rank, cardsval, no_of_singles, no_of_high) {
+		// collection: rank, cardsval, no_of_singles, no_of_high, strategy
+	}
+
+	function ChooseTributeBack () {
+		// TODO
+	}
+
 	return function () {
 		var aiPlayers = [],
 		    callbacks;
@@ -54,7 +61,12 @@ module.exports = function () {
 		function playerAI (player, id) {
 
 			var myCurrentIndex,
-			    currentOrder;
+				iSendTribute = false,
+			    currentOrder,
+			    cardsval,	// Húzott kártyák (adózás utáni) értéke
+			    no_of_singles,
+			    no_of_high,
+			    myStrategy; // 'finishfirst', 'betterposition', 'keep', 'noswamp'
 
 			var _iCall = function () {
 				// TODO Ne a legelső lappal nyisson, hanem ésszel
@@ -103,8 +115,13 @@ module.exports = function () {
 				// TODO
 			};
 			var _iTribute = function () {
-				// TODO valami okosság
-				callbacks.tributes(id, [4,2,1]);
+				var a = rndInt(3, 5);
+				var b = rndInt(2, a-1);
+				var c = rndInt(1,b-1);
+				callbacks.tributes(id, [a,b,c]);
+				// setTimeout(function (id_, a_, b_, c_) {
+					
+				// }, 200, id, a, b, c);
 			};
 			var _iTributeBack = function (num) {
 				// TODO ne a legelső numt, hanem értelmesen
@@ -130,13 +147,17 @@ module.exports = function () {
 			};
 
 			var onNewRound = function (data) {
+				iSendTribute = false;
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
-				if (data.democratic) _ready();
+				console.log('NEWROUND AT AI', currentOrder, id, myCurrentIndex);
+				if (data.democratic) {
+					_ready();
+				}
 				if (currentOrder.first() === id && !data.democratic) {
-					_iTribute();
+					//_iTribute();
+					iSendTribute = true;
 				};
-				AIFuzzyCards(player.cards);
 			};
 
 			var onPut = function (data) {
@@ -145,8 +166,11 @@ module.exports = function () {
 			};
 
 			var onTributes = function (tributes) {
+				// TODO
+				console.log("TRIBUTES AT AI", tributes, myCurrentIndex);
 				if (tributes.length > myCurrentIndex) {
 					_iTributeBack(tributes[myCurrentIndex]);
+					console.log('NEKEM KELL VISSZAADNI', player.name, player.id, myCurrentIndex);
 				};
 				_updateModel('tributes', tributes);
 			};
@@ -156,9 +180,17 @@ module.exports = function () {
 				_ready();
 			};
 
+			var onTributeReady = function () {
+				_ready();
+			};
+
 			var onNewPlayer = function (list) {
 				// TODO
 			};
+
+			var getISendTribute = function () {
+				return iSendTribute;
+			}
 
 			return {
 				newplayer: onNewPlayer,
@@ -167,7 +199,10 @@ module.exports = function () {
 				next: onNext,
 				nextcircle: onNextCircle,
 				tributes: onTributes,
-				tributeback: onTributeBack
+				tributeback: onTributeBack,
+				tributeready: onTributeReady,
+				iSendTribute: getISendTribute,
+				sendTribute: _iTribute
 			};
 		}
 
