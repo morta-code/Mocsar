@@ -2,14 +2,17 @@
 
 ## TODO
 
+#### Kliens
 * Animáció kártyák kirakásakor; ready az animáció végén
 * Adózás
-* Rangok szerveroldalról a newrounddal érkeznek -> írja ki a kliens
-* Stratégia kiválasztása
-* Lépés kiválasztása
-* Adatbázisba mentés
+* Nextcircle esetén még mindig előfordul, hogy kártya marad középen
+* FONTOS! A cardnums-ra a lapok számát az id sorrendjében küldi ki, nem az aktuális sorrendben!!! 
 
-
-* Rangok demokratikus kör esetén egyformák legyenek
-* Játékindítás után ha csatlakozni akar valaki, akkor kapjon vissza 1 signalt pl: accesdenied vagy valami hasonló
 * username max hossz jelenleg 12 karakter 
+
+#### Szerver
+* AI usernevek
+* Lépés kiválasztása
+* Stratégia kiválasztása
+* Adatbázisba mentés
+* Játékindítás után ha csatlakozni akar valaki, akkor kapjon vissza 1 signalt pl: accesdenied vagy valami hasonló
