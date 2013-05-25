@@ -5,6 +5,7 @@ module.exports = function () {
 		players = [],
 		gameStarted = false,
 		currentRound,
+		aiNames = ['Wapasha','Nayeli','Âviâja','Charulz','Dadenn','Darehl','Tifunee','Sharmaynn','Jayrehl','Izabylle','Lahteeffa','Klowee','Detoyaah','Óengus','Bradán','Svantepolk','Clodovicus','Vercingetorix','Gunnbjörg','Aðalsteinn','Ingvildr','Arthfael','Ingigerðr','Gyða','Wilhelm','Brunhilde','Sigfrøðr','Chlotichilda','Dagr','Haraldr','Suibhne','Boadicea','Gaufrid','Mildgyð','Eoforwine','Þeudhar','Feidlimid','Warin','Ásdís','Gisilbert','Carloman','Ewald','Waldo','Eysteinn','Helmut','Gebhard','Lucasta','Elanor','Figaro','Oberon','D\'Artagnan','Vivien','Olivette','Scheherazade','Angelica','Philomel','Mignon','Dulcinea','Pollyanna','Aramis','Caspian','Faust','Aminta','Nydia','Hermia'],
 		ais = []; // collection of ids. Length: num of ais, content: player index of ai
 
 
@@ -329,8 +330,13 @@ module.exports = function () {
 	*/
 	var aiPlayersNum = function (param, callback, funcs){
 		for (var i = 0; i < param && players.length < 12; i++) {
+			var ainame = aiNames.splice(rndInt(aiNames.length-1),1)[0];
+			console.log(ainame);
+			while (players.indexOfKeyValue('name', ainame) !== -1) {
+				ainame = aiNames.splice(rndInt(aiNames.length-1),1)[0];
+			}
 			players.push({
-				name: "player_" + i,
+				name: ainame,
 				ai: true,
 				cards: []
 			});
