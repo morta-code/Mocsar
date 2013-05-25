@@ -57,9 +57,11 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		};
   		var sendTribute = function(){
   			bridge.sendData('tributeback', model.SelectedCards.get());
+  			model.Message.set(false);
   		};
   		var sendTributeAd = function(){
 			bridge.sendData('tributes', model.TributeAd.get());
+			model.Message.set(false);
 			model.TributeState.set(false);	// bár lehetne "T" is
   		};
   	
@@ -156,7 +158,10 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			bridge.sendData('mycards', null);
 			if(data.democratic)	bridge.sendData('ready', null);
 			else if(lista[0].id == model.UserId.get()) //	INFO itt nincs semmiképpen sem ready
+			{
 				model.TributeState.set("AD");
+				model.Message.set("TRIBUTEAD");
+			}
             model.State.set(2);
 		};
   		var __nextcircle = function(data){
@@ -234,8 +239,10 @@ define(["jquery", "connection", "log", "model", "protocols"],
 		var __tributeback = function(data){
 			log("SIGNAL TRIBUTEBACK", SIGNAL);
 
-			if(data)
+			if(data){
 				model.TributeState.set(false);
+				model.SelectedCards.remove(); 
+			}
 			else
 				model.Message.set("BADTRIBUTEBACK");
 		};

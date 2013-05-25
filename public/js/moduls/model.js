@@ -157,6 +157,12 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 			};
 		return c;
 		};
+	var removeSelectedCards = function(){
+		for (var i = cards().length - 1; i >= 0; i--) {
+			if(cards()[i].isSelected)
+				cards().slice(i, 1);
+			};
+		};
 	var getTributeAd = function(){
 		var ad = [];
 		for (var i = players().length - 1; i >= 0; i--) {
@@ -206,20 +212,20 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	};
 	var emptyPlayers = function(){
 		log("empty players slice", 1);
-		return players().splice(0);
+		players.removeAll();
 	};
 	var emptyCards = function(){
 		log("empty cards slice", 1);
-		return cards().splice(0);
+		cards.removeAll();
 	};
 	var emptyDepositedCards = function(){
 		log("empty dep slice", 1);
-		return depositedCards().splice(0);
+		depositedCards.removeAll();
 	};
 	var isTributeAd = function(){};
 
 	var getState = function(){return state;};
-	var getTributeState = function(){return isTributeState;};
+	var getTributeState = function(){return isTributeState();};
 	var setTributeState = function(st){isTributeState(st);};
 	var isTributeStateAD = function(){
 		return isTributeState() == "AD";
@@ -246,7 +252,7 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		UserObject: 	{ get: getUserObject },
 		
 		State: 			{ get: getState,			set: toState,			next: nextState },
-		SelectedCards: 	{ get: getSelectedCards },
+		SelectedCards: 	{ get: getSelectedCards, 	remove: removeSelectedCards },
 		TributeState: 	{ get: getTributeState,		set: setTributeState },
 		TributeAd: 		{ get: getTributeAd },
 		Message: 		{ get: getMessageCode, 		set: setMessageCode },
