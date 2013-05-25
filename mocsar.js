@@ -392,6 +392,7 @@ module.exports = function () {
 		cardnums: getCardnums,
 		callAIs: callAIs,
 		ranks: {
+			'd':['Polgár'],
 			'6':['Király','Nádor','Nemes','Polgár','Paraszt','Mocsár'],
 			'7':['Király','Nádor','Nemes','Polgár','Paraszt','Jobbágy','Mocsár'],
 			'8':['Király','Nádor','Ispán','Nemes','Polgár','Paraszt','Jobbágy','Mocsár'],

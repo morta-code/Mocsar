@@ -163,6 +163,33 @@ Array.prototype.uniq = function () {
 };
 
 
+// Returns a new array repeated from original
+Array.prototype.repeat = function (num) {
+	var arr = [];
+	var t = this;
+	num.times(function (){
+		t.forEach(function (act){
+			arr.push(act);
+		});
+	});
+	return arr;
+};
+
+
+// Modifies and retuns the original array to a repeated array
+Array.prototype.repeated = function (num) {
+	var arr = [];
+	var t = this;
+	num.times(function (){
+		t.forEach(function (act){
+			arr.push(act);
+		});
+	});
+	this = arr;
+	return this;
+};
+
+
 // Returns the forty second item of the Array. It is undefined if the Array is shorter.
 Array.prototype.fortyTwo = function () {
 	return this[42];

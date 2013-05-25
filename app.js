@@ -147,7 +147,7 @@ io.sockets.on('connection', function (socket) {
 					});
 
 					mocsar.startGame(function (neworder) {
-						broadcast('newround', {order: neworder, democratic: true, ranks: mocsar.ranks[neworder.length]}); // Nincs adózás, ready-t válaszolnak, ha kész.
+						broadcast('newround', {order: neworder, democratic: true, ranks: mocsar.ranks.d.repeat(neworder.length)}); // Nincs adózás, ready-t válaszolnak, ha kész.
 					});
 				});
 
