@@ -123,7 +123,7 @@ module.exports = function () {
 			var _iTributeBack = function (num) {
 				// TODO ne a legelső numt, hanem értelmesen
 				var cards = [];
-				num.downto(1, function (i) {
+				Number(num).downto(1, function (i) {
 					cards.push(player.cards[i]);
 				});
 				callbacks.tributeback(id, null, cards);

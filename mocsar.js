@@ -141,7 +141,7 @@ module.exports = function () {
 		var __bestCards = function (player, num) {
 
 			var bests = [];
-			num.times(function () {
+			Number(num).times(function () {
 				var idx = -1;
 
 				idx = player.cards.indexOfKeyValue('value', 15);
