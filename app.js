@@ -1,26 +1,17 @@
 var express = require('express');
-var mongoose = require("mongoose");
+// var mongoose = require("mongoose");
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server, { log: false });
-
 var mocsar = require('./mocsar');
-
-
-// mongoose.connect("mongodb://localhost/mocsar");
-// var db = mongoose.connection;
-
-// var mocsarSchema = mongoose.Schema({
-// 	// TODO
-// });
-
-// var historySchema = mongoose.Schema({
-// 	// TODO
-// });
+var port = 7500;
+if (process.argv.indexOf("-p") !== -1) {
+	port = process.argv[process.argv.indexOf("-p") + 1];
+}
 
 
 app.use(express.static("./public"));
-server.listen(7500);
+server.listen(port);
 
 /////////////////////////////////////////////////
 
@@ -107,12 +98,26 @@ var onTributeBack = function (playerid, socket, cards) {
 }
 
 
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+console.log("Mocsár 0.0.1 -- Server-side application\nListening on port: "+port+"\n(Use \"exit\" to leave.)");
+process.stdin.on('data', function(chunk) {
+	if (chunk == "exit\n") {
+		console.log("Is exiting...");
+		mocsar.exit();
+		io.sockets.emit('serverdown');
+		io.sockets.emit('disconnect');
+		process.exit();
+	}
+});
+
 io.sockets.on('connection', function (socket) {
 
 	// Ha a játék kezdete után csatlakozik a kliens, kidobja.
 	// TODO: Ha már csatlakozott/frissített játékos lép vissza, engedje be (addig automatikusan passzoljon)
 	if (mocsar.gameStarted()){
-		socket.emit('disconnect'); // -> erre a kliens kiírja, hogy a játékhoz nem tud csatlakozni
+		socket.emit('accessdenied'); // -> erre a kliens kiírja, hogy a játékhoz nem tud csatlakozni
+		socket.emit('disconnect');
 		return;
 	};
 

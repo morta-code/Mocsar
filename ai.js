@@ -1,9 +1,11 @@
 module.exports = function () {
 	require('./jsexpansion');
+	var db = require('./db.json'),
+		fs = require('fs');
 
 	function AIFuzzyCards (cards) {
-		var value = 0 | 0;
-		var numOfCardValues = [0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0]; //[2,3,4,5,6,7,8,9,10,J,Q,K,A,Y]
+		var value = 0;
+		var numOfCardValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]; //[2,3,4,5,6,7,8,9,10,J,Q,K,A,Y]
 		cards.forEach(function (a) {
 			numOfCardValues[a.value - 2] += 1;
 		});
@@ -41,7 +43,12 @@ module.exports = function () {
 		// TODO
 	}
 
+	function saveDB () {
+		fs.writeFileSync('db.json', JSON.stringify(db));
+	}
+
 	return function () {
+
 		var aiPlayers = [],
 		    callbacks;
 
@@ -205,7 +212,8 @@ module.exports = function () {
 		return {
 			newAiPlayer: newAiPlayer,
 			aiPlayers: getAiPlayers,
-			callbacks: setCallbacks
+			callbacks: setCallbacks,
+			saveDB: saveDB
 		};
 	};
 }();

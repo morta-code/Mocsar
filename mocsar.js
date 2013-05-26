@@ -1,6 +1,6 @@
 module.exports = function () {
 	require('./jsexpansion');
-	var aiModule = (require('./ai'))(),
+	var aiModule,
 		pack = require("./cards"),
 		players = [],
 		gameStarted = false,
@@ -322,6 +322,8 @@ module.exports = function () {
 	*		callback: ha kész, visszahívódik
 	*/
 	var aiPlayersNum = function (param, callback, funcs){
+		if (param == 0) {callback(); return;};
+		aiModule = (require('./ai'))();
 		for (var i = 0; i < param && players.length < 12; i++) {
 			var ainame = aiNames.splice(rndInt(aiNames.length-1),1)[0];
 			while (players.indexOfKeyValue('name', ainame) !== -1) {
@@ -373,6 +375,7 @@ module.exports = function () {
 	}
 
 	var callAIs = function (ev, data) {
+		if (!aiModule) {return;};
 		ais.forEach(function (a, i) {
 			(aiModule.aiPlayers()[i])[ev](data);
 		});
@@ -383,6 +386,12 @@ module.exports = function () {
 				}
 			});
 		};
+	}
+
+	var exit = function () {
+		if (aiModule){
+			aiModule.saveDB();
+		}
 	}
 
 	return {
@@ -405,7 +414,8 @@ module.exports = function () {
 			'10':['Király','Nádor','Ispán','Alispán','Nemes','Polgár','Paraszt','Jobbágy','Zsellér','Mocsár'],
 			'11':['Király','Nádor','Ispán','Alispán','Nemes','Polgár','Módos gazda','Paraszt','Jobbágy','Zsellér','Mocsár'],
 			'12':['Király','Nádor','Ispán','Alispán','Nemes','Dzsentri','Polgár','Módos gazda','Paraszt','Jobbágy','Zsellér','Mocsár']
-		}
+		},
+		exit: exit
 	};
 }();
 

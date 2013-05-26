@@ -221,10 +221,10 @@ Object.prototype.values = function () {
 
 
 // It iterates over all key-value pairs and call the parameter function.
-Object.prototype.eachPair = function(cb) {
+Object.prototype.eachPair = function (callback) {
 	for (var prop in this) {
 		if (typeof this[prop] !== 'function'){
-				var ret = cb(prop, this[prop]);
+				var ret = callback(prop, this[prop]);
 				if (ret === "break") {break;};
 			}
 	}
@@ -273,23 +273,23 @@ Object.prototype.merge = function(otherObject) {
 
 ////////////////////N//U//M//B//E//R///////////////////
 
-Number.prototype.times = function (cb) {
+Number.prototype.times = function (callback) {
 	for(var i = 0; i < this; i++){
-		var ret = cb(i, this);
+		var ret = callback(i, this);
 		if (ret === "break") {break;};
 	};
 };
 
-Number.prototype.upto = function (lim, cb) {
+Number.prototype.upto = function (lim, callback) {
 	for(var i = this | 0; i <= lim; i++){
-		var ret = cb(i);
+		var ret = callback(i);
 		if (ret === "break") {break;};
 	};
 };
 
-Number.prototype.downto = function (lim, cb) {
+Number.prototype.downto = function (lim, callback) {
 	for(var i = this | 0; i >= lim; i--){
-		var ret = cb(i);
+		var ret = callback(i);
 		if (ret === "break") {break;};
 	};
 };
