@@ -225,7 +225,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			model.Cards.empty();
   			model.DepositedCards.empty();
 
-  			model.State.set(0);
+  			model.init();
   		};
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);

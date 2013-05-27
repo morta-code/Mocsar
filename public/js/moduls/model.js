@@ -3,7 +3,6 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	this.userName       = ko.observable("");
 	this.userId         = ko.observable("");
 	this.aiNumbers      = ko.observable("5");
-	this.badname        = ko.observable(false);
 	this.players        = ko.observableArray([]);
 	this.cards          = ko.observableArray([]);
 	this.depositedCards = ko.observableArray([]);
@@ -17,7 +16,6 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		userName("");     
 		userId("");       
 		aiNumbers("5");   
-		badname(false)    
 		players([]);      
 		cards([]);        
 		depositedCards([]);
@@ -46,8 +44,8 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
        	cards(data);	
    	};
    	var getMessageCode = function(){
-   		if(messageCode())
-   			if(getMessage(messageCode()))
+   		if(messageCode() != false && typeof messageCode() != "undefined")
+   			if(getMessage(messageCode())){
    				var back = getMessage(messageCode());
    				if(messageCodeParam.length > 0){
    					for (var i = 0; i < messageCodeParam.length; i++) {
@@ -55,6 +53,7 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
    					};
    				}
    				return back;
+   			}
    		return "";
    	};
    	var setMessageCode = function(code, param){
@@ -118,7 +117,7 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		return isLogin() || isSettings();
 	};
 	var isError = function(){
-		return badname();
+		return messageCode() != false;
 	};
 	var isGameStarted = function(){
 		return state() == 2;
@@ -286,7 +285,8 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 
 /****************************************************************************************************/
 /********************  ********************************************************************/
-		getMessage: 	getMessage
+		getMessage: 	getMessage,
+		init: 			initializeModel
 	};
 
 });

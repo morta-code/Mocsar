@@ -20,7 +20,7 @@
 							<label for="nev" data-bind="text: getMessage('LABELFORNAME')"></label>
 							<input type="text" name="Nev" id="nev" data-bind="value: userName, valueUpdate: 'afterkeydown'" />
 							<div data-bind="text: userName"></div>
-							<span id="errorLoginArea" data-bind="text: getMessageToUser()"></span><br />
+							<span id="errorLoginArea" data-bind="text: getMessageToUser(), visible: isError"></span><br />
 							<button name="ok" id="send" data-bind="click: sendUserName, enabled: isLogin, text: getMessage('BUTTONSENDNAME')" ></button>
 						</div>
 						<div id="settingsArea" data-bind="visible: isSettings" style="display:none;">
