@@ -9,8 +9,5 @@
 * Nem engedi visszaadni a lapokat
 
 
-
 #### Szerver
 * Lépés kiválasztása
-* Stratégia kiválasztása
-* Adatbázisba mentés
