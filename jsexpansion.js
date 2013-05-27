@@ -302,14 +302,14 @@ Number.prototype.times = function (callback) {
 };
 
 Number.prototype.upto = function (lim, callback) {
-	for(var i = this | 0; i <= lim; i++){
+	for(var i = this; i <= lim; i++){
 		var ret = callback(i);
 		if (ret === "break") {break;};
 	};
 };
 
 Number.prototype.downto = function (lim, callback) {
-	for(var i = this | 0; i >= lim; i--){
+	for(var i = this; i >= lim; i--){
 		var ret = callback(i);
 		if (ret === "break") {break;};
 	};

@@ -95,13 +95,13 @@ module.exports = function () {
 			return cstrat;
 		}
 
-		function ChoosePut (strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end) {
-			// collection: strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, call_strat
+		function ChoosePut (strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, val, num) {
+			// collection: strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, val, num, call_strat
 			if (db["put"].length < 100) {
 				return ['lowest', 'no_bid', 'win_the_circle'][rndInt(0, 2)];
 			};
 			if (!putTree) {putTree = ID3_build(db["put"])};
-			var pstrat = ID3_decision(putTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end]);
+			var pstrat = ID3_decision(putTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, val, num]);
 			return pstrat;
 		}
 
@@ -261,7 +261,7 @@ module.exports = function () {
 			});
 			filtered = filtered.column(1).column('value');
 			var j = filtered.numberOf(15) + filtered.numberOf(2);
-			console.log("NUMBER OF JOLLIES", j);
+			console.log("NUMBER OF JOLLIES", j, putHistory);
 
 			if (j < 3) {return 0;};
 			if (j < 5) {return 1;};
@@ -409,18 +409,67 @@ module.exports = function () {
 					return;
 				};
 
-				for (var i = 0; (i < player.cards.length); i++) {
-					var c = player.cards[i];
-					if (c.value != 2 && c.value <= val) continue;
-					if (cards.length == 0) {
-						cards.push(c);
-					} else {
-						if (cards[0].value != c.value && c.value != 2 && c.value != 15) cards.splice(0);
-						cards.push(c);
-					}
-					if (cards.length == num) break;
+
+				var cStrat = [];
+				cStrat.push(myStrategy);
+				cStrat.push(CalcCardsOver(player, players));
+				cStrat.push(CalcCardsUnder(player, players));
+				cStrat.push(CalcPutJollies(putHistory, id));
+				cStrat.push(CalcPutHighs(putHistory, id));
+				cStrat.push(CalcCircles(putHistory, id));
+				cStrat.push(CalcCirclesToEnd(player));
+				cStrat.push(val);
+				cStrat.push(num);
+				cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6],cStrat[7],cStrat[8]));
+				putStrategies.push(cStrat); //'lowest', 'no_bid', 'win_the_circle'
+
+
+				if (cStrat.last() === "lowest") {	
+					for (var i = 0; (i < player.cards.length); i++) {
+						var c = player.cards[i];
+						if (c.value != 2 && c.value <= val) continue;
+						if (cards.length == 0) {
+							cards.push(c);
+						} else {
+							if (cards[0].value != c.value && c.value != 2 && c.value != 15) cards.splice(0);
+							cards.push(c);
+						}
+						if (cards.length == num) break;
+					};
+					if (cards.length !== num || val === 14) cards.splice(0);
 				};
-				if (cards.length !== num) cards.splice(0);
+				if (cStrat.last() === 'no_bid') {
+				};
+				if (cStrat.last() === 'win_the_circle') {
+					var cvs = player.cards.column('value');
+					var high;
+					if (val === 14){
+						if (cvs.numberOf(2)+cvs.numberOf(15) >= num) {
+							num.times(function (i) {
+								cards.push(player.cards[cvs.length-(1+i)]);
+							});
+						}
+					} else {
+						(14).downto(val+1, function (i) {
+							if (cvs.numberOf(i) >= num) {
+								num.times(function (j) {
+									cards.push(player.cards[cvs.indexOf(i)+j]);
+								});
+								return 'break';
+							} else if ((cvs.numberOf(i) + cvs.numberOf(15) + cvs.numberOf(2)) >= num) {
+								cvs.numberOf(i).times(function (j) {
+									cards.push(player.cards[cvs.indexOf(i)+j]);
+								});
+								(num-cards.length).times(function (j) {
+									cards.push(player.cards[cvs.length-(1+j)]);
+								});
+								return 'break';
+							}
+						})
+					}
+						
+				};
+
 				callbacks.put(id, null, cards);
 			};
 			var _ready = function () {
