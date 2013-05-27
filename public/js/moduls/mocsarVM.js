@@ -195,14 +195,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
  				model.Cards.refresh();
  			}
  			else{
- 				/*
- 				for (var i = 0 ; i < data.cards.length; i++) {
- 					cardGroup.values.push(data.cards[i].value);
-	 				cardGroup.colors.push(data.cards[i].color);
-	 				cardGroup.isActive = true;
- 				}
- 				*/
-
  				data.cards.forEach(function(act){
  					cardGroup.values.push(act.value);
 	 				cardGroup.colors.push(act.color);
@@ -323,7 +315,8 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			sendTributeAd: 		sendTributeAd,
 			
 			getMessage: 		model.getMessage,
-			getMessageToUser: 	model.Message.get
+			getMessageToUser: 	model.Message.get,
+			isDevelopment: 		false
 
 		};
 	};

@@ -181,7 +181,7 @@ p {
 [id*="player-center"] {
   background-color: #ff0000;
   border: 3px solid #000000;
-  height: 10px;
+  height: 25px;
   top: -24px;
   position: relative;
   width: 80px;

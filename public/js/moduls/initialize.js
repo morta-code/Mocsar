@@ -92,4 +92,8 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
         update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
         }
     };
+
+    
+
+
 });
