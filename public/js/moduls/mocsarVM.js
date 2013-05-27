@@ -67,12 +67,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
   	
   	/* Adatok fogadása a szervertől */
 
-    	var isTribute = function(){
-    		if( model.getTributeData() )
-    			if( model.getTributeData() > -1)
-    				return true;
-    		return false;
-    	};
     	var __accessdenied = function(){
     		model.Message.set("ACCESSDENIED");
     	};
@@ -97,10 +91,10 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			log("SIGNAL CARDNUMS", SIGNAL);
             var elemek = model.Players.get().splice(0);
             
-  			for (var i = 0; i < elemek.length && i < data.length; i++) {
+  			for (var i = 0; i < data.length; i++) {
   				var obj = elemek.MgetObjectWithCustomEquals(i, function(a, b){
   					if(a == b.id) return true;
-  						return false;
+  					return false;
   				});
   				obj.setCardNums(data[i]);
   			};
@@ -245,7 +239,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			if(myObject.isTributeHigh(data.length)) // INFO felső ha order 0, 1, 2 ...
 			{
 				model.TributeState.set("T");
-				model.Message.set("TRIBUTEBACK", [].push(data[myObject.order]));
+				model.Message.set("TRIBUTEBACK", [data[myObject.order]]);
 				// TODO ennyi lapot kell visszaadnom
 				// INFO ha felső, akkor felület, mit adjunk vissza
 			}
@@ -256,6 +250,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 		};
 		var __tributeback = function(data){
 			log("SIGNAL TRIBUTEBACK", SIGNAL);
+			log("DATA " + data, 1);
 
 			if(data){
 				model.TributeState.set(false);
@@ -308,6 +303,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			isGameStarted: 		model.isGameStarted,
 			isYourNext: 		model.isYourNext,
 			isTributeStateAD: 	model.isTributeStateAD,
+			isTributeStateT: 	model.isTributeStateT,
 
 			//	tömbök elérése
 			getPlayers: 		model.Players.get,
@@ -319,7 +315,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			logPlayer: 			model.Players.log,
 			logDepositedCards: 	model.DepositedCards.log,
 
-			isTribute: 	   		isTribute,
 			sendUserName: 		sendUserName,
 			sendPassz: 			sendPassz,
 			sendCards: 			sendCards,

@@ -97,6 +97,12 @@ module.exports = function () {
 			}
 
 			p.forEach(function (actP) {
+
+				/* cheatek a teszteléshez */
+				if(actP.name == "asdf")	actP.cards = actP.cards.slice(0,1);
+				if(actP.name == "qwer") actP.cards = actP.cards.slice(0,3);
+				/* ********************** */
+
 				actP.cards.sort(function(a, b){
 	  				if(a.value == 2 || b.value == 2){
 	  					if(a.value == 2 && b.value != 2) return  1;

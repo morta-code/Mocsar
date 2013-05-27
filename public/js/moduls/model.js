@@ -109,9 +109,6 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	var isGameStarted = function(){
 		return state() == 2;
 	};
-	var messageToUser = function(){
-  		return "minta szöveg";
-   	};
 	var getUserObject = function(id){
 		id = id || userId();
 		log(id, 0);
@@ -121,18 +118,8 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 			return false;
 		});
 	};
-	var getTributeData = function(){
-   		if(isTributeState() == "T"){
-   			if( players().length > 0 ){
-    			var userObject = getUserObject();
-    				if( userObject ){
-   						if( typeof userObject.order != "undefined" ){
-    						return userObject.order;
-	    				}
-	    			}
-    			}
-    		}
-      		return false;
+	var isTributeStateT = function(){
+   		return isTributeState() == "T";
    	};
    	var isYourNext = function(){
    		if( players().length > 0 )
@@ -281,10 +268,10 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		isGameStarted: 		ko.computed(isGameStarted,		this),
 		isYourNext: 		ko.computed(isYourNext,			this),
 		isTributeStateAD: 	ko.computed(isTributeStateAD,	this),
+		isTributeStateT: 	ko.computed(isTributeStateT,	this),
 
 /****************************************************************************************************/
 /********************  ********************************************************************/
-		getTributeData: getTributeData,
 		getMessage: 	getMessage
 	};
 
