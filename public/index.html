@@ -1,85 +1,53 @@
 <html>
 	<head>
 		<title>Mocsar Game</title>
-
 		<script type='text/javascript' src="/js/libraries/require.js" data-main="/js/main.js"></script>
-		
-		<link rel="stylesheet" href="/css/style.css" type="text/css"> 
+		<link rel="stylesheet" type="text/css" href="/css/style.css" /> 
 		<link rel="stylesheet" type="text/css" href="/css/styleCardDondorf_less.css" />
-
-		<script type="text/html" id="gamer">
-			<span data-bind="attr: {id: player.id, class: player.getHtmlClass()}">
-				<div data-bind="visible: player.active, attr: {id: player.getHtmlClass()}"></div>
-				<div data-bind="text: player.name"></div>
-				<div data-bind="text: player.dignity"></div>
-				<div data-bind="text: player.card"></div>
-				<span class="card-hatlap" style="display:none;" data-bind="attr: {'id': 'hatlap-' + player.id}"></span>
-			</span>
-		</script>
-
-		<script type="text/html" id="templateUserList">
-			<div data-bind="text: player.name"></div>
-		</script>
-
-		<script type="text/html" id="gamerTribute">
-			<div class="gamerTributeItem">
-			 <span>
-				<input type="text" data-bind="value: player.tribute, attr:{'id': 'tribute_' + player.name }" class="gamerTributeItemInput" />
-				<label data-bind="text: player.name, attr: {'for': 'tribute_' + player.name} "></label>
-			</span>
-			</div>
-		</script>
-
-		<script type="text/html" id="templateCard">
-			<span data-bind="cardBindings: card, cardIndex: $index, attr: { id: 'me-' + $index() } "></span>
-		</script>
-
-		<script type="text/html" id="templateDepositedCards">
-			<span data-bind="cardsDepositedBindings: dcard, cardIndex: $index" class="depositedCardsContainer"></span>
-		</script>
-
 	</head>
 	<body>
 		<div class="wrapper">
             <div class="tartalom">
                 <div class="data" id="initArea" data-bind="visible: isInit">
                     <div class="userList">
-                    	<label for="userList"><p>Eddig csatlakozott Userek:</p></label>
+                    	<label for="userList">
+                    		<p data-bind="text: getMessage('CONNECTEDUSERS')"></p>
+                    	</label>
                     	<div id="userList" data-bind="template: {name: 'templateUserList', foreach: getPlayers(), as: 'player'}"></div>
                     </div>
 					<div class="content">
 						<div id="login" data-bind="visible: isLogin" style="display:none;">
-							<label for="nev"> Felhasználónév: </label>
+							<label for="nev" data-bind="text: getMessage('LABELFORNAME')"></label>
 							<input type="text" name="Nev" id="nev" data-bind="value: userName, valueUpdate: 'afterkeydown'" />
 							<div data-bind="text: userName"></div>
-							<span id="errorLoginArea" data-bind="text: getMessageToUser(), visible: isError"></span><br />
-							<button name="ok" id="send" data-bind="click: sendUserName, enabled: isLogin">Send</button>
+							<span id="errorLoginArea" data-bind="text: getMessageToUser()"></span><br />
+							<button name="ok" id="send" data-bind="click: sendUserName, enabled: isLogin, text: getMessage('BUTTONSENDNAME')" ></button>
 						</div>
 						<div id="settingsArea" data-bind="visible: isSettings" style="display:none;">
 							<div id="adminArea" data-bind="visible: isAdmin">
-								<label for="aiNumber">MI játékosok száma:</label>
+								<label for="aiNumber" data-bind="text: getMessage('LABELFORAINUMBERS')"></label>
 								<input type="number" name="aiNumber" id="aiNumber" min="0" max="11" data-bind="value: aiNumbers, valueUpdate: 'afterkeydown'"><br />
 								<span id="errorSettingsArea" style=""></span><br />
-								<button id="start" data-bind="enabled: isAdmin, click: sendAi">StartGame</button>
+								<button id="start" data-bind="enabled: isAdmin, click: sendAi, text: getMessage('BUTTONSTART')"></button>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="data" id="gameArea" style="display:none;" data-bind="visible: isGameStarted">
 					<div id="gamerTemplateArea">
-						<div data-bind="template: { name: 'gamer', foreach: getPlayers(), as: 'player' }" id="players"></div>
+						<div data-bind="template: { name: 'templateGamer', foreach: getPlayers(), as: 'player' }" id="players"></div>
 						<div data-bind="template: { name: 'templateDepositedCards', foreach: getDepositedCards(true), as: 'dcard'}" id="lapok"></div>
 						<div data-bind="visible: isTributeStateAD, enable: isTributeStateAD" class="input_field">
-							<div data-bind="template: { name: 'gamerTribute', foreach: getPlayers(true), as: 'player' }" id="tributePlayers"></div>
-							<button id="sendTributeList" data-bind="click: sendTributeAd">Send</button>
+							<div data-bind="template: { name: 'templateGamerTribute', foreach: getPlayers(true), as: 'player' }" id="tributePlayers"></div>
+							<button id="sendTributeList" data-bind="click: sendTributeAd, text: getMessage('BUTTONSENDNAME')"></button>
 						</div>
 					</div>
 					<div id="gameTemplateArea">
 						<div data-bind="template: { name: 'templateCard', foreach: getCards(), as: 'card'}" class="cardArea"></div>
 						<div id="footer">
-							<button data-bind="click: sendCards, enable: isYourNext()" class="buttonGroup"> SEND </button>
-							<button data-bind="click: sendPassz, enable: isYourNext()" class="buttonGroup"> PASSZ </button>
-							<button data-bind="click: sendTribute, enable: isTributeStateT()" class="buttonGroup"> TRIBUTE BACK </button>
+							<button data-bind="click: sendCards, enable: isYourNext(), text: getMessage('BUTTONSEND')" class="buttonGroup"></button>
+							<button data-bind="click: sendPassz, enable: isYourNext(), text: getMessage('BUTTONPASSZ')" class="buttonGroup"></button>
+							<button data-bind="click: sendTribute, enable: isTributeStateT(), text: getMessage('BUTTONTRIBUTEBACK')" class="buttonGroup"></button>
 							<button data-bind="click: logPlayer" class="buttonGroup"> LOG_PLAYER </button>
 							<button data-bind="click: logCard" class="buttonGroup"> LOG_CARD </button>
 							<button data-bind="click: logDepositedCards" class="buttonGroup"> LOG_DEP </button>

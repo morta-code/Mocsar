@@ -19,6 +19,9 @@ requirejs.config({
         "ko":           "js/libraries/knockout-2.2.1.debug",
         "less":         "js/libraries/less-1.3.3.min",
         "socket.io":    "js/libraries/socket.io",
+        "trafficCop":   "js/libraries/TrafficCop",
+        "infuser":      "js/libraries/infuser-amd",
+        "koExternal":   "js/libraries/koExternalTemplateEngine-amd",
         
         "jsexpansion":  "js/moduls/jsexpansion_client",
         "connection":   "js/moduls/connection",
@@ -32,7 +35,8 @@ requirejs.config({
 });
             
 require(["jquery", "ko", "socket.io", "less", "jsexpansion", "initialize"], function($, ko) {
-    require(["mocsarVM"], function (mocsar) {
+    require(["infuser", "koExternal", "mocsarVM"], function (infuser, koExt, mocsar) {
+        infuser.defaults.templateUrl = "../templates";
         $(document).ready (function () {
             $(window).bind('contextmenu', function(event){
                 return false;
