@@ -35,7 +35,15 @@ module.exports = function () {
 	*	callbackBad: Akkor hívódik meg, ha sikertelen
 	*/
 	var newPlayer = function (params, callbackOK, callbackBad) {
-		if (gameStarted) {return;};
+		if (gameStarted) {
+			callbackBad("GAMESTARTED");
+			return;
+		};
+		if (params.name.length > 12) {
+			callbackBad("TOLONGNAME");
+			return;
+		};
+
 		var player = {
 			name: "player" + (players.length + 1),
 			ai: false,
@@ -50,7 +58,7 @@ module.exports = function () {
 			};
 			for (var i = players.length - 1; i >= 0; i--) {
 				if (players[i].name == player.name){
-					callbackBad();
+					callbackBad("NAMEINUSE");
 					return;
 				};
 			};
