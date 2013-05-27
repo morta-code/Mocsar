@@ -73,6 +73,9 @@ define(["jquery", "connection", "log", "model", "protocols"],
     				return true;
     		return false;
     	};
+    	var __accessdenied = function(){
+    		model.Message.set("ACCESSDENIED");
+    	};
   		var __badname = function(data){
   			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
@@ -95,7 +98,11 @@ define(["jquery", "connection", "log", "model", "protocols"],
             var elemek = model.Players.get().splice(0);
             
   			for (var i = 0; i < elemek.length && i < data.length; i++) {
-  				elemek[i].setCardNums(data[i]);
+  				var obj = MgetObjectWithCustomEquals(i, function(a, b){
+  					if(a == b.id) return true;
+  						return false;
+  				});
+  				obj.setCardNums(data[i]);
   			};
   			model.Players.set(elemek);
   		};
@@ -215,6 +222,13 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			bridge.sendData('ready', null);
   			log("SIGNAL PUT END", SIGNAL);
   		};
+  		var __serverdown = function(){
+  			model.Players.empty();
+  			model.Cards.empty();
+  			model.DepositedCards.empty();
+
+  			model.State.set(0);
+  		};
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
 			log(data, SIGNAL);
@@ -227,7 +241,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			if(myObject.isTributeHigh(data.length)) // INFO felső ha order 0, 1, 2 ...
 			{
 				model.TributeState.set("T");
-				model.Message.set("TRIBUTEBACK");
+				model.Message.set("TRIBUTEBACK", [].push(data[myObject.order]));
 				// TODO ennyi lapot kell visszaadnom
 				// INFO ha felső, akkor felület, mit adjunk vissza
 			}
@@ -254,6 +268,8 @@ define(["jquery", "connection", "log", "model", "protocols"],
 		};
 
 		var init = function(){
+			bridge.registerSignal('accessdenied', 	__accessdenied);
+			bridge.registerSignal('serverdown', 	__serverdown);
 			bridge.registerSignal('newplayer',		__newplayer);
 			bridge.registerSignal('badname', 		__badname);
 			bridge.registerSignal('badcards', 		__badcards);
