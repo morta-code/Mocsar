@@ -74,9 +74,8 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
   				model.Message.set(data.message);
-  			else model.Message.set(false); 
-
-	  		if(!data.state){	  					
+  			else {
+  				model.Message.set(false); 
 	  			model.UserName.set(data.name);
 				model.UserId.set(data.id);
 				model.State.next();
@@ -102,10 +101,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		};
   		var __mycards = function(data){
   			log("SIGNAL MYCARDS", SIGNAL);
-  			for (var i = 0; i < data.length; i++) {
-  				log(data[i], 1);
-  			}
-			log("SIGNAL MYCARDS2", SIGNAL);
 
   			for (var i = 0; i < data.length; i++) {
   				data[i].isSelected = false;
@@ -113,7 +108,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 
   			data.sort(cardsSortByValue);
   			model.Cards.set(data);
-
+  			model.Cards.log();
   			bridge.sendData("cardnums", null);
   		};
   		var __newplayer = function (data) {
@@ -128,32 +123,31 @@ define(["jquery", "connection", "log", "model", "protocols"],
 		var __next = function(data){
 			log("SIGNAL NEXT", SIGNAL);
 			log("TEST " + data, TEST);
-			// INFO játéktér ürítése nincs, nem rakhat akármit
-			// INFO data id játékos jön
 
 			model.Message.set(false);
 			model.Message.set("NEXT", [data]);
 			model.ActivePlayer.set(data);
 			model.Players.refresh();
-			// INFO ha legfelül 2/joker van autopassz
+
 			var hossz = model.DepositedCards.get().length;
-			if(model.DepositedCards.get()[hossz-1].isLargestCard())
+			if(model.DepositedCards.get()[hossz-1].isLargestCard()) // INFO ha legfelül 2/joker van autopassz
 				sendPassz();
-			// INFO bridge.sendData('put', cards);
 		};
 		var __newround = function(data){
 			log("SIGNAL NEWROUND", SIGNAL);
 			model.DepositedCards.empty();
 
 			var lista = model.Players.get();
-			for (var i = 0; i < lista.length && i < data.order.length; i++) {
+			for (var i = 0; i < data.order.length; i++) {
 				var item = lista.MgetObjectWithCustomEquals(data.order[i], function(a,b){
   					if(a == b.id)
 	  					return true;
   					return false;
   				});
-  				item.order = i;
-  				item.dignity = data.ranks[i];
+  				if(item){
+  					item.order = i;
+	  				item.dignity = data.ranks[i];
+  				}
 			};
 			lista.sort(playersSortByOrder);
 			model.Players.set(lista);
@@ -171,14 +165,12 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		var __nextcircle = function(data){
   			log("SIGNAL NEXTCIRCLE", SIGNAL);
   			log("TEST " + data, TEST);
-  			// INFO játéktér ürítése
-  			model.DepositedCards.empty();
+  			
+  			model.DepositedCards.empty(); // INFO játéktér ürítése
   			model.Message.set(false);
   			model.Message.set("NEXT", [data]);
-  			// INFO data id játékos jön
-  			model.ActivePlayer.set(data);
-  			// INFO játékosok frissítése
-  			model.Players.refresh();
+  			model.ActivePlayer.set(data); // INFO data id játékos jön	
+  			model.Players.refresh();// INFO játékosok frissítése
   		};
  		var __put = function (data) {
  			log("SIGNAL PUT", SIGNAL);
@@ -203,11 +195,20 @@ define(["jquery", "connection", "log", "model", "protocols"],
  				model.Cards.refresh();
  			}
  			else{
+ 				/*
  				for (var i = 0 ; i < data.cards.length; i++) {
  					cardGroup.values.push(data.cards[i].value);
 	 				cardGroup.colors.push(data.cards[i].color);
 	 				cardGroup.isActive = true;
  				}
+ 				*/
+
+ 				data.cards.forEach(function(act){
+ 					cardGroup.values.push(act.value);
+	 				cardGroup.colors.push(act.color);
+	 				cardGroup.isActive = true;
+
+ 				});
  			}
 
  			if (cardGroup.isActive)
@@ -218,7 +219,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
  			model.UserObject.get(data.from).toLowerCardsNum(data.cards.length);
  			
   			bridge.sendData('ready', null);
-  			log("SIGNAL PUT END", SIGNAL);
   		};
   		var __serverdown = function(){
   			model.Players.empty();
@@ -230,7 +230,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 		var __tributes = function(data){
 			log("SIGNAL TRIBUTES", SIGNAL);
 			log(data, SIGNAL);
-			// INFO mycards és cardnums emit
+
 			bridge.sendData('mycards', null);
 			bridge.sendData('cardnums', null);
 
