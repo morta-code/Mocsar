@@ -79,7 +79,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		var __badname = function(data){
   			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
-  				model.Message.set("BADNAME");
+  				model.Message.set(data.message);
   			else model.Message.set(false); 
 
 	  		if(!data.state){	  					
