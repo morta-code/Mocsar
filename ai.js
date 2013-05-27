@@ -294,15 +294,15 @@ module.exports = function () {
 			    putStrategies = [];
 
 			var _iCall = function () {
-				var cStrat = [];
-				cStrat.push(myStrategy);
-				cStrat.push(CalcCardsOver());
-				cStrat.push(CalcCardsUnder());
-				cStrat.push(CalcPutJollies());
-				cStrat.push(CalcPutHighs());
-				cStrat.push(CalcCircles());
-				cStrat.push(CalcCirclesToEnd());
-				cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6]));
+				// var cStrat = [];
+				// cStrat.push(myStrategy);
+				// cStrat.push(CalcCardsOver());
+				// cStrat.push(CalcCardsUnder());
+				// cStrat.push(CalcPutJollies());
+				// cStrat.push(CalcPutHighs());
+				// cStrat.push(CalcCircles());
+				// cStrat.push(CalcCirclesToEnd());
+				// cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6]));
 
 				// TODO Ne a legelső lappal nyisson, hanem ésszel
 				var cards = [];
@@ -434,8 +434,8 @@ module.exports = function () {
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
 				if (data.democratic) {
-					_calcVariables();
-					myStrategy = ChooseStrategy(rank, cardsval, no_of_singles, no_of_pairs, no_of_big_groups, no_of_high);
+					// _calcVariables();
+					// myStrategy = ChooseStrategy(rank, cardsval, no_of_singles, no_of_pairs, no_of_big_groups, no_of_high);
 					_ready();
 				}
 				if (currentOrder.first() === id && !data.democratic) {
@@ -444,7 +444,6 @@ module.exports = function () {
 			};
 
 			var onPut = function (data) {
-				_updateModel('put', data.from, data.cards);
 				_ready();
 			};
 
