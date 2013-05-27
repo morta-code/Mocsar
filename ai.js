@@ -88,11 +88,21 @@ module.exports = function () {
 		function ChooseCall (strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end) {
 			// collection: strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, call_strat
 			if (db["call"].length < 100) {
-				return ['lowest', 'most', 'winn_the_circle'][rndInt(0, 2)];
+				return ['lowest', 'most', 'win_the_circle'][rndInt(0, 2)];
 			};
 			if (!callTree) {callTree = ID3_build(db["call"])};
 			var cstrat = ID3_decision(callTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end]);
 			return cstrat;
+		}
+
+		function ChoosePut (strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end) {
+			// collection: strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, call_strat
+			if (db["put"].length < 100) {
+				return ['lowest', 'no_bid', 'win_the_circle'][rndInt(0, 2)];
+			};
+			if (!putTree) {putTree = ID3_build(db["put"])};
+			var pstrat = ID3_decision(putTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end]);
+			return pstrat;
 		}
 
 		////////////////////////////////////////////////////////////////////////////////
@@ -211,6 +221,44 @@ module.exports = function () {
 			return 3;
 		}
 
+		function CalcCardsOver (player, players) {
+			var cards = [],
+				sum = 0;
+			players.forEach(function (p, i) {
+				if (p.cards.length > player.cards.length) {
+					cards.push(p.cards.length);
+					sum += p.cards.length;
+				}
+			});
+			if (sum === 0) {return 0};
+			if (sum/cards.length < 3) {return 1;};
+			if (sum/cards.length < 5) {return 2;};
+			if (sum/cards.length < 7) {return 3;};
+			if (sum/cards.length < 9) {return 4;};
+			return 5;
+		}
+
+		function CalcCardsUnder (player, players) {
+			var cards = [],
+				sum = 0;
+			players.forEach(function (p, i) {
+				if (p.cards.length < player.cards.length) {
+					cards.push(p.cards.length);
+					sum += p.cards.length;
+				}
+			});
+			if (sum === 0) {return 0};
+			if (sum/cards.length < 3) {return 1;};
+			if (sum/cards.length < 5) {return 2;};
+			if (sum/cards.length < 7) {return 3;};
+			if (sum/cards.length < 9) {return 4;};
+			return 5;
+		}
+
+		function CalcPutJollies () {
+			// TODO
+		}
+
 		function saveDB () {
 			fs.writeFileSync('db.json', JSON.stringify(db));
 		}
@@ -241,16 +289,21 @@ module.exports = function () {
 			    no_of_pairs,
 			    no_of_big_groups,
 			    no_of_high,
-			    myStrategy;
+			    myStrategy,
+			    callStrategies = [],
+			    putStrategies = [];
 
 			var _iCall = function () {
-				if ((myStrategy === 'finishfirst' || myStrategy === "betterposition") &&
-					function (ps, id_) {
-						for (var i = ps.length - 1; i >= 0; i--) {
-							if (ps[i].id === id_) continue;
+				var cStrat = [];
+				cStrat.push(myStrategy);
+				cStrat.push(CalcCardsOver());
+				cStrat.push(CalcCardsUnder());
+				cStrat.push(CalcPutJollies());
+				cStrat.push(CalcPutHighs());
+				cStrat.push(CalcCircles());
+				cStrat.push(CalcCirclesToEnd());
+				cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6]));
 
-						};
-					}(players, id)) {};
 				// TODO Ne a legelső lappal nyisson, hanem ésszel
 				var cards = [];
 				for (var i = 0; (i < player.cards.length); i++) {
@@ -323,8 +376,16 @@ module.exports = function () {
 			var _saveResults = function (neworder) {
 				function save () {
 					db["strategy"].push([rank, cardsval, no_of_singles, no_of_pairs, no_of_big_groups, no_of_high, myStrategy]);
+					db["call"].push.apply(db["call"], callStrategies);
+					db["put"].push.apply(db["put"], putStrategies);
 					if (db["strategy"].length > 200) {
 						db["strategy"].shift();
+					};
+					if (db["call"].length > 400) {
+						db["call"].shift();
+					};
+					if (db["put"].length > 200) {
+						db["put"].shift();
 					};
 				}
 				var myO = neworder.indexOf(id);
