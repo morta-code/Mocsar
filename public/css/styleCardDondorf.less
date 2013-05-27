@@ -159,6 +159,58 @@
 100%  { transform:  translate(0px, -80px);   }
 }
 
+.getEltolas(@value1, @value2, @egysegDb, @counter){
+	transform:  translate( (@counter*@value1/@egysegDb), (@counter*@value2/@egysegDb)) scale(((@counter+1)/@egysegDb),((@counter+1)/@egysegDb));
+}
+
+.CardToPosition(@bottom, @rigth){
+
+	0%     { .getEltolas(@rigth, @bottom, 10, 0);    }
+	10%    { .getEltolas(@rigth, @bottom, 10, 1);    }
+	20%    { .getEltolas(@rigth, @bottom, 10, 2);    }
+	30%    { .getEltolas(@rigth, @bottom, 10, 3);    }
+	40%    { .getEltolas(@rigth, @bottom, 10, 4);    }
+	50%    { .getEltolas(@rigth, @bottom, 10, 5); 	 }
+	60%    { .getEltolas(@rigth, @bottom, 10, 6);    }
+	70%    { .getEltolas(@rigth, @bottom, 10, 7);    }
+	80%    { .getEltolas(@rigth, @bottom, 10, 8);    }
+	90%    { .getEltolas(@rigth, @bottom, 10, 9);    }
+	100%   { .getEltolas(@rigth, @bottom, 10, 10);	 }
+}
+
+
+
+@keyframes cardToDeck_Left_0 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_1 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_2 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_3 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_4 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_5 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_6 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_7 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_8 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_9 	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_10	{ .CardToPosition(0px, 300px); } 
+@keyframes cardToDeck_Left_11	{ .CardToPosition(0px, 300px); } 
+
+
+
+#hatlap-0{
+	      animation-name: cardToDeck_Left_0;
+  	-webkit-animation-name: cardToDeck_Left_0;
+          animation-duration: 3s;
+  	-webkit-animation-duration: 3s;
+          animation-iteration-count: 1;
+  	-webkit-animation-iteration-count: 1;
+          animation-direction:alternate;
+  	-webkit-animation-direction:alternate;
+	  	  animation-play-state: paused;
+	-webkit-animation-play-state: paused;
+}
+#hatlap-0:hover{
+	  	  animation-play-state: running;
+	-webkit-animation-play-state: running;	
+}
 
 [class^="de-"]{
 	

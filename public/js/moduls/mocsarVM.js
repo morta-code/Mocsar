@@ -137,6 +137,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			// INFO játéktér ürítése nincs, nem rakhat akármit
 			// INFO data id játékos jön
 
+			model.Message.set(false);
 			model.Message.set("NEXT", [data]);
 			model.ActivePlayer.set(data);
 			model.Players.refresh();
@@ -178,6 +179,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			log("TEST " + data, TEST);
   			// INFO játéktér ürítése
   			model.DepositedCards.empty();
+  			model.Message.set(false);
   			model.Message.set("NEXT", [data]);
   			// INFO data id játékos jön
   			model.ActivePlayer.set(data);
