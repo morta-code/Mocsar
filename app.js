@@ -87,7 +87,7 @@ var onTributes = function (playerid, tributes) {
 */
 var onTributeBack = function (playerid, socket, cards) {
 	console.log('TRIBUTE BACK', playerid, cards);
-	if (mocsar.players()[playerid].toTributeBack !== cards.length) {
+	if (mocsar.players()[playerid].toTributeBack != cards.length) {
 		if (socket) socket.emit('tributeback', false);
 		return;
 	};
