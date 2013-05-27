@@ -10,6 +10,4 @@
 
 
 #### Szerver
-* Lépés kiválasztása
-
-* Adózási gond: rossz lapokat vesz ki a király, nádor... szekcióból adózásnál ( mindig a legnagyobbakat )
+* Tanulóhalmaz építése
