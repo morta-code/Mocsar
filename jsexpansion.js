@@ -13,21 +13,11 @@
 	}
 }
 
-/*
-(global ? global : window).compareCards = function (a, b) {
-
-//	if(typeof b === 'undefined'){
-//		console.log("b is undefined");
-//		return 1;
-//	}
-
-	if(typeof a !== "object" || typeof b !== "object")
-		return 0;
-	if (a.value === 2 && b.value !== 2) return 1;
-	return a.value - b.value;
+Math.log2 = function (num) {
+	return Math.log(num)/Math.LN2;
 }
-*/
-	
+
+
 /////////////////////A//R//R//A//Y/////////////////////
 
 
@@ -188,6 +178,37 @@ Array.prototype.repeated = function (num) {
 	this = arr;
 	return this;
 };
+
+
+// Return the array of the selected column from the matrix
+Array.prototype.column = function (index) {
+	var arr = [];
+	this.forEach(function (a) {
+		arr.push(a[index]);
+	});
+	return arr;
+}
+
+
+Array.prototype.numberOf = function (value) {
+	var num = 0;
+	this.forEach(function (a) {
+		if (a === value) {++num;};
+	});
+	return num;
+}
+
+
+Array.prototype.maxIndex = function () {
+	var num = Math.max.apply(null, this);
+	return this.indexOf(num);
+}
+
+
+Array.prototype.minIndex = function () {
+	var num = Math.min.apply(null, this);
+	return this.indexOf(num);
+}
 
 
 // Returns the forty second item of the Array. It is undefined if the Array is shorter.

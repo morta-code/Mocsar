@@ -336,7 +336,7 @@ module.exports = function () {
 			});
 			players.last().id = players.length-1;
 			ais.push(players.length-1);
-			aiModule.newAiPlayer(players.last(), players.length-1);
+			aiModule.newAiPlayer(players.last(), players.length-1, players);
 		};
 		aiModule.callbacks(funcs.merge({players: getPlayers, currentRound: getCurrentRound}));
 		callback();
