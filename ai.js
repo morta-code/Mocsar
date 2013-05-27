@@ -255,8 +255,56 @@ module.exports = function () {
 			return 5;
 		}
 
-		function CalcPutJollies () {
-			// TODO
+		function CalcPutJollies (putHistory, id) {
+			var filtered = putHistory.filter(function  (e) {
+				return e[0] !== id;
+			});
+			filtered = filtered.column(1).column('value');
+			var j = filtered.numberOf(15) + filtered.numberOf(2);
+			console.log("NUMBER OF JOLLIES", j);
+
+			if (j < 3) {return 0;};
+			if (j < 5) {return 1;};
+			if (j < 7) {return 2;};
+			if (j < 9) {return 3;};
+			if (j < 11) {return 4;};
+			return 5;
+		}
+
+		function CalcPutHighs (putHistory, id) {
+			var filtered = putHistory.filter(function  (e) {
+				return e[0] !== id;
+			});
+			filtered = filtered.column(1).column('value');
+			var j = filtered.numberOf(14) + filtered.numberOf(13) + filtered.numberOf(12) + filtered.numberOf(11);
+			console.log("NUMBER OF HIGHS", j);
+
+			if (j < 5) {return 0;};
+			if (j < 8) {return 1;};
+			if (j < 12) {return 2;};
+			if (j < 15) {return 3;};
+			if (j < 18) {return 4;};
+			return 5;
+		}
+
+		function CalcCircles (putHistory, id) {
+			var j = putHistory.column(1).numberOf(id);
+
+			if (j < 3) {return 0;};
+			if (j < 5) {return 1;};
+			if (j < 8) {return 2;};
+			if (j < 11) {return 3;};
+			if (j < 15) {return 4;};
+			return 5;
+		}
+
+		function CalcCirclesToEnd (player) {
+			var j = player.cards.column('value').uniq().length;
+			if (j < 2) {return 0;};
+			if (j < 4) {return 1;};
+			if (j < 6) {return 2;};
+			if (j < 8) {return 3;};
+			return 4;
 		}
 
 		function saveDB () {
@@ -269,8 +317,8 @@ module.exports = function () {
 			return aiPlayers;
 		}
 
-		function newAiPlayer (player, id) {
-			aiPlayers.push(playerAI(player, id));
+		function newAiPlayer (player, id, players) {
+			aiPlayers.push(playerAI(player, id, players));
 		}
 
 		function setCallbacks (data) {
@@ -279,7 +327,6 @@ module.exports = function () {
 
 		
 		function playerAI (player, id, players) {
-
 			var myCurrentIndex,
 				iSendTribute = false,
 			    currentOrder,
@@ -291,35 +338,68 @@ module.exports = function () {
 			    no_of_high,
 			    myStrategy,
 			    callStrategies = [],
-			    putStrategies = [];
+			    putStrategies = [],
+			    putHistory = [];
 
 			var _iCall = function () {
-				// var cStrat = [];
-				// cStrat.push(myStrategy);
-				// cStrat.push(CalcCardsOver());
-				// cStrat.push(CalcCardsUnder());
-				// cStrat.push(CalcPutJollies());
-				// cStrat.push(CalcPutHighs());
-				// cStrat.push(CalcCircles());
-				// cStrat.push(CalcCirclesToEnd());
-				// cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6]));
+				var cStrat = [];
+				cStrat.push(myStrategy);
+				cStrat.push(CalcCardsOver(player, players));
+				cStrat.push(CalcCardsUnder(player, players));
+				cStrat.push(CalcPutJollies(putHistory, id));
+				cStrat.push(CalcPutHighs(putHistory, id));
+				cStrat.push(CalcCircles(putHistory, id));
+				cStrat.push(CalcCirclesToEnd(player));
+				cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6]));
+				callStrategies.push(cStrat);
 
-				// TODO Ne a legelső lappal nyisson, hanem ésszel
 				var cards = [];
-				for (var i = 0; (i < player.cards.length); i++) {
-					var c = player.cards[i];
-					
-					if (cards.length == 0) {
-						cards.push(c);
+				if (cStrat.last() === 'lowest') {
+					for (var i = 0; (i < player.cards.length); i++) {
+						var c = player.cards[i];
+						
+						if (cards.length == 0) {
+							cards.push(c);
+						} else {
+							if (cards[0].value != c.value && c.value != 2 && c.value != 15) break;
+							cards.push(c);
+						}
+					};
+				};
+				if (cStrat.last() === 'most') {
+					var groups = player.cards.column('value').uniq();
+					var numbers = [];
+					groups.forEach(function (a) {
+						numbers.push(player.cards.column('value').numberOf(a));
+					});
+					player.cards.forEach(function (a) {
+						if(a.value === groups[numbers.maxIndex()])
+							cards.push(a);
+					});
+				};
+				if (cStrat.last() === 'win_the_circle') {
+					var groups = player.cards.column('value').uniq();
+					var high;
+						 if (groups.contains(14)) {high = 14;}
+					else if (groups.contains(13)) {high = 13;}
+					else if (groups.contains(12)) {high = 12;}
+					else if (groups.contains(11)) {high = 11;}
+					else if (groups.contains(10)) {high = 10;}
+					else high = groups.last();
+
+					if (high == 15 || high == 2) {
+						cards.push(player.cards.last());
 					} else {
-						if (cards[0].value != c.value && c.value != 2 && c.value != 15) break;
-						cards.push(c);
+						player.cards.forEach(function (a) {
+							if(a.value === high)
+								cards.push(a);
+						});
 					}
 				};
+					
 				callbacks.put(id, function() {}, cards);
 			};
 			var _iPut = function () {
-				// TODO Ne passzoljon, hanem ésszel
 				var cards = [],
 					num = callbacks.currentRound().cardsOnTable().last().cards.length,
 					val = callbacks.currentRound().cardsOnTable().last().value;
@@ -430,12 +510,15 @@ module.exports = function () {
 				if (myCurrentIndex) {
 					_saveResults(data.order);
 				}
+				callStrategies.splice(0);
+				putStrategies.splice(0);
+				putHistory.splice(0);
 				iSendTribute = false;
 				currentOrder = data.order;
 				myCurrentIndex = currentOrder.indexOf(id);
 				if (data.democratic) {
-					// _calcVariables();
-					// myStrategy = ChooseStrategy(rank, cardsval, no_of_singles, no_of_pairs, no_of_big_groups, no_of_high);
+					_calcVariables();
+					myStrategy = ChooseStrategy(rank, cardsval, no_of_singles, no_of_pairs, no_of_big_groups, no_of_high);
 					_ready();
 				}
 				if (currentOrder.first() === id && !data.democratic) {
@@ -444,6 +527,7 @@ module.exports = function () {
 			};
 
 			var onPut = function (data) {
+				putHistory.push([data.from, data.cards]);
 				_ready();
 			};
 

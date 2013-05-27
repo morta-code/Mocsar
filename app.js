@@ -49,7 +49,6 @@ var onPut = function (playerid, socket, cards) {
 *			cardnums: Játékosok kártyáinak számai (eredeti sorrendben, pl [14,14,...,16])
 */
 var onReady = function (playerid) {
-	console.log("READY FROM", playerid);
 	mocsar.currentRound().readyFrom(playerid, function (nextid) {
 		if (nextid === undefined) {
 			throw new Error();
