@@ -16,6 +16,8 @@ module.exports = function () {
 		function ID3_build (collection) {
 
 			var node = {};
+			var allresults = collection.column(collection[0].length-1);
+			var results = allresults.uniq();
 
 			function H (Set) {
 				var sm = 0;
@@ -36,28 +38,41 @@ module.exports = function () {
 				return res;
 			}
 
-			// Highest information gain
+
+
+			// 1. Highest information gain
 			var gains = [];
-			(collection[0].length-1).times(function (i) {
+			(collection[0].length-2).times(function (i) {
 				gains.push(G(collection, i));
 			});
 			node['param'] = gains.maxIndex();
 			console.log("HIGHEST INFORMATION GAIN", node.param);
-			// 3.
-			collection.column(node.param).uniq().forEach(function (val) {
-				node[val] = null;
-				var filtered = collection.filter(function (element) {
-					return element[node.param] === val;
-				});
-				if (filtered.column(filtered[0].length-1).uniq().length === 1) {
-					node[val] = filtered.column(filtered[0].length-1).first();
-				// } else if (filtered.length === 0) {
-				// 	node[val] 
-				} else {
-					node[val] = ID3(filtered);
-				}
+
+			// 2.
+			collection.column(node.param).uniq().forEach(function (ar) {
+				node[ar] = null;
 			});
 
+			// 3.
+			for (var vi in node) {
+				if (vi === 'param') continue;
+				var filtered = collection.filter(function (e) {e[node.param] === vi;});
+
+				if (filtered.column(collection[0].length-1).uniq().length === 1) {
+					node[vi] = collection[0].last();
+				} else if (filtered.column(collection[0].length-1).uniq().length === 0) {
+					node[vi] = function () {
+						var resnums = [];
+						results.forEach(function (a) {
+							resnums.push(allresults.numberOf(a));
+						});
+						return results[resnums.maxIndex()];
+					}();
+				} else {
+					node[vi] = ID3_build(filtered);
+				}
+
+			}
 
 
 			return node;
@@ -66,8 +81,8 @@ module.exports = function () {
 
 		function ID3_decision (node, datas) {
 			var deref = node[datas[node.param]];
-			if (typeof deref == 'object') return deref;
-			return ID3_Choose(deref, datas);
+			if (typeof deref !== 'object') return deref;
+			return ID3_decision(deref, datas);
 		}
 
 
@@ -79,7 +94,11 @@ module.exports = function () {
 			if (db["strategy"].length < 100) {
 				return ['finishfirst', 'betterposition', 'keep', 'noswamp'][rndInt(0, 3)];
 			};
-			if (!stratTree) {stratTree = ID3_build(db["strategy"])};
+			if (!stratTree) {
+				console.log("------BUILDING STRAT TREE------");
+				stratTree = ID3_build(db["strategy"])
+			};
+				console.log("------USING STRAT TREE------");
 			var strat = ID3_decision(stratTree, [rank, cardsval, no_of_singles, no_of_pairs, no_of_big_groups, no_of_high]);
 			console.log("STRATEGY choosen:",strat);
 			return strat;
@@ -90,8 +109,13 @@ module.exports = function () {
 			if (db["call"].length < 100) {
 				return ['lowest', 'most', 'win_the_circle'][rndInt(0, 2)];
 			};
-			if (!callTree) {callTree = ID3_build(db["call"])};
+			if (!callTree) {
+				console.log("------BUILDING CALL TREE------");
+				callTree = ID3_build(db["call"])
+			};
+				console.log("------USING CALL TREE------");
 			var cstrat = ID3_decision(callTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end]);
+			console.log("CALL choosen:",cStrat);
 			return cstrat;
 		}
 
@@ -100,8 +124,13 @@ module.exports = function () {
 			if (db["put"].length < 100) {
 				return ['lowest', 'no_bid', 'win_the_circle'][rndInt(0, 2)];
 			};
-			if (!putTree) {putTree = ID3_build(db["put"])};
+			if (!putTree) {
+				console.log("------BUILDING PUT TREE------");
+				putTree = ID3_build(db["put"])
+			};
+				console.log("------USING PUT TREE------");
 			var pstrat = ID3_decision(putTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end, val, num]);
+			console.log("PUT choosen:",pstrat);
 			return pstrat;
 		}
 
@@ -230,7 +259,6 @@ module.exports = function () {
 					sum += p.cards.length;
 				}
 			});
-			console.log("CARDS OVER", sum);
 			if (sum === 0) {return 0};
 			if (sum/cards.length < 3) {return 1;};
 			if (sum/cards.length < 5) {return 2;};
@@ -248,7 +276,6 @@ module.exports = function () {
 					sum += p.cards.length;
 				}
 			});
-			console.log("CARDS UNDER", sum);
 			if (sum === 0) {return 0};
 			if (sum/cards.length < 3) {return 1;};
 			if (sum/cards.length < 5) {return 2;};
@@ -268,7 +295,6 @@ module.exports = function () {
 					if (b.value === 15 || b.value === 2) {j++};
 				});
 			});
-			console.log("NUMBER OF JOLLIES", j);
 
 			if (j < 3) {return 0;};
 			if (j < 6) {return 1;};
@@ -289,7 +315,6 @@ module.exports = function () {
 					if (b.value === 14 || b.value === 13 || b.value === 12 || b.value === 11) {j++};
 				});
 			});
-			console.log("NUMBER OF HIGHS", j);
 
 			if (j < 6) {return 0;};
 			if (j < 12) {return 1;};
@@ -301,7 +326,6 @@ module.exports = function () {
 
 		function CalcCircles (putHistory, id) {
 			var j = putHistory.column(0).numberOf(id);
-			console.log("NUMBER OF CIRCLES", j);
 
 			if (j < 3) {return 0;};
 			if (j < 5) {return 1;};
@@ -313,7 +337,6 @@ module.exports = function () {
 
 		function CalcCirclesToEnd (player) {
 			var j = player.cards.column('value').uniq().length;
-			console.log("NUMBER OF CIRCLES TO END", j);
 			if (j < 2) {return 0;};
 			if (j < 4) {return 1;};
 			if (j < 6) {return 2;};
@@ -423,7 +446,7 @@ module.exports = function () {
 					return;
 				};
 
-
+				console.log("------I AM PUTING------");
 				var cStrat = [];
 				cStrat.push(myStrategy);
 				cStrat.push(CalcCardsOver(player, players));
@@ -434,10 +457,11 @@ module.exports = function () {
 				cStrat.push(CalcCirclesToEnd(player));
 				cStrat.push(val);
 				cStrat.push(num);
+				console.log("------I CALCED EVERYTHING------", cStrat);
 				cStrat.push(ChoosePut(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6],cStrat[7],cStrat[8]));
 				putStrategies.push(cStrat); //'lowest', 'no_bid', 'win_the_circle'
 
-
+				console.log("------PUT STRATEGY IS------", cStrat.last());
 				if (cStrat.last() === "lowest") {	
 					for (var i = 0; (i < player.cards.length); i++) {
 						var c = player.cards[i];
