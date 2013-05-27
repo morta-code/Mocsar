@@ -86,6 +86,7 @@ var onTributes = function (playerid, tributes) {
 *	Erre mindenki kérdezze le a lapjait, majd válaszoljon 'ready'-vel.
 */
 var onTributeBack = function (playerid, socket, cards) {
+	console.log('TRIBUTE BACK', playerid, cards);
 	if (mocsar.players()[playerid].toTributeBack !== cards.length) {
 		if (socket) socket.emit('tributeback', false);
 		return;

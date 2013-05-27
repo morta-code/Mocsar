@@ -291,7 +291,7 @@ module.exports = function () {
 			var fromCards = players[id].cards;
 			var forCards = players[ players[id].toTributeBackFor ].cards;
 			cards.forEach(function (c, i) {
-				forCards.push(fromCards.splice(fromCards.indexOf(c), 1)[0]);
+				forCards.push(fromCards.splice(fromCards.indexOfObject(c), 1)[0]);
 			});
 
 			needsTributeBack--;
