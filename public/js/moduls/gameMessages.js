@@ -1,6 +1,19 @@
 define([], function () {
 	
 	var map = {};
+	//map[""] = "";
+
+/* Oldalhoz tartozó szövegek */
+	map["CONNECTEDUSERS"] = "Eddig csatlakozott Userek:";
+	map["LABELFORNAME"] = "Felhasználónév:";	
+	map["LABELFORAINUMBERS"] = "MI játékosok száma:";
+
+	map["BUTTONSENDNAME"] = "Login";
+	map["BUTTONSTART"] = "Start Game";
+	map["BUTTONSEND"] = "Send";
+	map["BUTTONPASSZ"] = "Passz";
+	map["BUTTONTRIBUTEBACK"] = "Tribute Back";
+/* Játékmenethez tartozó szövegek */
 
 	map["TRIBUTEBACK"] = "Kérlek adj vissza %0 lapot";
 	map["BADTRIBUTEBACK"] = "Hibás kártya visszaadás. Kérlek próbáld meg újra";

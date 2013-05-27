@@ -13,6 +13,20 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 
 	var messageCodeParam = [];
 	
+	var initializeModel = function(){
+		userName("");     
+		userId("");       
+		aiNumbers("5");   
+		badname(false)    
+		players([]);      
+		cards([]);        
+		depositedCards([]);
+		state(0);
+		isTributeState(false);
+		messageCode(false);
+		messageCodeParam = [];
+	};
+
 	var refreshPlayers = function(){
       	var data = players().slice(0);
       	log("players slice", 1);

@@ -38,11 +38,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
         	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
         	var eltolas =  -1 * cardIndex * 100;
         	var theCard = "card-" + switchColor(card.color) + switchValue(card.value);
-/*        	log("cardbindings_init", 1);
-        	log("color: " + card.color, 1);
-        	log("value: " + card.value, 1);
-        	log(theCard, 1);
-*/			
+
         	$(element).attr({class: theCard});
           	$(element).css("left", cardIndex * 50);	
 			$(element).bind('contextmenu', function(event){
@@ -70,21 +66,8 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
         	}
         },
         update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        	var card = valueAccessor(), allBindings = allBindingsAccessor();    
-/*        	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
-        	var eltolas =  -1 * cardIndex * 100;
-
-        	var theCard = "card-" + switchColor(card.color) + switchValue(card.value);
-        	log("cardbindings_update", 1);
-        	log(theCard, 1);
-
-			
-        	$(element).attr({class: theCard});
-          	$(element).css("left", cardIndex * 50);	   
- */      
-         	if(card.isSelected){
-        		$(element).addClass("selected");
-        	}
+        	var card = valueAccessor();
+         	if(card.isSelected)	$(element).addClass("selected");
     	}
     };
 

@@ -8,7 +8,7 @@
 #### Szerver
 * Tanulóhalmaz építése
 * Nem engedi visszaadni a lapokat
-
+* Kilépés esetén lehessen visszalépni
 
 ## Második körben a szerver megakadt:
 * én már rég kimentem de a többi játékosnak még bőven van lapja
