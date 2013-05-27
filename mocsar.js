@@ -36,11 +36,11 @@ module.exports = function () {
 	*/
 	var newPlayer = function (params, callbackOK, callbackBad) {
 		if (gameStarted) {
-			callbackBad("A játék már elkezdődött :(");
+			callbackBad("GAMESTARTED");
 			return;
 		};
 		if (params.name.length > 12) {
-			callbackBad("Túl hosszú név");
+			callbackBad("TOLONGNAME");
 			return;
 		};
 
@@ -58,7 +58,7 @@ module.exports = function () {
 			};
 			for (var i = players.length - 1; i >= 0; i--) {
 				if (players[i].name == player.name){
-					callbackBad();
+					callbackBad("NAMEINUSE");
 					return;
 				};
 			};
