@@ -114,7 +114,7 @@ module.exports = function () {
 			};
 				console.log("------USING CALL TREE------");
 			var cstrat = ID3_decision(callTree, [strategy, cards_over, cards_under, put_jollies, put_highs, circles, circles_to_my_end]);
-			console.log("CALL choosen:",cStrat);
+			console.log("CALL choosen:",cstrat);
 			return cstrat;
 		}
 
@@ -458,7 +458,7 @@ module.exports = function () {
 				cStrat.push(ChoosePut(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6],cStrat[7],cStrat[8]));
 				putStrategies.push(cStrat); //'lowest', 'no_bid', 'win_the_circle'
 
-				if (cStrat.last() === "lowest" || (cStrat.last() === 'no_bid' && rndInt(10) > 6)) {	
+				if (cStrat.last() === "lowest" || (cStrat.last() === 'no_bid' && rndInt(10) > 4)) {	
 					for (var i = 0; (i < player.cards.length); i++) {
 						var c = player.cards[i];
 						if (c.value != 2 && c.value <= val) continue;
