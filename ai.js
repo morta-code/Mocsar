@@ -434,7 +434,7 @@ module.exports = function () {
 				cStrat.push(CalcCirclesToEnd(player));
 				cStrat.push(val);
 				cStrat.push(num);
-				cStrat.push(ChooseCall(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6],cStrat[7],cStrat[8]));
+				cStrat.push(ChoosePut(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6],cStrat[7],cStrat[8]));
 				putStrategies.push(cStrat); //'lowest', 'no_bid', 'win_the_circle'
 
 
