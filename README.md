@@ -17,17 +17,15 @@
 * Stratégia kiválasztása
 * Adatbázisba mentés
 
+### Szerver elhal játék közben:
 
-BROADCAST: ----> next 2
-BROADCAST: ----> put { from: 2, cards: [] }
-BROADCAST: ----> nextcircle 2
-
-
-* Szerver elhal játék közben:
+* BROADCAST: ----> next 2
+* BROADCAST: ----> put { from: 2, cards: [] }
+* BROADCAST: ----> nextcircle 2
 
 /home/quiga/workspace/Mocsar/ai.js:249	for (var i = ps.length - 1; i >= 0; i--) {
 						               
-                                       
+
 TypeError: Cannot read property 'length' of undefined (ps.length)
     at /home/quiga/workspace/Mocsar/ai.js:249:22
     at _iCall (/home/quiga/workspace/Mocsar/ai.js:253:7)
