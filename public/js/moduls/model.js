@@ -11,7 +11,7 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	this.isTributeState = ko.observable(false);
 	this.messageCode	= ko.observable(false);
 
-	var messageCodeParam = false;
+	var messageCodeParam = [];
 	
 	var refreshPlayers = function(){
       	var data = players().slice(0);
@@ -35,16 +35,16 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
    		if(messageCode())
    			if(getMessage(messageCode()))
    				var back = getMessage(messageCode());
-   				if(messageCodeParam){
+   				if(messageCodeParam.length > 0){
    					for (var i = 0; i < messageCodeParam.length; i++) {
-						back.replace('%'+i, messageCodeParam[i]);   						
+						back = back.replace('%'+i, messageCodeParam[i]);   						
    					};
    				}
-	   			return back;
+   				return back;
    		return "";
    	};
    	var setMessageCode = function(code, param){
-   		messageCodeParam = param || false;
+   		messageCodeParam = param || [];
    		messageCode(code);
    	};
 	var getUserId = function(){
@@ -235,7 +235,10 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 
 	var getState = function(){return state;};
 	var getTributeState = function(){return isTributeState();};
-	var setTributeState = function(st){isTributeState(st);};
+	var setTributeState = function(st){
+		isTributeState(st);
+		log("tributestate " + isTributeState(), 1);
+	};
 	var isTributeStateAD = function(){
 		return isTributeState() == "AD";
 	};

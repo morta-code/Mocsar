@@ -79,7 +79,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   		var __badname = function(data){
   			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
-  				model.Message.set("BADNAME");
+  				model.Message.set(data.message);
   			else model.Message.set(false); 
 
 	  		if(!data.state){	  					
@@ -136,6 +136,8 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			log("TEST " + data, TEST);
 			// INFO játéktér ürítése nincs, nem rakhat akármit
 			// INFO data id játékos jön
+
+			model.Message.set("NEXT", [data]);
 			model.ActivePlayer.set(data);
 			model.Players.refresh();
 			// INFO ha legfelül 2/joker van autopassz
@@ -176,7 +178,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			log("TEST " + data, TEST);
   			// INFO játéktér ürítése
   			model.DepositedCards.empty();
-
+  			model.Message.set("NEXT", [data]);
   			// INFO data id játékos jön
   			model.ActivePlayer.set(data);
   			// INFO játékosok frissítése
