@@ -11,6 +11,7 @@ define([], function () {
 	map["BUTTONSENDNAME"] = "Login";
 	map["BUTTONSTART"] = "Start Game";
 	map["BUTTONSEND"] = "Send";
+	map["BUTTONSENDAD"] = "Send";
 	map["BUTTONPASSZ"] = "Passz";
 	map["BUTTONTRIBUTEBACK"] = "Tribute Back";
 /* Játékmenethez tartozó szövegek */
