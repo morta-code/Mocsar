@@ -46,7 +46,6 @@ module.exports = function () {
 				gains.push(G(collection, i));
 			});
 			node['param'] = gains.maxIndex();
-			console.log("HIGHEST INFORMATION GAIN", node.param);
 
 			// 2.
 			collection.column(node.param).uniq().forEach(function (ar) {
@@ -446,7 +445,6 @@ module.exports = function () {
 					return;
 				};
 
-				console.log("------I AM PUTING------");
 				var cStrat = [];
 				cStrat.push(myStrategy);
 				cStrat.push(CalcCardsOver(player, players));
@@ -457,12 +455,10 @@ module.exports = function () {
 				cStrat.push(CalcCirclesToEnd(player));
 				cStrat.push(val);
 				cStrat.push(num);
-				console.log("------I CALCED EVERYTHING------", cStrat);
 				cStrat.push(ChoosePut(cStrat[0],cStrat[1],cStrat[2],cStrat[3],cStrat[4],cStrat[5],cStrat[6],cStrat[7],cStrat[8]));
 				putStrategies.push(cStrat); //'lowest', 'no_bid', 'win_the_circle'
 
-				console.log("------PUT STRATEGY IS------", cStrat.last());
-				if (cStrat.last() === "lowest") {	
+				if (cStrat.last() === "lowest" || (cStrat.last() === 'no_bid' && rndInt(10) > 6)) {	
 					for (var i = 0; (i < player.cards.length); i++) {
 						var c = player.cards[i];
 						if (c.value != 2 && c.value <= val) continue;
@@ -482,9 +478,10 @@ module.exports = function () {
 					var cvs = player.cards.column('value');
 					var high;
 					if (val === 14){
-						if (cvs.numberOf(2)+cvs.numberOf(15) >= num) {
+						var js = player.cards.filter(function (e) {return (e.value === 2 || e.value === 15);});
+						if (js.length >= num) {
 							num.times(function (i) {
-								cards.push(player.cards[cvs.length-(1+i)]);
+								cards.push(js[i]);
 							});
 						}
 					} else {
@@ -503,9 +500,8 @@ module.exports = function () {
 								});
 								return 'break';
 							}
-						})
+						});
 					}
-						
 				};
 
 				callbacks.put(id, null, cards);
