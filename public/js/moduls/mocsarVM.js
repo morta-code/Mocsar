@@ -98,7 +98,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
             var elemek = model.Players.get().splice(0);
             
   			for (var i = 0; i < elemek.length && i < data.length; i++) {
-  				var obj = MgetObjectWithCustomEquals(i, function(a, b){
+  				var obj = elemek.MgetObjectWithCustomEquals(i, function(a, b){
   					if(a == b.id) return true;
   						return false;
   				});
