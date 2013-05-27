@@ -10,6 +10,8 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	this.state          = ko.observable(0);
 	this.isTributeState = ko.observable(false);
 	this.messageCode	= ko.observable(false);
+
+	var messageCodeParam = false;
 	
 	var refreshPlayers = function(){
       	var data = players().slice(0);
@@ -32,10 +34,17 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
    	var getMessageCode = function(){
    		if(messageCode())
    			if(getMessage(messageCode()))
-	   			return getMessage(messageCode());
+   				var back = getMessage(messageCode());
+   				if(messageCodeParam){
+   					for (var i = 0; i < messageCodeParam.length; i++) {
+						back.replace('%'+i, messageCodeParam[i]);   						
+   					};
+   				}
+	   			return back;
    		return "";
    	};
-   	var setMessageCode = function(code){
+   	var setMessageCode = function(code, param){
+   		messageCodeParam = param || false;
    		messageCode(code);
    	};
 	var getUserId = function(){
@@ -49,7 +58,7 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 		var hossz = players().length;
 		if(tributeIs){
 			var lista = [];
-			for (var i = 0; i < hossz; i++) {
+			for (var i = hossz - 1; i >= 0; i--) {
 				if(players()[i].order >= hossz/2)
 					lista.push(players()[i]);
 			};
@@ -138,7 +147,7 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 	var setActivePlayer = function(id){
 		for (var i = 0; i < players().length; i++) {
 			players()[i].active = false;
-			if(players()[i].order == id)
+			if(players()[i].id == id)
 				players()[i].active = true;
 		};
 	};
@@ -235,6 +244,8 @@ define(["jquery", "ko", "gameMessages", "log"], function ($, ko, getMessage, log
 			cards()[i].isSelected = false;
 		}
 	};
+
+
 	return {
 /****************************************************************************************************/
 /******************** Default-ba kiadott válltozók **************************************************/
