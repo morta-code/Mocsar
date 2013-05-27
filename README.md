@@ -4,18 +4,19 @@
 
 #### Kliens
 * Animáció kártyák kirakásakor; ready az animáció végén
-* index.html a /public-ba
 * Adózás
 * Nextcircle esetén még mindig előfordul, hogy kártya marad középen
-* Adóztatás után azt írja: „Kérlek adj vissza x lapot”, tehát nem írja ki a pontos számot
 * Nem engedi visszaadni a lapokat
 
-* username max hossz jelenleg 12 karakter 
+
 
 #### Szerver
 * Lépés kiválasztása
 * Stratégia kiválasztása
 * Adatbázisba mentés
+
+* username max hossz jelenleg 12 karakter (szerver oldali ellenőrzés)
+* mocsar.newPlayer badCallback-nak add át a hibakódot, és ezt a badname-mel küld át nekem
 
 ### Szerver elhal játék közben:
 
