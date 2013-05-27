@@ -199,8 +199,8 @@ io.sockets.on('connection', function (socket) {
 			});
 
 			socket.emit('badname', {state: false, id: playerid, name: nam});
-		}, function () {
-			socket.emit('badname', {state: true});
+		}, function (msg) {
+			socket.emit('badname', {state: true, message: msg});
 		});
 	});
 });

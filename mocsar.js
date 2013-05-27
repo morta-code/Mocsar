@@ -35,7 +35,15 @@ module.exports = function () {
 	*	callbackBad: Akkor hívódik meg, ha sikertelen
 	*/
 	var newPlayer = function (params, callbackOK, callbackBad) {
-		if (gameStarted) {return;};
+		if (gameStarted) {
+			callbackBad("A játék már elkezdődött :(");
+			return;
+		};
+		if (params.name.length > 12) {
+			callbackBad("Túl hosszú név");
+			return;
+		};
+
 		var player = {
 			name: "player" + (players.length + 1),
 			ai: false,
