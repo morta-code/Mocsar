@@ -1,11 +1,5 @@
-define(["jquery", "connection", "log", "model", "protocols"], 
-	function ($, bridge, log, model, protocols) {
-
-	var ERROR = 0;
-	var SIGNAL = 1;
-	var TEST = 2;
-	var INFO = 3;
-	var ALL = 4;
+define(["jquery", "connection", "model", "protocols"], 
+	function ($, bridge, model, protocols) {
 	
 	return function(){
 
@@ -71,7 +65,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
     		model.Message.set("ACCESSDENIED");
     	};
   		var __badname = function(data){
-  			log("SIGNAL BADNAME", SIGNAL);
   			if(data.state)
   				model.Message.set(data.message);
   			else {
@@ -87,7 +80,7 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			model.Message.set("BADCARDS");
   		};
   		var __cardnums = function(data){
-  			log("SIGNAL CARDNUMS", SIGNAL);
+
             var elemek = model.Players.get().splice(0);
             
   			for (var i = 0; i < data.length; i++) {
@@ -100,7 +93,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			model.Players.set(elemek);
   		};
   		var __mycards = function(data){
-  			log("SIGNAL MYCARDS", SIGNAL);
 
   			for (var i = 0; i < data.length; i++) {
   				data[i].isSelected = false;
@@ -108,22 +100,16 @@ define(["jquery", "connection", "log", "model", "protocols"],
 
   			data.sort(cardsSortByValue);
   			model.Cards.set(data);
-  			model.Cards.log();
   			bridge.sendData("cardnums", null);
   		};
   		var __newplayer = function (data) {
-  			log("SIGNAL NEWPLAYER", SIGNAL);
   			var lista = [];
 			for (var i = 0; i < data.length; i++) {
 				lista.push(protocols.Player(data[i], i));
     		}
     		model.Players.set(lista);
-    		model.Players.log();
   		};
 		var __next = function(data){
-			log("SIGNAL NEXT", SIGNAL);
-			log("TEST " + data, TEST);
-
 			model.Message.set(false);
 			model.Message.set("NEXT", [data]);
 			model.ActivePlayer.set(data);
@@ -134,7 +120,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
 				sendPassz();
 		};
 		var __newround = function(data){
-			log("SIGNAL NEWROUND", SIGNAL);
 			model.DepositedCards.empty();
 
 			var lista = model.Players.get();
@@ -151,7 +136,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			};
 			lista.sort(playersSortByOrder);
 			model.Players.set(lista);
-			model.Players.log();
 
 			bridge.sendData('mycards', null);
 			if(data.democratic)	bridge.sendData('ready', null);
@@ -163,9 +147,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
             model.State.set(2);
 		};
   		var __nextcircle = function(data){
-  			log("SIGNAL NEXTCIRCLE", SIGNAL);
-  			log("TEST " + data, TEST);
-  			
   			model.DepositedCards.empty(); // INFO játéktér ürítése
   			model.Message.set(false);
   			model.Message.set("NEXT", [data]);
@@ -173,7 +154,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			model.Players.refresh();// INFO játékosok frissítése
   		};
  		var __put = function (data) {
- 			log("SIGNAL PUT", SIGNAL);
 
  			var cardGroup = protocols.CardGroup();
 
@@ -220,9 +200,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
   			model.init();
   		};
 		var __tributes = function(data){
-			log("SIGNAL TRIBUTES", SIGNAL);
-			log(data, SIGNAL);
-
 			bridge.sendData('mycards', null);
 			bridge.sendData('cardnums', null);
 
@@ -241,8 +218,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			}
 		};
 		var __tributeback = function(data){
-			log("SIGNAL TRIBUTEBACK", SIGNAL);
-			log("DATA " + data, 1);
 
 			if(data){
 				model.TributeState.set(false);
@@ -302,11 +277,6 @@ define(["jquery", "connection", "log", "model", "protocols"],
 			getCards: 			model.Cards.get,
 			getDepositedCards: 	model.DepositedCards.get,
 			
-			//	csak ideiglenes listázás
-			logCard: 			model.Cards.log,
-			logPlayer: 			model.Players.log,
-			logDepositedCards: 	model.DepositedCards.log,
-
 			sendUserName: 		sendUserName,
 			sendPassz: 			sendPassz,
 			sendCards: 			sendCards,

@@ -1,4 +1,4 @@
-define(["socket.io", "log"], function (io, log) {
+define(["socket.io"], function (io) {
 	
 	var socket;
 	var connectToServer = function(url){
@@ -9,8 +9,6 @@ define(["socket.io", "log"], function (io, log) {
 	};
 	var sendData = function(signal, data){
 		if(socket==null) return null;
-		log("SENDED DATA, SIGNAL " + signal, 1);
-		log(data, 1);
 		socket.emit(signal, data);
 		return true;
 	};

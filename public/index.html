@@ -48,9 +48,6 @@
 							<button data-bind="click: sendCards, enable: isYourNext(), text: getMessage('BUTTONSEND')" class="buttonGroup"></button>
 							<button data-bind="click: sendPassz, enable: isYourNext(), text: getMessage('BUTTONPASSZ')" class="buttonGroup"></button>
 							<button data-bind="click: sendTribute, enable: isTributeStateT(), text: getMessage('BUTTONTRIBUTEBACK')" class="buttonGroup"></button>
-							<button data-bind="click: logPlayer, visible: isDevelopment" class="buttonGroup"> LOG_PLAYER </button>
-							<button data-bind="click: logCard, visible: isDevelopment" class="buttonGroup"> LOG_CARD </button>
-							<button data-bind="click: logDepositedCards, visible: isDevelopment" class="buttonGroup"> LOG_DEP </button>
 							<span   data-bind="text:  getMessageToUser()" class="buttonGroup"></span>
 						</div>
 					</div>

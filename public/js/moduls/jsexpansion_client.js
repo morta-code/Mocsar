@@ -1,5 +1,4 @@
 define([], function () {
-	console.log("JSEXPANSION CLIENT LOADED");
 
 // Returns the index of given object in the array of objects. Otherwise -1
 Array.prototype.MindexOfObjectWithCustomEquals = function (obj, eq) {

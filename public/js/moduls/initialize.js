@@ -1,4 +1,4 @@
-define(["jquery", "ko", "log"], function ($, ko, log) {
+define(["jquery", "ko"], function ($, ko) {
 	/*
 	*	saját bindingHandler-ek létrehozása, vissza nem ad semmit sem
 	*/
@@ -75,7 +75,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 			var card = valueAccessor(), allBindings = allBindingsAccessor();       
         	var cardIndex = ko.utils.unwrapObservable( allBindings.cardIndex );
-			log(card, 1);
+			
 			if(typeof card != "undefined"){
 			var cardCount =  card.values.length;
 			
@@ -93,7 +93,7 @@ define(["jquery", "ko", "log"], function ($, ko, log) {
         }
     };
 
-    
+
 
 
 });
