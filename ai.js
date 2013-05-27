@@ -230,6 +230,7 @@ module.exports = function () {
 					sum += p.cards.length;
 				}
 			});
+			console.log("CARDS OVER", sum);
 			if (sum === 0) {return 0};
 			if (sum/cards.length < 3) {return 1;};
 			if (sum/cards.length < 5) {return 2;};
@@ -247,6 +248,7 @@ module.exports = function () {
 					sum += p.cards.length;
 				}
 			});
+			console.log("CARDS UNDER", sum);
 			if (sum === 0) {return 0};
 			if (sum/cards.length < 3) {return 1;};
 			if (sum/cards.length < 5) {return 2;};
@@ -259,15 +261,20 @@ module.exports = function () {
 			var filtered = putHistory.filter(function  (e) {
 				return e[0] !== id;
 			});
-			filtered = filtered.column(1).column('value');
-			var j = filtered.numberOf(15) + filtered.numberOf(2);
-			console.log("NUMBER OF JOLLIES", j, putHistory);
+			filtered = filtered.column(1);
+			var j = 0;
+			filtered.forEach(function (a) {
+				a.forEach(function (b) {
+					if (b.value === 15 || b.value === 2) {j++};
+				});
+			});
+			console.log("NUMBER OF JOLLIES", j);
 
 			if (j < 3) {return 0;};
-			if (j < 5) {return 1;};
-			if (j < 7) {return 2;};
-			if (j < 9) {return 3;};
-			if (j < 11) {return 4;};
+			if (j < 6) {return 1;};
+			if (j < 9) {return 2;};
+			if (j < 12) {return 3;};
+			if (j < 15) {return 4;};
 			return 5;
 		}
 
@@ -275,20 +282,26 @@ module.exports = function () {
 			var filtered = putHistory.filter(function  (e) {
 				return e[0] !== id;
 			});
-			filtered = filtered.column(1).column('value');
-			var j = filtered.numberOf(14) + filtered.numberOf(13) + filtered.numberOf(12) + filtered.numberOf(11);
+			filtered = filtered.column(1);
+			var j = 0;
+			filtered.forEach(function (a) {
+				a.forEach(function (b) {
+					if (b.value === 14 || b.value === 13 || b.value === 12 || b.value === 11) {j++};
+				});
+			});
 			console.log("NUMBER OF HIGHS", j);
 
-			if (j < 5) {return 0;};
-			if (j < 8) {return 1;};
-			if (j < 12) {return 2;};
-			if (j < 15) {return 3;};
-			if (j < 18) {return 4;};
+			if (j < 6) {return 0;};
+			if (j < 12) {return 1;};
+			if (j < 20) {return 2;};
+			if (j < 28) {return 3;};
+			if (j < 36) {return 4;};
 			return 5;
 		}
 
 		function CalcCircles (putHistory, id) {
-			var j = putHistory.column(1).numberOf(id);
+			var j = putHistory.column(0).numberOf(id);
+			console.log("NUMBER OF CIRCLES", j);
 
 			if (j < 3) {return 0;};
 			if (j < 5) {return 1;};
@@ -300,6 +313,7 @@ module.exports = function () {
 
 		function CalcCirclesToEnd (player) {
 			var j = player.cards.column('value').uniq().length;
+			console.log("NUMBER OF CIRCLES TO END", j);
 			if (j < 2) {return 0;};
 			if (j < 4) {return 1;};
 			if (j < 6) {return 2;};
