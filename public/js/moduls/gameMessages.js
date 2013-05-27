@@ -12,6 +12,7 @@ define([], function () {
 	map["GAMESTARTED"] = "A játék már elkezdődött. Nem Tudsz csatlakozni.";
 	map["NAMEINUSED"] = "A név már használatban van.";
 	map["TOLONGNAME"] = "A név túl hosszú";
+	map["NEXT"] = "következő játékos: %0";	// csak teszteléshez
 
 	return function(code){
 		return map[code];
