@@ -251,7 +251,7 @@ define(["jquery", "connection", "model", "protocols"],
         };
 
 		var connectToServer = function(){
-			bridge.connectToServer('http://localhost');
+			bridge.connectToServer('192.168.255.162');
 		};
 
 		connectToServer();
