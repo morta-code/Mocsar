@@ -16,7 +16,8 @@ define([], function () {
 			return this.order == 0;
 		};
 		obj.toLowerCardsNum = function(num){
-			this.card -= num;
+			if(this.card - num >= 0)
+				this.card -= num;
 		};
 		obj.setCardNums = function(num){
 			this.card = num;
