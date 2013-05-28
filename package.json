@@ -12,7 +12,7 @@
 		"jquery": "1.8.x",
 		"azure": "*"
  	},
- 	"engines":{"node": ">=0.8.0"},
+ 	"engines":{"node": ">=0.8.x"},
 	"license": "Closed",
 	"ownership": {
 		"name": "PPKE-ITK",
