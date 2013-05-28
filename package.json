@@ -25,6 +25,7 @@
 			"name": "Quintz Gábor",
 			"email": "quiga@digitus.itk.ppke.hu"
 		}
-	]
+	],
+	"main": "app.js"
 
 }
