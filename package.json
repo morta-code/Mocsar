@@ -12,7 +12,10 @@
 		"jquery": "1.8.x",
 		"azure": "*"
  	},
- 	"engines":{"node": "0.8.2"},
+ 	"engines": {
+    		"node": ">=0.8.2"
+  	},
+  	"main": "./app.js",  
 	"license": "Closed",
 	"ownership": {
 		"name": "PPKE-ITK",
@@ -27,7 +30,6 @@
 			"name": "Quintz Gábor",
 			"email": "quiga@digitus.itk.ppke.hu"
 		}
-	],
-	"main": "app.js"
-
+	]
 }
+
