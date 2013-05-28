@@ -251,7 +251,7 @@ define(["jquery", "connection", "model", "protocols"],
         };
 
 		var connectToServer = function(){
-			bridge.connectToServer('192.168.255.162');
+			bridge.connectToServer('http://mocsar.azurewebsites.net/');
 		};
 
 		connectToServer();
